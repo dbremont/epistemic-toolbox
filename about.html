@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Epistemic Toolbox</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #060a10;
+            --bg-primary: #0a1019;
+            --bg-elevated: #0f1621;
+            --bg-card: rgba(15, 22, 33, 0.7);
+            --fg-primary: #e8eef5;
+            --fg-secondary: #8a96a8;
+            --fg-muted: #4a5567;
+            --accent-primary: #d4a056;
+            --accent-secondary: #7dd3c0;
+            --accent-glow: rgba(212, 160, 86, 0.25);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-elevated: rgba(255, 255, 255, 0.1);
+            --border-accent: rgba(212, 160, 86, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--fg-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main { flex: 1; }
+
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Background & Atmosphere */
+        .bg-atmosphere {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 160, 86, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(125, 211, 192, 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+        }
+
+        .nav-blur {
+            background: rgba(6, 10, 16, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .accent-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 160, 86, 0.08), rgba(125, 211, 192, 0.04));
+            border: 1px solid rgba(212, 160, 86, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.3rem 0.65rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 0.2rem;
+        }
+
+        .tag-primary {
+            background: rgba(212, 160, 86, 0.12);
+            border: 1px solid rgba(212, 160, 86, 0.3);
+            color: var(--accent-primary);
+        }
+
+        .tag-secondary {
+            background: rgba(125, 211, 192, 0.08);
+            border: 1px solid rgba(125, 211, 192, 0.2);
+            color: var(--accent-secondary);
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--fg-primary);
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 0.875rem;
+            color: var(--fg-primary);
+        }
+
+        p {
+            color: var(--fg-secondary);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            color: var(--fg-secondary);
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+        }
+
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--accent-secondary);
+        }
+
+        /* Animations */
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.7s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Layers -->
+    <div class="bg-atmosphere"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 bg-[var(--accent-primary)] rounded-full"></div>
+                <span class="font-mono text-sm tracking-wider text-[var(--fg-secondary)]">EPISTEMIC TOOLBOX</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="font-mono text-xs text-[var(--fg-secondary)] hover:text-[var(--fg-primary)] transition-colors">Tools</a>
+                <a href="docs.html" class="font-mono text-xs text-[var(--fg-secondary)] hover:text-[var(--fg-primary)] transition-colors">Documentation</a>
+                <a href="about.html" class="font-mono text-xs text-[var(--accent-primary)]">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <header class="mb-12 animate-in stagger-1">
+                <h1 class="font-display text-5xl md:text-6xl font-semibold mb-4" style="letter-spacing: -0.03em; line-height: 1.1;">
+                    About the<br/><span class="text-[var(--fg-secondary)]">Epistemic Toolbox</span>
+                </h1>
+                <p class="text-xl text-[var(--fg-secondary)]">
+                    Understanding reality through computational tools and systematic inquiry
+                </p>
+            </header>
+
+            <div class="accent-line animate-in stagger-2"></div>
+
+            <!-- What is it? -->
+            <section class="content-card animate-in stagger-2">
+                <h2>What is the Epistemic Toolbox?</h2>
+                <p>
+                    The Epistemic Toolbox is a curated collection of computational tools designed to help you understand, analyze, and represent complex aspects of reality. Each tool in this collection is an <strong>epistemic instrument</strong>—a method or construct that enables us to extract compressed descriptions and meaningful insights from data.
+                </p>
+                <p>
+                    Unlike traditional software libraries or frameworks, this toolbox focuses on the <em>philosophical</em> and <em>representational</em> aspects of data analysis. Each tool is presented not just as a mathematical technique, but as a lens through which we can view and make affirmations about reality.
+                </p>
+                <div class="highlight-box">
+                    <h3 class="font-mono text-sm text-[var(--accent-primary)] mb-2">Core Philosophy</h3>
+                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                        An epistemic tool is any instrument, construct, or method used to represent aspects of reality and extract compressed descriptions at multiple levels. It enables the exploration of the space of possible affirmations about that reality.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Purpose -->
+            <section class="content-card animate-in stagger-3">
+                <h2>Purpose & Vision</h2>
+                <p>
+                    The toolbox serves multiple purposes for researchers, analysts, and curious minds:
+                </p>
+                <ul>
+                    <li><strong>Representation:</strong> Transform raw data into structured, interpretable forms that reveal underlying patterns and structures</li>
+                    <li><strong>Exploration:</strong> Navigate the space of possible affirmations about a given domain or phenomenon</li>
+                    <li><strong>Compression:</strong> Extract essential features from complex datasets, enabling efficient reasoning</li>
+                    <li><strong>Discovery:</strong> Uncover latent structures, relationships, and dynamics that might otherwise remain hidden</li>
+                    <li><strong>Communication:</strong> Provide shared conceptual frameworks for discussing and reasoning about complex systems</li>
+                </ul>
+            </section>
+
+            <!-- The Tools -->
+            <section class="content-card animate-in stagger-4">
+                <h2>The Collection</h2>
+                <p>
+                    Currently, the toolbox includes tools across several domains of inquiry:
+                </p>
+                <div class="mb-4">
+                    <span class="tag tag-primary">Data Visualization</span>
+                    <span class="tag tag-primary">Statistical Analysis</span>
+                    <span class="tag tag-primary">Pattern Detection</span>
+                    <span class="tag tag-primary">Network Analysis</span>
+                    <span class="tag tag-primary">Probabilistic Reasoning</span>
+                    <span class="tag tag-primary">Temporal Analysis</span>
+                </div>
+                <p>
+                    Each tool is accompanied by interactive visualizations, explanations of its epistemic role, and guidance on when and how to apply it effectively. The tools range from fundamental statistical measures like <em>Standard Deviation</em> to complex frameworks like <em>Bayesian Inference</em> and <em>Monte Carlo Simulation</em>.
+                </p>
+            </section>
+
+            <!-- Affirmation Space -->
+            <section class="content-card animate-in stagger-4">
+                <h2>The Affirmation Space</h2>
+                <p>
+                    Central to this project is the concept of the <strong>Affirmation Space</strong>—the set of all possible statements or claims we can make about a given reality. Epistemic tools help us navigate this space by:
+                </p>
+                <ul>
+                    <li>Identifying which affirmations are <em>supported</em> by the available evidence</li>
+                    <li>Quantifying the <em>confidence</em> or <em>uncertainty</em> associated with different claims</li>
+                    <li>Revealing <em>relationships</em> between different affirmations</li>
+                    <li>Highlighting the <em>boundaries</em> of what can be reasonably asserted given current knowledge</li>
+                </ul>
+                <div class="highlight-box">
+                    <h3 class="font-mono text-sm text-[var(--accent-secondary)] mb-2">Further Reading</h3>
+                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                        Explore the theoretical foundations in the <a href="https://www.notion.so/Affirmation-Space-336c0f5171ec80928f75ddbde09d7121?source=copy_link" target="_blank">Affirmation Space</a> and <a href="https://www.notion.so/Framework-334c0f5171ec803e8cfbe7f0bc02c575?source=copy_link" target="_blank">Modelling Modelling</a> documentation.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Future Development -->
+            <section class="content-card animate-in stagger-4">
+                <h2>Future Development</h2>
+                <p>
+                    This is an ongoing project. Future enhancements may include:
+                </p>
+                <ul>
+                    <li>Additional tools covering more domains of inquiry</li>
+                    <li>Integration capabilities for combining multiple tools in analysis workflows</li>
+                    <li>Export and documentation features for sharing insights</li>
+                    <li>Community contributions and curated use cases</li>
+                    <li>Advanced tutorials and guided explorations</li>
+                </ul>
+            </section>
+
+            <!-- Contact -->
+            <section class="content-card animate-in stagger-4">
+                <h2>Get Involved</h2>
+                <p>
+                    The Epistemic Toolbox is open to feedback, suggestions, and contributions. Whether you've found a bug, have an idea for a new tool, or simply want to discuss the philosophical implications of epistemic tools, we'd love to hear from you.
+                </p>
+                <p>
+                    This project is maintained with the belief that better tools for understanding reality lead to better decisions and deeper insights across all domains of human inquiry.
+                </p>
+            </section>
+
+            <div class="accent-line animate-in stagger-4"></div>
+
+            <!-- Footer -->
+            <footer class="text-center py-8 animate-in stagger-4">
+                <p class="font-mono text-sm text-[var(--fg-muted)]">
+                    Part of the exploration into how we model, understand, and navigate reality
+                </p>
+                <p class="font-mono text-xs text-[var(--fg-muted)] mt-2">
+                    <a href="index.html" class="hover:text-[var(--accent-primary)]">← Back to Tools</a>
+                </p>
+            </footer>
+        </div>
+    </main>
+</body>
+</html>

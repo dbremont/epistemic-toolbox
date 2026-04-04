@@ -3,130 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Standard Deviation Explorer</title>
+  <title>Standard Deviation Explorer - Epistemic Toolbox</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg: #0a0f1a;
-      --bg-secondary: #111827;
-      --fg: #f0f4f8;
-      --muted: #64748b;
-      --accent: #00d4aa;
-      --accent-glow: rgba(0, 212, 170, 0.3);
-      --card: rgba(17, 24, 39, 0.8);
-      --border: rgba(100, 116, 139, 0.2);
-      --sigma1: #22d3ee;
+      --bg-deep: #060a10;
+      --bg-primary: #0a1019;
+      --bg-elevated: #0f1621;
+      --bg-card: rgba(15, 22, 33, 0.7);
+      --fg-primary: #e8eef5;
+      --fg-secondary: #8a96a8;
+      --fg-muted: #4a5567;
+      --accent-primary: #d4a056;
+      --accent-secondary: #7dd3c0;
+      --accent-glow: rgba(212, 160, 86, 0.25);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-elevated: rgba(255, 255, 255, 0.1);
+      --border-accent: rgba(212, 160, 86, 0.4);
+      
+      /* Tool Specific Variables mapped to Theme */
+      --sigma1: #7dd3c0; /* Accent Secondary */
       --sigma2: #a78bfa;
       --sigma3: #fb7185;
-      --data-point: #fbbf24;
-      --z-low: #10b981;
-      --z-medium: #f59e0b;
-      --z-high: #ef4444;
+      --data-point: #d4a056; /* Accent Primary */
+      --z-low: #7dd3c0;
+      --z-medium: #d4a056;
+      --z-high: #fb7185;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Space Grotesk', sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-deep);
+      color: var(--fg-primary);
+      line-height: 1.6;
       overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
+    main { flex: 1; }
+    .font-display { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
 
+    /* Background & Atmosphere */
     .bg-atmosphere {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
+      position: fixed; inset: 0; z-index: -1;
       background: 
-        radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse 50% 30% at 50% 50%, rgba(167, 139, 250, 0.04) 0%, transparent 50%),
-        var(--bg);
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 160, 86, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(125, 211, 192, 0.05) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
     }
-
-    .grid-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
+    .bg-pattern {
+      position: fixed; inset: 0; z-index: -1; opacity: 0.4;
       background-image: 
-        linear-gradient(rgba(100, 116, 139, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(100, 116, 139, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 100% 70% at 50% 30%, black, transparent);
     }
 
-    @keyframes slide-up {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes scale-in {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes pulse-subtle {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-
-    .animate-slide-up {
-      animation: slide-up 0.6s ease-out forwards;
-    }
-
-    .animate-scale-in {
-      animation: scale-in 0.4s ease-out forwards;
-    }
-
-    .stagger-1 { animation-delay: 0.1s; opacity: 0; }
-    .stagger-2 { animation-delay: 0.2s; opacity: 0; }
-    .stagger-3 { animation-delay: 0.3s; opacity: 0; }
-    .stagger-4 { animation-delay: 0.4s; opacity: 0; }
-    .stagger-5 { animation-delay: 0.5s; opacity: 0; }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: var(--bg-secondary);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--muted);
-      border-radius: 4px;
-    }
-
-    .glass-card {
-      background: var(--card);
+    /* Navigation */
+    .nav-blur {
+      background: rgba(6, 10, 16, 0.8);
       backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      -webkit-backdrop-filter: blur(20px);
     }
+
+    /* Cards & Elements */
+    .tool-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.5rem;
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    }
+    
+    .tool-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    
+    .tool-card:hover {
+      border-color: var(--border-elevated);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+    }
+    .tool-card:hover::before { opacity: 1; }
 
     .input-field {
       background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       border-radius: 10px;
       padding: 12px 16px;
-      color: var(--fg);
+      color: var(--fg-primary);
       font-family: 'JetBrains Mono', monospace;
       font-size: 14px;
       transition: all 0.3s ease;
@@ -135,473 +115,310 @@
 
     .input-field:focus {
       outline: none;
-      border-color: var(--accent);
+      border-color: var(--accent-primary);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    .input-field::placeholder {
-      color: var(--muted);
-    }
+    .input-field::placeholder { color: var(--fg-muted); }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, #00b894 100%);
-      color: var(--bg);
+      background: linear-gradient(135deg, var(--accent-primary) 0%, #c49347 100%);
+      color: var(--bg-deep);
       font-weight: 600;
-      padding: 12px 24px;
-      border-radius: 10px;
+      padding: 10px 20px;
+      border-radius: 8px;
       border: none;
       cursor: pointer;
       transition: all 0.3s ease;
       font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
+      box-shadow: 0 10px 30px rgba(212, 160, 86, 0.3);
     }
 
     .btn-secondary {
-      background: transparent;
-      color: var(--fg);
-      font-weight: 500;
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
+      background: rgba(212, 160, 86, 0.08);
+      color: var(--accent-primary);
+      border: 1px solid rgba(212, 160, 86, 0.2);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.3s;
     }
 
     .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+      background: rgba(212, 160, 86, 0.15);
+      border-color: var(--accent-primary);
     }
-
+    
     .btn-danger {
       background: rgba(251, 113, 133, 0.1);
       color: var(--sigma3);
-      border: 1px solid rgba(251, 113, 133, 0.3);
+      border: 1px solid rgba(251, 113, 133, 0.2);
     }
-
     .btn-danger:hover {
       background: rgba(251, 113, 133, 0.2);
       border-color: var(--sigma3);
     }
 
+    /* Mode Selector Toggle */
+    .mode-selector {
+      display: flex;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 1rem;
+    }
+    .mode-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--fg-muted);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      background: rgba(212, 160, 86, 0.15);
+      color: var(--accent-primary);
+      box-shadow: 0 0 0 1px var(--border-accent);
+    }
+
+    /* Tags */
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.3rem 0.65rem; border-radius: 4px;
+      display: inline-block; margin: 0.2rem; transition: all 0.3s;
+    }
+    .tag-primary { background: rgba(212, 160, 86, 0.12); border: 1px solid rgba(212, 160, 86, 0.3); color: var(--accent-primary); }
+    
     .data-tag {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(251, 191, 36, 0.1);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      color: var(--data-point);
-      padding: 6px 12px;
-      border-radius: 20px;
+      gap: 6px;
+      background: rgba(212, 160, 86, 0.08);
+      border: 1px solid rgba(212, 160, 86, 0.2);
+      color: var(--accent-primary);
+      padding: 4px 10px;
+      border-radius: 6px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 12px;
       transition: all 0.2s ease;
     }
-
-    .data-tag:hover {
-      background: rgba(251, 191, 36, 0.2);
-      transform: scale(1.05);
-    }
-
     .data-tag button {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      padding: 2px;
-      display: flex;
-      opacity: 0.6;
-      transition: opacity 0.2s;
+      background: none; border: none; color: inherit; cursor: pointer; padding: 2px; display: flex; opacity: 0.6;
     }
+    .data-tag button:hover { opacity: 1; }
 
-    .data-tag button:hover {
-      opacity: 1;
-    }
-
-    #viz-canvas {
-      border-radius: 12px;
-      cursor: crosshair;
-    }
-
+    /* Stats */
     .stat-card {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
-      padding: 16px 20px;
+      padding: 14px 18px;
       transition: all 0.3s ease;
     }
+    .stat-card:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+    .stat-value { font-size: 24px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent-primary); }
+    .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--fg-muted); margin-top: 4px; }
 
-    .stat-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
+    /* Canvas */
+    #viz-canvas { border-radius: 12px; cursor: crosshair; background: rgba(0,0,0,0.2); }
 
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-    }
-
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
+    /* Toggles */
     .sigma-toggle {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid transparent;
+      display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; margin-bottom: 0.25rem;
     }
-
-    .sigma-toggle:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .sigma-toggle.active {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border);
-    }
-
-    .sigma-toggle input {
-      display: none;
-    }
-
+    .sigma-toggle:hover { background: rgba(255, 255, 255, 0.03); }
+    .sigma-toggle.active { background: rgba(255, 255, 255, 0.05); border-color: var(--border-subtle); }
+    .sigma-toggle input { display: none; }
     .sigma-toggle .checkmark {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--muted);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
+      width: 18px; height: 18px; border: 1.5px solid var(--fg-muted); border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+    }
+    .sigma-toggle.active .checkmark { background: var(--accent-primary); border-color: var(--accent-primary); }
+
+    /* Score Bar */
+    .score-bar {
+      height: 8px; border-radius: 4px;
+      background: linear-gradient(90deg, var(--z-low) 0%, var(--z-low) 33%, var(--z-medium) 33%, var(--z-medium) 66%, var(--z-high) 66%, var(--z-high) 100%);
+      position: relative; margin: 20px 0;
+    }
+    .score-marker {
+      position: absolute; top: -6px; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--fg-primary); transform: translateX(-50%); transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
-    .sigma-toggle.active .checkmark {
-      background: var(--accent);
-      border-color: var(--accent);
+    .interpretation-card {
+      border-radius: 12px; padding: 16px; transition: all 0.3s ease; border: 1px solid transparent; background: rgba(255,255,255,0.02);
     }
+    .interpretation-card.common { border-color: rgba(125, 211, 192, 0.2); }
+    .interpretation-card.uncommon { border-color: rgba(212, 160, 86, 0.2); }
+    .interpretation-card.rare { border-color: rgba(251, 113, 133, 0.2); }
 
     .tooltip {
-      position: absolute;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      z-index: 100;
-      white-space: nowrap;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      position: absolute; background: var(--bg-elevated); border: 1px solid var(--border-elevated); padding: 12px 16px; border-radius: 10px; font-size: 13px; pointer-events: none; opacity: 0; transition: opacity 0.2s ease; z-index: 100; white-space: nowrap; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     }
+    .tooltip.visible { opacity: 1; }
 
-    .tooltip.visible {
-      opacity: 1;
-    }
-
-    button:focus-visible, input:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    .preset-btn {
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 500;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .preset-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(0, 212, 170, 0.05);
-    }
-
-    /* Z-Score specific styles */
-    .z-score-bar {
-      height: 8px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, 
-        var(--z-low) 0%, 
-        var(--z-low) 33%, 
-        var(--z-medium) 33%, 
-        var(--z-medium) 66%, 
-        var(--z-high) 66%, 
-        var(--z-high) 100%
-      );
-      position: relative;
-      margin: 20px 0;
-    }
-
-    .z-marker {
-      position: absolute;
-      top: -6px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 3px solid var(--fg);
-      transform: translateX(-50%);
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .z-interpretation-card {
-      border-radius: 12px;
-      padding: 16px;
-      transition: all 0.3s ease;
-      border: 1px solid transparent;
-    }
-
-    .z-interpretation-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .z-interpretation-card.common {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-
-    .z-interpretation-card.uncommon {
-      background: rgba(245, 158, 11, 0.1);
-      border-color: rgba(245, 158, 11, 0.3);
-    }
-
-    .z-interpretation-card.rare {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.3);
-    }
-
-    .z-distribution-bar {
-      display: flex;
-      height: 40px;
-      border-radius: 8px;
-      overflow: hidden;
-      margin: 16px 0;
-    }
-
-    .z-distribution-segment {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .z-distribution-segment:hover {
-      filter: brightness(1.2);
-    }
-
-    .percentile-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+    /* Animations */
+    @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
+    .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+    .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+    .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+    
+    /* Responsive */
+    @media (max-width: 640px) { .stat-value { font-size: 18px; } }
   </style>
 </head>
 <body>
   <div class="bg-atmosphere"></div>
-  <div class="grid-overlay"></div>
+  <div class="bg-pattern"></div>
 
-  <div class="min-h-screen p-4 md:p-8">
-    <header class="max-w-7xl mx-auto mb-8 animate-slide-up">
-      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-          <h1 class="text-4xl md:text-5xl font-bold tracking-tight" style="color: var(--fg);">
-            Standard Deviation
-            <span class="block text-lg font-normal mt-2" style="color: var(--muted);">
-              Interactive Visual Learning Tool
-            </span>
-          </h1>
-        </div>
-        <div class="flex gap-3 flex-wrap">
-          <button class="preset-btn" onclick="loadPreset('normal')" aria-label="Load normal distribution preset">
-            Normal Distribution
-          </button>
-          <button class="preset-btn" onclick="loadPreset('uniform')" aria-label="Load uniform distribution preset">
-            Uniform
-          </button>
-          <button class="preset-btn" onclick="loadPreset('outliers')" aria-label="Load outliers preset">
-            With Outliers
-          </button>
-          <button class="preset-btn" onclick="loadPreset('bimodal')" aria-label="Load bimodal preset">
-            Bimodal
-          </button>
-        </div>
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-2 h-2 bg-[var(--accent-primary)] rounded-full"></div>
+        <span class="font-mono text-sm tracking-wider text-[var(--fg-secondary)]">EPISTEMIC TOOLBOX</span>
       </div>
-    </header>
+      <div class="flex items-center gap-4">
+        <span class="font-mono text-xs text-[var(--fg-muted)] hidden sm:block" id="clock">00:00:00</span>
+        <a href="../index.html" class="btn-secondary">Back to Tools</a>
+      </div>
+    </div>
+  </nav>
 
-    <main class="max-w-7xl mx-auto grid lg:grid-cols-3 gap-6">
+  <!-- Hero Section -->
+  <header class="pt-32 pb-8 px-6">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="font-display text-5xl md:text-6xl font-semibold mb-4 animate-slide-up stagger-2" style="letter-spacing: -0.03em; line-height: 1.1;">
+        Standard Deviation<br/>
+      </h1>
+      
+      <p class="text-[var(--fg-secondary)] text-lg max-w-2xl mb-8 animate-slide-up stagger-3" style="line-height: 1.7;">
+        An interactive tool to visualize variance, standard deviation, and score distributions. Add data points or load presets to explore statistical patterns.
+      </p>
+
+      <div class="animate-slide-up stagger-4 flex flex-wrap gap-3">
+        <button class="btn-secondary" onclick="loadPreset('normal')">Normal Distribution</button>
+        <button class="btn-secondary" onclick="loadPreset('uniform')">Uniform</button>
+        <button class="btn-secondary" onclick="loadPreset('outliers')">With Outliers</button>
+        <button class="btn-secondary" onclick="loadPreset('bimodal')">Bimodal</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="pb-24 px-6">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-3 gap-6">
+      
+      <!-- Sidebar -->
       <div class="lg:col-span-1 space-y-6">
-        <section class="glass-card p-6 animate-slide-up stagger-1" aria-labelledby="add-data-heading">
-          <h2 id="add-data-heading" class="text-lg font-semibold mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="16"/>
-              <line x1="8" y1="12" x2="16" y2="12"/>
-            </svg>
-            Add Data Points
-          </h2>
+        
+        <!-- Add Data Card -->
+        <section class="tool-card animate-slide-up stagger-1">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="icon-wrapper" style="width: 40px; height: 40px; margin: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </div>
+            <h2 class="font-display text-lg font-semibold">Add Data Points</h2>
+          </div>
           
           <form id="add-form" class="space-y-4">
-            <div>
-              <label for="value-input" class="block text-sm mb-2" style="color: var(--muted);">Value</label>
-              <input 
-                type="number" 
-                id="value-input" 
-                class="input-field" 
-                placeholder="Enter a number..."
-                step="any"
-                aria-describedby="input-hint"
-              >
-              <p id="input-hint" class="text-xs mt-2" style="color: var(--muted);">
-                Press Enter or click Add to add the value
-              </p>
-            </div>
-            <button type="submit" class="btn-primary w-full">
-              Add Data Point
-            </button>
+            <input type="number" id="value-input" class="input-field" placeholder="Enter value..." step="any">
+            <button type="submit" class="btn-primary w-full">Add Point</button>
           </form>
 
-          <div class="mt-4 pt-4 border-t" style="border-color: var(--border);">
-            <p class="text-sm mb-3" style="color: var(--muted);">Quick add:</p>
-            <div class="flex flex-wrap gap-2">
-              <button class="btn-secondary text-sm py-2 px-3" onclick="addValue(10)">+10</button>
-              <button class="btn-secondary text-sm py-2 px-3" onclick="addValue(25)">+25</button>
-              <button class="btn-secondary text-sm py-2 px-3" onclick="addValue(50)">+50</button>
-              <button class="btn-secondary text-sm py-2 px-3" onclick="addValue(75)">+75</button>
-              <button class="btn-secondary text-sm py-2 px-3" onclick="addValue(90)">+90</button>
+          <div class="mt-4 pt-4 border-t border-white/5 flex flex-wrap gap-2">
+            <button class="btn-secondary text-xs py-1.5 px-3" onclick="addValue(10)">+10</button>
+            <button class="btn-secondary text-xs py-1.5 px-3" onclick="addValue(25)">+25</button>
+            <button class="btn-secondary text-xs py-1.5 px-3" onclick="addValue(50)">+50</button>
+            <button class="btn-secondary text-xs py-1.5 px-3" onclick="addValue(75)">+75</button>
+          </div>
+        </section>
+
+        <!-- Data Set Card -->
+        <section class="tool-card animate-slide-up stagger-2">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-display text-lg font-semibold">Data Set</h2>
+            <span class="font-mono text-xs text-[var(--fg-muted)]" id="data-count">(0 points)</span>
+          </div>
+          
+          <div id="data-container" class="flex flex-wrap gap-2 min-h-[80px] p-3 rounded-lg bg-black/20 mb-4">
+            <p class="text-sm text-[var(--fg-muted)] w-full text-center" id="empty-hint">No data added yet</p>
+          </div>
+          
+          <button class="btn-secondary btn-danger w-full text-center" onclick="clearAllData()" id="clear-btn">Clear All</button>
+        </section>
+
+        <!-- Display Options Card -->
+        <section class="tool-card animate-slide-up stagger-3">
+          <h2 class="font-display text-lg font-semibold mb-4">Display Options</h2>
+          
+          <!-- Unified Statistic Mode Selector -->
+          <div class="mb-4">
+            <label class="text-xs text-[var(--fg-muted)] uppercase tracking-wider block mb-2">Statistic Mode</label>
+            <div class="mode-selector">
+              <button class="mode-btn active" data-mode="z" onclick="setMode('z')">Z-Score</button>
+              <button class="mode-btn" data-mode="t" onclick="setMode('t')">T-Score</button>
             </div>
           </div>
-        </section>
 
-        <section class="glass-card p-6 animate-slide-up stagger-2" aria-labelledby="data-list-heading">
-          <div class="flex items-center justify-between mb-4">
-            <h2 id="data-list-heading" class="text-lg font-semibold flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"/>
-                <line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-              Data Set
-              <span class="text-sm font-normal mono" style="color: var(--muted);" id="data-count">(0 points)</span>
-            </h2>
-            <button class="btn-secondary btn-danger text-sm py-2 px-3" onclick="clearAllData()" id="clear-btn" aria-label="Clear all data">
-              Clear All
-            </button>
-          </div>
-          
-          <div id="data-container" class="flex flex-wrap gap-2 min-h-[60px] p-3 rounded-lg" style="background: rgba(0, 0, 0, 0.2);">
-            <p class="text-sm" style="color: var(--muted);" id="empty-hint">No data yet. Add some values above!</p>
-          </div>
-        </section>
-
-        <section class="glass-card p-6 animate-slide-up stagger-3" aria-labelledby="sigma-heading">
-          <h2 id="sigma-heading" class="text-lg font-semibold mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            Display Options
-          </h2>
-          
-          <div class="space-y-2">
+          <div class="space-y-1 border-t border-white/5 pt-4">
+            <label class="text-xs text-[var(--fg-muted)] uppercase tracking-wider block mb-2">Visualization Layers</label>
+            
             <label class="sigma-toggle active" data-sigma="1">
               <input type="checkbox" checked>
-              <span class="checkmark">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </span>
-              <div class="legend-dot" style="background: var(--sigma1);"></div>
-              <span>68% Band (±1σ)</span>
+              <span class="checkmark"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--bg-deep)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div class="w-3 h-3 rounded-full" style="background: var(--sigma1);"></div>
+              <span class="text-sm">68% Band (±1σ)</span>
             </label>
             
             <label class="sigma-toggle active" data-sigma="2">
               <input type="checkbox" checked>
-              <span class="checkmark">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </span>
-              <div class="legend-dot" style="background: var(--sigma2);"></div>
-              <span>95% Band (±2σ)</span>
+              <span class="checkmark"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--bg-deep)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div class="w-3 h-3 rounded-full" style="background: var(--sigma2);"></div>
+              <span class="text-sm">95% Band (±2σ)</span>
             </label>
             
             <label class="sigma-toggle active" data-sigma="3">
               <input type="checkbox" checked>
-              <span class="checkmark">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </span>
-              <div class="legend-dot" style="background: var(--sigma3);"></div>
-              <span>99.7% Band (±3σ)</span>
+              <span class="checkmark"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--bg-deep)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div class="w-3 h-3 rounded-full" style="background: var(--sigma3);"></div>
+              <span class="text-sm">99.7% Band (±3σ)</span>
             </label>
           </div>
 
-          <div class="mt-4 pt-4 border-t" style="border-color: var(--border);">
+          <div class="mt-4 pt-4 border-t border-white/5">
             <label class="sigma-toggle" id="show-curve-toggle">
               <input type="checkbox">
-              <span class="checkmark">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </span>
-              <span>Show Normal Curve</span>
+              <span class="checkmark"></span>
+              <span class="text-sm">Show Normal Curve</span>
             </label>
           </div>
         </section>
       </div>
 
+      <!-- Main Visualization Area -->
       <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Stats Row -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 animate-slide-up stagger-1">
           <div class="stat-card">
-            <div class="stat-value" style="color: var(--accent);" id="stat-mean">--</div>
+            <div class="stat-value" id="stat-mean">--</div>
             <div class="stat-label">Mean (μ)</div>
           </div>
           <div class="stat-card">
@@ -613,440 +430,308 @@
             <div class="stat-label">Variance (σ²)</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value" style="color: var(--data-point);" id="stat-range">--</div>
+            <div class="stat-value" style="color: var(--fg-primary);" id="stat-range">--</div>
             <div class="stat-label">Range</div>
           </div>
         </div>
 
-        <section class="glass-card p-6 animate-slide-up stagger-2" aria-labelledby="viz-heading">
-          <h2 id="viz-heading" class="text-lg font-semibold mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10"/>
-              <line x1="12" y1="20" x2="12" y2="4"/>
-              <line x1="6" y1="20" x2="6" y2="14"/>
-            </svg>
-            Distribution Visualization
-          </h2>
+        <!-- Canvas Card -->
+        <section class="tool-card animate-slide-up stagger-2">
+          <h2 class="font-display text-lg font-semibold mb-4">Distribution Visualization</h2>
           
-          <div class="relative" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px;">
+          <div class="relative rounded-xl overflow-hidden bg-black/20">
             <canvas id="viz-canvas" width="800" height="400" aria-label="Data distribution visualization"></canvas>
             <div id="tooltip" class="tooltip" role="tooltip"></div>
           </div>
-
-          <p class="text-sm mt-4" style="color: var(--muted);">
-            Click on the canvas to add data points. Hover over points to see Z-score interpretation.
-          </p>
+          <p class="text-xs mt-4 text-[var(--fg-muted)]">Click on the canvas to add data points. Hover over points to see score interpretation.</p>
         </section>
 
-        <!-- Z-Score Interpretation Panel -->
-        <section class="glass-card p-6 animate-slide-up stagger-4" aria-labelledby="zscore-heading">
-          <h2 id="zscore-heading" class="text-lg font-semibold mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            Z-Score Interpretation
-          </h2>
+        <!-- Score Interpretation (Dynamic based on Mode) -->
+        <section class="tool-card animate-slide-up stagger-3">
+          <h2 class="font-display text-lg font-semibold mb-4" id="interp-title">Z-Score Interpretation</h2>
 
-          <!-- Z-Score Visual Scale -->
+          <!-- Score Bar -->
           <div class="mb-6">
-            <div class="flex justify-between text-xs mono mb-2" style="color: var(--muted);">
-              <span>-3σ</span>
-              <span>-2σ</span>
-              <span>-1σ</span>
-              <span>μ</span>
-              <span>+1σ</span>
-              <span>+2σ</span>
-              <span>+3σ</span>
+            <div class="flex justify-between text-xs font-mono mb-2 text-[var(--fg-muted)]" id="score-bar-labels">
+              <span>-3σ</span><span>-2σ</span><span>-1σ</span><span>μ</span><span>+1σ</span><span>+2σ</span><span>+3σ</span>
             </div>
-            <div class="z-score-bar" id="z-score-bar">
-              <div class="z-marker" id="z-marker" style="left: 50%; background: var(--accent);"></div>
+            <div class="score-bar">
+              <div class="score-marker" id="score-marker" style="left: 50%; background: var(--accent-primary);"></div>
             </div>
-            <div class="flex justify-between text-xs" style="color: var(--muted);">
-              <span>Extreme Low</span>
-              <span>Below Average</span>
-              <span>Average</span>
-              <span>Above Average</span>
-              <span>Extreme High</span>
+            <div class="flex justify-between text-xs text-[var(--fg-muted)]">
+              <span>Extreme Low</span><span>Below Avg</span><span>Average</span><span>Above Avg</span><span>Extreme High</span>
             </div>
           </div>
 
-          <!-- Interactive Z-Score Calculator -->
-          <div class="p-4 rounded-lg mb-6" style="background: rgba(0, 0, 0, 0.3);">
-            <h3 class="font-medium mb-3" style="color: var(--accent);">Calculate Z-Score for Any Value</h3>
+          <!-- Score Calc -->
+          <div class="p-4 rounded-lg mb-6 bg-black/20 border border-white/5">
+            <h3 class="font-medium mb-3 text-[var(--accent-primary)]" id="calc-title">Calculate Z-Score</h3>
             <div class="flex gap-4 items-end">
               <div class="flex-1">
-                <label for="z-calc-input" class="block text-sm mb-2" style="color: var(--muted);">Enter a value:</label>
-                <input type="number" id="z-calc-input" class="input-field" placeholder="e.g., 65" step="any">
+                <label for="score-calc-input" class="block text-xs mb-2 text-[var(--fg-muted)]">Enter a value:</label>
+                <input type="number" id="score-calc-input" class="input-field" placeholder="e.g., 65" step="any">
               </div>
-              <button class="btn-primary" onclick="calculateZScore()">Calculate</button>
+              <button class="btn-primary" onclick="calculateScore()">Calculate</button>
             </div>
-            <div id="z-calc-result" class="mt-4 hidden">
-              <!-- Result will be injected here -->
-            </div>
-          </div>
-
-          <!-- Data Distribution by Z-Score -->
-          <div class="mb-6">
-            <h3 class="font-medium mb-3" style="color: var(--accent);">Your Data Distribution</h3>
-            <div class="z-distribution-bar" id="z-distribution-bar">
-              <div class="z-distribution-segment" style="background: rgba(239, 68, 68, 0.6); width: 2.15%;" title="Z < -2 (Rare)">
-                <span id="dist-z-low-out"></span>
-              </div>
-              <div class="z-distribution-segment" style="background: rgba(245, 158, 11, 0.6); width: 13.6%;" title="-2 < Z < -1 (Uncommon)">
-                <span id="dist-z-low-mid"></span>
-              </div>
-              <div class="z-distribution-segment" style="background: rgba(16, 185, 129, 0.6); width: 34.15%;" title="-1 < Z < 0 (Common)">
-                <span id="dist-z-low-in"></span>
-              </div>
-              <div class="z-distribution-segment" style="background: rgba(16, 185, 129, 0.8); width: 34.15%;" title="0 < Z < 1 (Common)">
-                <span id="dist-z-high-in"></span>
-              </div>
-              <div class="z-distribution-segment" style="background: rgba(245, 158, 11, 0.6); width: 13.6%;" title="1 < Z < 2 (Uncommon)">
-                <span id="dist-z-high-mid"></span>
-              </div>
-              <div class="z-distribution-segment" style="background: rgba(239, 68, 68, 0.6); width: 2.15%;" title="Z > 2 (Rare)">
-                <span id="dist-z-high-out"></span>
-              </div>
-            </div>
-            <div class="flex justify-between text-xs mono" style="color: var(--muted);">
-              <span>-3σ</span>
-              <span>0</span>
-              <span>+3σ</span>
-            </div>
+            <div id="score-calc-result" class="mt-4 hidden"></div>
           </div>
 
           <!-- Interpretation Cards -->
           <div class="grid md:grid-cols-3 gap-4">
-            <div class="z-interpretation-card common">
+            <div class="interpretation-card common">
               <div class="flex items-center gap-2 mb-2">
-                <div class="w-3 h-3 rounded-full" style="background: var(--z-low);"></div>
-                <span class="font-semibold" style="color: var(--z-low);">Common</span>
+                <div class="w-2.5 h-2.5 rounded-full" style="background: var(--z-low);"></div>
+                <span class="font-semibold text-sm" style="color: var(--z-low);">Common</span>
               </div>
-              <p class="text-sm mb-2" style="color: var(--fg);">|Z| &le; 1</p>
-              <p class="text-xs" style="color: var(--muted);">Within 1 standard deviation. About 68% of data falls here. These are typical, expected values.</p>
-              <div class="mt-2 mono text-sm" style="color: var(--z-low);" id="common-count">0 points</div>
+              <p class="text-xs mb-1 text-[var(--fg-primary)]" id="common-range">|Z| ≤ 1</p>
+              <p class="text-xs text-[var(--fg-muted)]">Typical, expected values.</p>
+              <div class="mt-2 font-mono text-xs" style="color: var(--z-low);" id="common-count">0 points</div>
             </div>
 
-            <div class="z-interpretation-card uncommon">
+            <div class="interpretation-card uncommon">
               <div class="flex items-center gap-2 mb-2">
-                <div class="w-3 h-3 rounded-full" style="background: var(--z-medium);"></div>
-                <span class="font-semibold" style="color: var(--z-medium);">Uncommon</span>
+                <div class="w-2.5 h-2.5 rounded-full" style="background: var(--z-medium);"></div>
+                <span class="font-semibold text-sm" style="color: var(--z-medium);">Uncommon</span>
               </div>
-              <p class="text-sm mb-2" style="color: var(--fg);">1 &lt; |Z| &le; 2</p>
-              <p class="text-xs" style="color: var(--muted);">Between 1-2 standard deviations. About 27% of data. Noticeably different from average.</p>
-              <div class="mt-2 mono text-sm" style="color: var(--z-medium);" id="uncommon-count">0 points</div>
+              <p class="text-xs mb-1 text-[var(--fg-primary)]" id="uncommon-range">1 < |Z| ≤ 2</p>
+              <p class="text-xs text-[var(--fg-muted)]">Noticeably different.</p>
+              <div class="mt-2 font-mono text-xs" style="color: var(--z-medium);" id="uncommon-count">0 points</div>
             </div>
 
-            <div class="z-interpretation-card rare">
+            <div class="interpretation-card rare">
               <div class="flex items-center gap-2 mb-2">
-                <div class="w-3 h-3 rounded-full" style="background: var(--z-high);"></div>
-                <span class="font-semibold" style="color: var(--z-high);">Rare / Outlier</span>
+                <div class="w-2.5 h-2.5 rounded-full" style="background: var(--z-high);"></div>
+                <span class="font-semibold text-sm" style="color: var(--z-high);">Rare / Outlier</span>
               </div>
-              <p class="text-sm mb-2" style="color: var(--fg);">|Z| &gt; 2</p>
-              <p class="text-xs" style="color: var(--muted);">Beyond 2 standard deviations. Only ~5% of data. These are exceptional or unusual values.</p>
-              <div class="mt-2 mono text-sm" style="color: var(--z-high);" id="rare-count">0 points</div>
+              <p class="text-xs mb-1 text-[var(--fg-primary)]" id="rare-range">|Z| > 2</p>
+              <p class="text-xs text-[var(--fg-muted)]">Exceptional values.</p>
+              <div class="mt-2 font-mono text-xs" style="color: var(--z-high);" id="rare-count">0 points</div>
             </div>
-          </div>
-
-          <!-- Percentile Reference -->
-          <div class="mt-6 p-4 rounded-lg" style="background: rgba(0, 0, 0, 0.3);">
-            <h3 class="font-medium mb-3" style="color: var(--accent);">Z-Score to Percentile Reference</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = -2</span>
-                <span class="mono">2.3%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = -1</span>
-                <span class="mono">15.9%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = 0</span>
-                <span class="mono">50%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = 1</span>
-                <span class="mono">84.1%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = 1.5</span>
-                <span class="mono">93.3%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = 2</span>
-                <span class="mono">97.7%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = 2.5</span>
-                <span class="mono">99.4%</span>
-              </div>
-              <div class="flex justify-between">
-                <span style="color: var(--muted);">Z = 3</span>
-                <span class="mono">99.9%</span>
-              </div>
-            </div>
-            <p class="text-xs mt-3" style="color: var(--muted);">
-              Percentile indicates what percentage of data falls below this Z-score in a normal distribution.
-            </p>
           </div>
         </section>
 
-        <section class="glass-card p-6 animate-slide-up stagger-3" aria-labelledby="formula-heading">
-          <h2 id="formula-heading" class="text-lg font-semibold mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-            Understanding Standard Deviation
-          </h2>
-          
+        <!-- Math Section -->
+        <section class="tool-card animate-slide-up stagger-4">
+          <h2 class="font-display text-lg font-semibold mb-4">Understanding Calculations</h2>
           <div class="grid md:grid-cols-2 gap-6">
             <div>
-              <h3 class="font-medium mb-2" style="color: var(--accent);">The Formulas</h3>
-              <div class="mono text-sm p-4 rounded-lg space-y-3" style="background: rgba(0, 0, 0, 0.3);">
+              <h3 class="font-medium mb-2 text-[var(--accent-primary)]">Formulas</h3>
+              <div class="font-mono text-sm p-4 rounded-lg space-y-3 bg-black/20 border border-white/5">
                 <div>
-                  <p class="mb-1" style="color: var(--fg);">Standard Deviation:</p>
-                  <p>σ = √( Σ(xi - μ)² / N )</p>
+                  <p class="mb-1 text-[var(--fg-primary)]">Standard Deviation:</p>
+                  <p class="text-[var(--fg-secondary)]">σ = √( Σ(xi - μ)² / N )</p>
                 </div>
-                <div>
-                  <p class="mb-1" style="color: var(--fg);">Z-Score:</p>
-                  <p>Z = (x - μ) / σ</p>
+                <div id="formula-score">
+                  <p class="mb-1 text-[var(--fg-primary)]">Z-Score:</p>
+                  <p class="text-[var(--fg-secondary)]">Z = (x - μ) / σ</p>
                 </div>
-                <p class="text-xs" style="color: var(--muted);">
-                  μ = mean, xi = value, N = count, x = data point
-                </p>
               </div>
             </div>
             <div>
-              <h3 class="font-medium mb-2" style="color: var(--accent);">What Z-Score Tells You</h3>
-              <p class="text-sm mb-3" style="color: var(--muted);">
-                Z-score standardizes any data point by measuring how many standard deviations it is from the mean. This lets you compare values from different distributions.
-              </p>
-              <div class="space-y-2 text-sm">
-                <p><span style="color: var(--z-low);">●</span> Z = 0: Exactly at the mean (average)</p>
-                <p><span style="color: var(--z-medium);">●</span> Z = +1: One standard deviation above mean</p>
-                <p><span style="color: var(--z-high);">●</span> Z = -2: Two standard deviations below mean</p>
+              <h3 class="font-medium mb-2 text-[var(--accent-primary)]">Calculation Steps</h3>
+              <div id="calculation-steps" class="font-mono text-xs space-y-2 text-[var(--fg-muted)] max-h-32 overflow-y-auto">
+                <p>Add data points to see steps...</p>
               </div>
             </div>
           </div>
         </section>
-
-        <section class="glass-card p-6 animate-slide-up stagger-5" aria-labelledby="steps-heading">
-          <h2 id="steps-heading" class="text-lg font-semibold mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-              <polyline points="2 17 12 22 22 17"/>
-              <polyline points="2 12 12 17 22 12"/>
-            </svg>
-            Step-by-Step Calculation
-          </h2>
-          
-          <div id="calculation-steps" class="mono text-sm space-y-3" style="color: var(--muted);">
-            <p>Add data points to see the calculation steps...</p>
-          </div>
-        </section>
+        
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-16 px-6 mt-auto">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-3 mb-4"><div class="w-2 h-2 bg-[var(--accent-primary)] rounded-full"></div><span class="font-mono text-sm text-[var(--fg-secondary)] tracking-wider">EPISTEMIC TOOLBOX</span></div>
+          <p class="text-sm text-[var(--fg-muted)] leading-relaxed mb-6 max-w-md">A curated collection of computational tools designed to reveal patterns, structures, and insights hidden within your data.</p>
+        </div>
+        <div>
+          <h4 class="font-mono text-xs text-[var(--accent-primary)] uppercase tracking-widest mb-4">System</h4>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2 text-sm text-[var(--fg-secondary)]"><div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div><span>Operational</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <script>
-    // Initialize all variables first
+    // Core Logic
     let dataPoints = [];
     let showSigmaBands = { 1: true, 2: true, 3: true };
     let showNormalCurve = false;
     let hoveredPoint = null;
     let animationProgress = 0;
     let targetAnimationProgress = 0;
+    
+    // 'z' for Z-Score, 't' for T-Score
+    let currentMode = 'z'; 
 
-    // DOM elements
     const canvas = document.getElementById('viz-canvas');
     const ctx = canvas.getContext('2d');
     const tooltip = document.getElementById('tooltip');
     const dataContainer = document.getElementById('data-container');
-    const emptyHint = document.getElementById('empty-hint');
 
-    // Statistical calculations
-    function calculateMean(data) {
-      if (data.length === 0) return 0;
-      return data.reduce((a, b) => a + b, 0) / data.length;
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      const time = now.toTimeString().slice(0, 8);
+      document.getElementById('clock').textContent = time;
     }
+    setInterval(updateClock, 1000);
+    updateClock();
 
+    // Stats Calc
+    function calculateMean(data) {
+      return data.length === 0 ? 0 : data.reduce((a, b) => a + b, 0) / data.length;
+    }
     function calculateStdDev(data) {
       if (data.length <= 1) return 0;
       const mean = calculateMean(data);
-      const squaredDiffs = data.map(x => Math.pow(x - mean, 2));
-      const variance = squaredDiffs.reduce((a, b) => a + b, 0) / data.length;
-      return Math.sqrt(variance);
+      return Math.sqrt(data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / data.length);
     }
-
     function calculateVariance(data) {
       if (data.length <= 1) return 0;
       const mean = calculateMean(data);
-      const squaredDiffs = data.map(x => Math.pow(x - mean, 2));
-      return squaredDiffs.reduce((a, b) => a + b, 0) / data.length;
+      return data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / data.length;
+    }
+    
+    // Mode Logic
+    function setMode(mode) {
+      currentMode = mode;
+      
+      // Update UI Toggle
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      // Update Text Labels
+      const isZ = mode === 'z';
+      const scoreName = isZ ? 'Z-Score' : 'T-Score';
+      
+      document.getElementById('interp-title').textContent = `${scoreName} Interpretation`;
+      document.getElementById('calc-title').textContent = `Calculate ${scoreName}`;
+      
+      // Update Range Descriptions
+      document.getElementById('common-range').textContent = isZ ? '|Z| ≤ 1' : '40 ≤ T ≤ 60';
+      document.getElementById('uncommon-range').textContent = isZ ? '1 < |Z| ≤ 2' : 'T in [30,40) or (60,70]';
+      document.getElementById('rare-range').textContent = isZ ? '|Z| > 2' : 'T < 30 or T > 70';
+
+      // Update Formula
+      document.getElementById('formula-score').innerHTML = isZ 
+        ? `<p class="mb-1 text-[var(--fg-primary)]">Z-Score:</p><p class="text-[var(--fg-secondary)]">Z = (x - μ) / σ</p>`
+        : `<p class="mb-1 text-[var(--fg-primary)]">T-Score:</p><p class="text-[var(--fg-secondary)]">T = 50 + 10 * Z</p>`;
+
+      // Refresh visualizations
+      updateStats();
+      updateDataTags();
+      calculateScore(); // Re-calculate if input has value
+      draw();
     }
 
-    function calculateZScoreValue(value, mean, std) {
-      if (std === 0) return 0;
-      return (value - mean) / std;
+    function getScore(val, mean, std) {
+      if (std === 0) return currentMode === 'z' ? 0 : 50;
+      const z = (val - mean) / std;
+      return currentMode === 'z' ? z : 50 + (10 * z);
     }
 
-    function getZScoreCategory(z) {
-      const absZ = Math.abs(z);
-      if (absZ <= 1) return { category: 'common', color: '#10b981', label: 'Common' };
-      if (absZ <= 2) return { category: 'uncommon', color: '#f59e0b', label: 'Uncommon' };
-      return { category: 'rare', color: '#ef4444', label: 'Rare / Outlier' };
+    function getScoreCategory(score) {
+      // Logic works for both Z and T
+      // Z: Thresholds are 1, 2. T: Thresholds are 60/40, 70/30 (derived from Z)
+      
+      if (currentMode === 'z') {
+        const absZ = Math.abs(score);
+        if (absZ <= 1) return { category: 'common', color: '#7dd3c0', label: 'Common' };
+        if (absZ <= 2) return { category: 'uncommon', color: '#d4a056', label: 'Uncommon' };
+        return { category: 'rare', color: '#fb7185', label: 'Rare / Outlier' };
+      } else {
+        // T-Score logic
+        if (score >= 40 && score <= 60) return { category: 'common', color: '#7dd3c0', label: 'Common' };
+        if ((score >= 30 && score < 40) || (score > 60 && score <= 70)) return { category: 'uncommon', color: '#d4a056', label: 'Uncommon' };
+        return { category: 'rare', color: '#fb7185', label: 'Rare / Outlier' };
+      }
     }
 
     function zScoreToPercentile(z) {
-      // Approximate percentile from z-score using error function approximation
-      const a1 =  0.254829592;
-      const a2 = -0.284496736;
-      const a3 =  1.421413741;
-      const a4 = -1.453152027;
-      const a5 =  1.061405429;
-      const p  =  0.3275911;
-
-      const sign = z < 0 ? -1 : 1;
-      const absZ = Math.abs(z) / Math.sqrt(2);
-
+      // Approximation
+      const a1 =  0.254829592, a2 = -0.284496736, a3 =  1.421413741, a4 = -1.453152027, a5 =  1.061405429, p  =  0.3275911;
+      const sign = z < 0 ? -1 : 1, absZ = Math.abs(z) / Math.sqrt(2);
       const t = 1.0 / (1.0 + p * absZ);
       const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absZ * absZ);
-
       return 0.5 * (1.0 + sign * y);
     }
 
-    function updateZScoreDistribution() {
-      if (dataPoints.length === 0) {
-        document.getElementById('common-count').textContent = '0 points';
-        document.getElementById('uncommon-count').textContent = '0 points';
-        document.getElementById('rare-count').textContent = '0 points';
-        document.getElementById('dist-z-low-out').textContent = '';
-        document.getElementById('dist-z-low-mid').textContent = '';
-        document.getElementById('dist-z-low-in').textContent = '';
-        document.getElementById('dist-z-high-in').textContent = '';
-        document.getElementById('dist-z-high-mid').textContent = '';
-        document.getElementById('dist-z-high-out').textContent = '';
-        return;
-      }
-
+    // Updates
+    function updateScoreDistribution() {
       const mean = calculateMean(dataPoints);
       const std = calculateStdDev(dataPoints);
-
-      let counts = {
-        common: 0,
-        uncommon: 0,
-        rare: 0,
-        lowOut: 0,   // Z < -2
-        lowMid: 0,   // -2 < Z < -1
-        lowIn: 0,    // -1 < Z < 0
-        highIn: 0,   // 0 < Z < 1
-        highMid: 0,  // 1 < Z < 2
-        highOut: 0   // Z > 2
-      };
-
+      let counts = { common: 0, uncommon: 0, rare: 0 };
+      
       if (std > 0) {
         dataPoints.forEach(val => {
-          const z = calculateZScoreValue(val, mean, std);
-          const absZ = Math.abs(z);
-
-          if (absZ <= 1) counts.common++;
-          else if (absZ <= 2) counts.uncommon++;
-          else counts.rare++;
-
-          if (z < -2) counts.lowOut++;
-          else if (z < -1) counts.lowMid++;
-          else if (z < 0) counts.lowIn++;
-          else if (z === 0) counts.lowIn += 0.5, counts.highIn += 0.5;
-          else if (z <= 1) counts.highIn++;
-          else if (z <= 2) counts.highMid++;
-          else counts.highOut++;
+          const score = getScore(val, mean, std);
+          const cat = getScoreCategory(score);
+          counts[cat.category]++;
         });
-      } else {
+      } else if (dataPoints.length > 0) {
         counts.common = dataPoints.length;
-        counts.lowIn = dataPoints.length / 2;
-        counts.highIn = dataPoints.length / 2;
       }
-
-      document.getElementById('common-count').textContent = `${counts.common} points (${((counts.common / dataPoints.length) * 100).toFixed(1)}%)`;
-      document.getElementById('uncommon-count').textContent = `${counts.uncommon} points (${((counts.uncommon / dataPoints.length) * 100).toFixed(1)}%)`;
-      document.getElementById('rare-count').textContent = `${counts.rare} points (${((counts.rare / dataPoints.length) * 100).toFixed(1)}%)`;
-
-      // Update distribution bar labels
-      const updateLabel = (id, count) => {
-        const el = document.getElementById(id);
-        if (count > 0) {
-          el.textContent = count;
-        } else {
-          el.textContent = '';
-        }
-      };
-
-      updateLabel('dist-z-low-out', counts.lowOut);
-      updateLabel('dist-z-low-mid', counts.lowMid);
-      updateLabel('dist-z-low-in', counts.lowIn);
-      updateLabel('dist-z-high-in', counts.highIn);
-      updateLabel('dist-z-high-mid', counts.highMid);
-      updateLabel('dist-z-high-out', counts.highOut);
+      
+      document.getElementById('common-count').textContent = `${counts.common} pts`;
+      document.getElementById('uncommon-count').textContent = `${counts.uncommon} pts`;
+      document.getElementById('rare-count').textContent = `${counts.rare} pts`;
     }
 
-    function calculateZScore() {
-      const input = document.getElementById('z-calc-input');
-      const resultDiv = document.getElementById('z-calc-result');
+    function calculateScore() {
+      const input = document.getElementById('score-calc-input');
+      const resultDiv = document.getElementById('score-calc-result');
       const value = parseFloat(input.value);
-
-      if (isNaN(value)) {
-        resultDiv.classList.add('hidden');
-        return;
-      }
-
+      
+      if (isNaN(value)) { resultDiv.classList.add('hidden'); return; }
       if (dataPoints.length < 2) {
         resultDiv.classList.remove('hidden');
-        resultDiv.innerHTML = `
-          <div class="p-3 rounded-lg" style="background: rgba(251, 113, 133, 0.1); border: 1px solid rgba(251, 113, 133, 0.3);">
-            <p style="color: var(--sigma3);">Add at least 2 data points to calculate Z-scores.</p>
-          </div>
-        `;
+        resultDiv.innerHTML = `<div class="p-3 rounded-lg bg-black/20 border border-white/5 text-xs text-[var(--fg-muted)]">Add at least 2 data points.</div>`;
         return;
       }
-
+      
       const mean = calculateMean(dataPoints);
       const std = calculateStdDev(dataPoints);
-      const z = calculateZScoreValue(value, mean, std);
-      const zInfo = getZScoreCategory(z);
+      
+      const z = (value - mean) / std;
+      const score = currentMode === 'z' ? z : 50 + (10 * z);
+      const scoreInfo = getScoreCategory(score);
       const percentile = zScoreToPercentile(z);
 
       resultDiv.classList.remove('hidden');
       resultDiv.innerHTML = `
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="p-4 rounded-lg" style="background: rgba(0, 0, 0, 0.3);">
-            <p class="text-sm mb-2" style="color: var(--muted);">Z-Score</p>
-            <p class="text-3xl font-bold mono" style="color: ${zInfo.color};">${z >= 0 ? '+' : ''}${z.toFixed(3)}</p>
-            <p class="text-sm mt-2" style="color: ${zInfo.color};">${zInfo.label}</p>
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="p-3 rounded-lg bg-black/20">
+            <p class="text-xs text-[var(--fg-muted)] mb-1">${currentMode === 'z' ? 'Z-Score' : 'T-Score'}</p>
+            <p class="text-xl font-bold font-mono" style="color: ${scoreInfo.color};">${score.toFixed(3)}</p>
           </div>
-          <div class="p-4 rounded-lg" style="background: rgba(0, 0, 0, 0.3);">
-            <p class="text-sm mb-2" style="color: var(--muted);">Percentile Rank</p>
-            <p class="text-3xl font-bold mono" style="color: var(--accent);">${(percentile * 100).toFixed(1)}%</p>
-            <p class="text-sm mt-2" style="color: var(--muted);">${(percentile * 100).toFixed(1)}% of data falls below this value</p>
+          <div class="p-3 rounded-lg bg-black/20">
+            <p class="text-xs text-[var(--fg-muted)] mb-1">Percentile</p>
+            <p class="text-xl font-bold font-mono text-[var(--accent-primary)]">${(percentile * 100).toFixed(1)}%</p>
           </div>
-        </div>
-        <div class="mt-4 p-3 rounded-lg" style="background: rgba(0, 0, 0, 0.2);">
-          <p class="mono text-sm" style="color: var(--muted);">
-            Z = (${value.toFixed(2)} - ${mean.toFixed(2)}) / ${std.toFixed(2)} = ${z.toFixed(3)}
-          </p>
-          <p class="text-sm mt-2" style="color: var(--fg);">
-            The value <strong>${value.toFixed(2)}</strong> is <strong style="color: ${zInfo.color};">${Math.abs(z).toFixed(2)} standard deviations ${z >= 0 ? 'above' : 'below'}</strong> the mean.
-          </p>
         </div>
       `;
 
-      // Update Z-score marker position
-      const marker = document.getElementById('z-marker');
-      const clampedZ = Math.max(-3, Math.min(3, z));
-      const position = ((clampedZ + 3) / 6) * 100;
-      marker.style.left = `${position}%`;
-      marker.style.background = zInfo.color;
+      // Update Marker
+      const marker = document.getElementById('score-marker');
+      let positionPercent;
+      if (currentMode === 'z') {
+        const clampedZ = Math.max(-3, Math.min(3, z));
+        positionPercent = ((clampedZ + 3) / 6) * 100;
+      } else {
+        // T-Score range typically 20 to 80 for visualization
+        const clampedT = Math.max(20, Math.min(80, score));
+        positionPercent = ((clampedT - 20) / 60) * 100;
+      }
+      marker.style.left = `${positionPercent}%`;
+      marker.style.background = scoreInfo.color;
     }
 
     function updateStats() {
@@ -1059,132 +744,63 @@
       document.getElementById('stat-std').textContent = dataPoints.length > 1 ? std.toFixed(2) : '--';
       document.getElementById('stat-var').textContent = dataPoints.length > 1 ? variance.toFixed(2) : '--';
       document.getElementById('stat-range').textContent = dataPoints.length > 0 ? range.toFixed(2) : '--';
-      document.getElementById('data-count').textContent = `(${dataPoints.length} point${dataPoints.length !== 1 ? 's' : ''})`;
-
-      updateZScoreDistribution();
+      document.getElementById('data-count').textContent = `(${dataPoints.length} points)`;
+      updateScoreDistribution();
     }
 
     function updateDataTags() {
       if (dataPoints.length === 0) {
-        emptyHint.style.display = 'block';
-        dataContainer.innerHTML = '<p class="text-sm" style="color: var(--muted);" id="empty-hint">No data yet. Add some values above!</p>';
+        dataContainer.innerHTML = '<p class="text-sm text-[var(--fg-muted)] w-full text-center" id="empty-hint">No data added yet</p>';
         return;
       }
-
-      emptyHint.style.display = 'none';
       const mean = calculateMean(dataPoints);
       const std = calculateStdDev(dataPoints);
-
       dataContainer.innerHTML = dataPoints.map((val, idx) => {
-        const z = std > 0 ? calculateZScoreValue(val, mean, std) : 0;
-        const zInfo = getZScoreCategory(z);
+        const score = getScore(val, mean, std);
+        const scoreInfo = getScoreCategory(score);
         return `
-          <span class="data-tag animate-scale-in" style="border-color: ${zInfo.color}40; color: ${zInfo.color};" title="Z-score: ${z.toFixed(2)}">
+          <span class="data-tag" style="border-color: ${scoreInfo.color}40; color: ${scoreInfo.color};">
             ${val.toFixed(1)}
-            <span class="text-xs opacity-60">z=${z.toFixed(1)}</span>
-            <button onclick="removeDataPoint(${idx})" aria-label="Remove value ${val.toFixed(1)}">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
+            <span class="text-[10px] opacity-60">${currentMode === 'z' ? 'z' : 't'}=${score.toFixed(1)}</span>
+            <button onclick="removeDataPoint(${idx})">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </span>
         `;
       }).join('');
     }
-
+    
     function updateCalculationSteps() {
       const container = document.getElementById('calculation-steps');
-      
-      if (dataPoints.length === 0) {
-        container.innerHTML = '<p>Add data points to see the calculation steps...</p>';
-        return;
-      }
-
+      if (dataPoints.length === 0) { container.innerHTML = '<p>Add data points to see steps...</p>'; return; }
       const mean = calculateMean(dataPoints);
       const variance = calculateVariance(dataPoints);
       const std = calculateStdDev(dataPoints);
-
-      let html = `
-        <div class="space-y-4">
-          <div class="p-3 rounded-lg" style="background: rgba(0, 212, 170, 0.1);">
-            <p style="color: var(--accent);">Step 1: Calculate the Mean (μ)</p>
-            <p class="mt-1">μ = (${dataPoints.map(x => x.toFixed(1)).join(' + ')}) / ${dataPoints.length}</p>
-            <p class="mt-1" style="color: var(--fg);">μ = ${mean.toFixed(4)}</p>
-          </div>
-          
-          <div class="p-3 rounded-lg" style="background: rgba(167, 139, 250, 0.1);">
-            <p style="color: var(--sigma2);">Step 2: Calculate squared differences from mean</p>
-            <div class="mt-2 grid gap-1 max-h-32 overflow-y-auto">
-              ${dataPoints.slice(0, 10).map(x => {
-                const diff = x - mean;
-                const squared = Math.pow(diff, 2);
-                return `<p>(${x.toFixed(1)} - ${mean.toFixed(2)})² = ${squared.toFixed(4)}</p>`;
-              }).join('')}
-              ${dataPoints.length > 10 ? `<p style="color: var(--muted);">... and ${dataPoints.length - 10} more</p>` : ''}
-            </div>
-          </div>
-          
-          <div class="p-3 rounded-lg" style="background: rgba(251, 113, 133, 0.1);">
-            <p style="color: var(--sigma3);">Step 3: Calculate Variance (σ²)</p>
-            <p class="mt-1">σ² = Σ(xi - μ)² / N = ${variance.toFixed(4)}</p>
-            <p class="mt-1" style="color: var(--fg);">σ² = ${variance.toFixed(4)}</p>
-          </div>
-          
-          <div class="p-3 rounded-lg" style="background: rgba(34, 211, 238, 0.1);">
-            <p style="color: var(--sigma1);">Step 4: Calculate Standard Deviation (σ)</p>
-            <p class="mt-1">σ = √${variance.toFixed(4)} = ${std.toFixed(4)}</p>
-            <p class="mt-1" style="color: var(--fg);">σ = ${std.toFixed(4)}</p>
-          </div>
-
-          ${dataPoints.length > 1 ? `
-          <div class="p-3 rounded-lg" style="background: rgba(251, 191, 36, 0.1);">
-            <p style="color: var(--data-point);">Step 5: Calculate Z-Scores</p>
-            <p class="mt-1">Z = (x - μ) / σ = (x - ${mean.toFixed(2)}) / ${std.toFixed(2)}</p>
-            <div class="mt-2 grid gap-1 max-h-24 overflow-y-auto text-xs">
-              ${dataPoints.slice(0, 5).map(x => {
-                const z = calculateZScoreValue(x, mean, std);
-                const zInfo = getZScoreCategory(z);
-                return `<p>Z(${x.toFixed(1)}) = <span style="color: ${zInfo.color};">${z.toFixed(3)}</span> (${zInfo.label})</p>`;
-              }).join('')}
-              ${dataPoints.length > 5 ? `<p style="color: var(--muted);">... and ${dataPoints.length - 5} more</p>` : ''}
-            </div>
-          </div>
-          ` : ''}
-        </div>
+      container.innerHTML = `
+        <p>1. Mean (μ): ${mean.toFixed(2)}</p>
+        <p>2. Variance (σ²): ${variance.toFixed(2)}</p>
+        <p>3. Std Dev (σ): ${std.toFixed(2)}</p>
       `;
-
-      container.innerHTML = html;
     }
 
     function resizeCanvas() {
-      const container = canvas.parentElement;
-      const rect = container.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      const width = Math.max(100, rect.width);
-      const height = 400;
-      
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = width + 'px';
-      canvas.style.height = height + 'px';
-      ctx.scale(dpr, dpr);
-      
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = 400;
       draw();
     }
 
     function draw() {
-      const width = parseInt(canvas.style.width) || 800;
-      const height = parseInt(canvas.style.height) || 400;
-      
+      const width = canvas.width;
+      const height = canvas.height;
       ctx.clearRect(0, 0, width, height);
-
-      ctx.fillStyle = 'rgba(10, 15, 26, 0.5)';
+      
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(0, 0, width, height);
 
       if (dataPoints.length === 0) {
-        ctx.fillStyle = '#64748b';
-        ctx.font = '16px "Space Grotesk", sans-serif';
+        ctx.fillStyle = '#4a5567';
+        ctx.font = '14px Inter';
         ctx.textAlign = 'center';
         ctx.fillText('Add data points to visualize', width / 2, height / 2);
         return;
@@ -1194,50 +810,36 @@
       const std = calculateStdDev(dataPoints);
       const minVal = Math.min(...dataPoints);
       const maxVal = Math.max(...dataPoints);
-      const padding = 60;
+      const padding = 50;
 
       const dataMin = minVal - std * 3 - 10;
       const dataMax = maxVal + std * 3 + 10;
       const scale = (width - padding * 2) / Math.max(1, dataMax - dataMin);
 
       const toX = (val) => padding + (val - dataMin) * scale;
-      const toY = (val) => height - padding;
 
       animationProgress += (targetAnimationProgress - animationProgress) * 0.1;
 
       // Grid
-      ctx.strokeStyle = 'rgba(100, 116, 139, 0.1)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.lineWidth = 1;
       for (let i = 0; i <= 10; i++) {
         const x = padding + (width - padding * 2) * i / 10;
-        ctx.beginPath();
-        ctx.moveTo(x, padding);
-        ctx.lineTo(x, height - padding);
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, height - padding); ctx.stroke();
       }
 
-      // Sigma bands
+      // Bands
       if (std > 0) {
-        if (showSigmaBands[3]) {
-          ctx.fillStyle = 'rgba(251, 113, 133, 0.08)';
-          ctx.fillRect(toX(mean - std * 3), padding, Math.max(1, toX(mean + std * 3) - toX(mean - std * 3)), height - padding * 2);
-        }
-        if (showSigmaBands[2]) {
-          ctx.fillStyle = 'rgba(167, 139, 250, 0.12)';
-          ctx.fillRect(toX(mean - std * 2), padding, Math.max(1, toX(mean + std * 2) - toX(mean - std * 2)), height - padding * 2);
-        }
-        if (showSigmaBands[1]) {
-          ctx.fillStyle = 'rgba(34, 211, 238, 0.15)';
-          ctx.fillRect(toX(mean - std), padding, Math.max(1, toX(mean + std) - toX(mean - std)), height - padding * 2);
-        }
+        if (showSigmaBands[3]) { ctx.fillStyle = 'rgba(251, 113, 133, 0.08)'; ctx.fillRect(toX(mean - std * 3), padding, toX(mean + std * 3) - toX(mean - std * 3), height - padding * 2); }
+        if (showSigmaBands[2]) { ctx.fillStyle = 'rgba(167, 139, 250, 0.1)'; ctx.fillRect(toX(mean - std * 2), padding, toX(mean + std * 2) - toX(mean - std * 2), height - padding * 2); }
+        if (showSigmaBands[1]) { ctx.fillStyle = 'rgba(125, 211, 192, 0.1)'; ctx.fillRect(toX(mean - std), padding, toX(mean + std) - toX(mean - std), height - padding * 2); }
       }
 
-      // Normal curve
+      // Normal Curve
       if (showNormalCurve && std > 0) {
         ctx.beginPath();
-        ctx.strokeStyle = 'rgba(0, 212, 170, 0.5)';
+        ctx.strokeStyle = 'rgba(212, 160, 86, 0.4)';
         ctx.lineWidth = 2;
-        
         const curveHeight = height - padding * 2 - 40;
         for (let i = 0; i <= width - padding * 2; i++) {
           const x = padding + i;
@@ -1245,95 +847,68 @@
           const z = (dataVal - mean) / Math.max(0.001, std);
           const normalY = Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
           const y = height - padding - normalY * curveHeight * 2 * animationProgress;
-          
-          if (i === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
       }
 
       // Axis
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = '#4a5567';
       ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(padding, height - padding);
-      ctx.lineTo(width - padding, height - padding);
-      ctx.stroke();
-
-      // Tick marks
-      ctx.fillStyle = '#64748b';
-      ctx.font = '11px "JetBrains Mono", monospace';
-      ctx.textAlign = 'center';
+      ctx.beginPath(); ctx.moveTo(padding, height - padding); ctx.lineTo(width - padding, height - padding); ctx.stroke();
       
+      ctx.fillStyle = '#4a5567';
+      ctx.font = '10px JetBrains Mono';
+      ctx.textAlign = 'center';
       const tickCount = 8;
       for (let i = 0; i <= tickCount; i++) {
         const val = dataMin + (dataMax - dataMin) * i / tickCount;
         const x = toX(val);
-        ctx.beginPath();
-        ctx.moveTo(x, height - padding);
-        ctx.lineTo(x, height - padding + 5);
-        ctx.stroke();
-        ctx.fillText(val.toFixed(1), x, height - padding + 20);
+        ctx.beginPath(); ctx.moveTo(x, height - padding); ctx.lineTo(x, height - padding + 5); ctx.stroke();
+        ctx.fillText(val.toFixed(1), x, height - padding + 18);
       }
 
-      // Mean line
-      ctx.strokeStyle = '#00d4aa';
+      // Mean Line
+      ctx.strokeStyle = '#d4a056';
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(toX(mean), padding);
-      ctx.lineTo(toX(mean), height - padding);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(toX(mean), padding); ctx.lineTo(toX(mean), height - padding); ctx.stroke();
       ctx.setLineDash([]);
+      ctx.fillStyle = '#d4a056';
+      ctx.font = 'bold 11px Space Grotesk';
+      ctx.fillText(`μ = ${mean.toFixed(2)}`, toX(mean), padding - 10);
 
-      ctx.fillStyle = '#00d4aa';
-      ctx.font = 'bold 12px "Space Grotesk", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`μ = ${mean.toFixed(2)}`, toX(mean), padding + 20);
-
-      // Data points
-      const pointRadius = 8;
+      // Points
+      const pointRadius = 6;
       dataPoints.forEach((val, idx) => {
         const x = toX(val);
         const y = height - padding - 30;
         const isHovered = hoveredPoint === idx;
         const radius = Math.max(1, isHovered ? pointRadius * 1.5 : pointRadius);
 
-        const z = std > 0 ? calculateZScoreValue(val, mean, std) : 0;
-        const zInfo = getZScoreCategory(z);
-        const pointColor = zInfo.color;
+        const score = getScore(val, mean, std);
+        const scoreInfo = getScoreCategory(score);
+        const pointColor = scoreInfo.color;
 
         // Glow
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius * 3);
         gradient.addColorStop(0, pointColor);
         gradient.addColorStop(0.5, pointColor + '4D');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        
         ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x, y, radius * 3, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, radius * 3, 0, Math.PI * 2); ctx.fill();
 
         // Point
         ctx.fillStyle = pointColor;
-        ctx.beginPath();
-        ctx.arc(x, y, radius * animationProgress, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (radius > 6) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.beginPath();
-          ctx.arc(x, y, radius * 0.3, 0, Math.PI * 2);
-          ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, radius * animationProgress, 0, Math.PI * 2); ctx.fill();
+        
+        if (radius > 4) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.beginPath(); ctx.arc(x, y, radius * 0.3, 0, Math.PI * 2); ctx.fill();
         }
       });
 
-      if (Math.abs(animationProgress - targetAnimationProgress) > 0.01) {
-        requestAnimationFrame(draw);
-      }
+      if (Math.abs(animationProgress - targetAnimationProgress) > 0.01) requestAnimationFrame(draw);
     }
 
     function addValue(val) {
@@ -1360,25 +935,17 @@
       updateStats();
       updateDataTags();
       updateCalculationSteps();
-      document.getElementById('z-calc-result').classList.add('hidden');
+      document.getElementById('score-calc-result').classList.add('hidden');
       draw();
     }
 
     function loadPreset(type) {
       clearAllData();
       switch (type) {
-        case 'normal':
-          dataPoints = [45, 48, 50, 52, 55, 47, 51, 53, 49, 50, 52, 48, 54, 46, 51, 49, 53, 47, 50, 52];
-          break;
-        case 'uniform':
-          dataPoints = [10, 20, 30, 40, 50, 60, 70, 80, 90];
-          break;
-        case 'outliers':
-          dataPoints = [50, 51, 49, 52, 48, 50, 51, 5, 95, 49, 52, 48, 50, 51];
-          break;
-        case 'bimodal':
-          dataPoints = [20, 22, 25, 23, 21, 24, 80, 82, 85, 83, 81, 84];
-          break;
+        case 'normal': dataPoints = [45, 48, 50, 52, 55, 47, 51, 53, 49, 50, 52, 48, 54, 46, 51, 49, 53, 47, 50, 52]; break;
+        case 'uniform': dataPoints = [10, 20, 30, 40, 50, 60, 70, 80, 90]; break;
+        case 'outliers': dataPoints = [50, 51, 49, 52, 48, 50, 51, 5, 95, 49, 52, 48, 50, 51]; break;
+        case 'bimodal': dataPoints = [20, 22, 25, 23, 21, 24, 80, 82, 85, 83, 81, 84]; break;
       }
       targetAnimationProgress = 1;
       updateStats();
@@ -1387,33 +954,26 @@
       draw();
     }
 
-    // Event listeners
+    // Events
     document.getElementById('add-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const input = document.getElementById('value-input');
       const val = parseFloat(input.value);
-      if (!isNaN(val)) {
-        addValue(val);
-        input.value = '';
-        input.focus();
-      }
+      if (!isNaN(val)) { addValue(val); input.value = ''; input.focus(); }
     });
 
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
-      
       if (dataPoints.length === 0) return;
-      
       const mean = calculateMean(dataPoints);
       const std = calculateStdDev(dataPoints);
       const minVal = Math.min(...dataPoints);
       const maxVal = Math.max(...dataPoints);
-      const padding = 60;
+      const padding = 50;
       const dataMin = minVal - std * 3 - 10;
       const dataMax = maxVal + std * 3 + 10;
       const scale = (rect.width - padding * 2) / Math.max(1, dataMax - dataMin);
-      
       const newVal = dataMin + (x - padding) / scale;
       addValue(Math.round(newVal * 10) / 10);
     });
@@ -1422,74 +982,58 @@
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
       if (dataPoints.length === 0) return;
 
       const mean = calculateMean(dataPoints);
       const std = calculateStdDev(dataPoints);
       const minVal = Math.min(...dataPoints);
       const maxVal = Math.max(...dataPoints);
-      const padding = 60;
+      const padding = 50;
       const dataMin = minVal - std * 3 - 10;
       const dataMax = maxVal + std * 3 + 10;
       const scale = (rect.width - padding * 2) / Math.max(1, dataMax - dataMin);
       const toX = (val) => padding + (val - dataMin) * scale;
-      const toY = (val) => rect.height - padding - 30;
 
       hoveredPoint = null;
-      
       dataPoints.forEach((val, idx) => {
         const px = toX(val);
-        const py = toY(val);
+        const py = canvas.height - padding - 30;
         const dist = Math.sqrt(Math.pow(x - px, 2) + Math.pow(y - py, 2));
         
         if (dist < 15) {
           hoveredPoint = idx;
-          
-          const z = std > 0 ? calculateZScoreValue(val, mean, std) : 0;
-          const zInfo = getZScoreCategory(z);
-          const percentile = std > 0 ? zScoreToPercentile(z) * 100 : 50;
+          const score = getScore(val, mean, std);
+          const scoreInfo = getScoreCategory(score);
+          // Calculate Z for percentile regardless of mode
+          const z = (val - mean) / std; 
+          const percentile = zScoreToPercentile(z) * 100;
           
           tooltip.innerHTML = `
-            <div class="mono">
-              <div style="color: ${zInfo.color}; font-weight: 600; font-size: 16px;">${val.toFixed(2)}</div>
-              <div class="mt-2 pt-2 border-t" style="border-color: var(--border);">
-                <div class="flex justify-between gap-6">
-                  <span style="color: var(--muted);">Z-Score:</span>
-                  <span style="color: ${zInfo.color};">${z >= 0 ? '+' : ''}${z.toFixed(3)}</span>
+            <div class="font-mono">
+              <div style="color: ${scoreInfo.color}; font-weight: 600; font-size: 14px;">${val.toFixed(2)}</div>
+              <div class="mt-2 pt-2 border-t border-white/10">
+                <div class="flex justify-between gap-6 text-xs">
+                  <span class="text-[var(--fg-muted)]">${currentMode === 'z' ? 'Z-Score' : 'T-Score'}:</span>
+                  <span style="color: ${scoreInfo.color};">${score.toFixed(3)}</span>
                 </div>
-                <div class="flex justify-between gap-6 mt-1">
-                  <span style="color: var(--muted);">Category:</span>
-                  <span style="color: ${zInfo.color};">${zInfo.label}</span>
+                <div class="flex justify-between gap-6 text-xs mt-1">
+                  <span class="text-[var(--fg-muted)]">Category:</span>
+                  <span style="color: ${scoreInfo.color};">${scoreInfo.label}</span>
                 </div>
-                <div class="flex justify-between gap-6 mt-1">
-                  <span style="color: var(--muted);">Percentile:</span>
-                  <span>${percentile.toFixed(1)}%</span>
-                </div>
-              </div>
-              <div class="mt-2 text-xs" style="color: var(--muted);">
-                ${Math.abs(z).toFixed(2)}σ ${z >= 0 ? 'above' : 'below'} the mean
               </div>
             </div>
           `;
           tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
-          tooltip.style.top = (e.clientY - rect.top - 80) + 'px';
+          tooltip.style.top = (e.clientY - rect.top - 60) + 'px';
           tooltip.classList.add('visible');
         }
       });
 
-      if (hoveredPoint === null) {
-        tooltip.classList.remove('visible');
-      }
-      
+      if (hoveredPoint === null) tooltip.classList.remove('visible');
       draw();
     });
 
-    canvas.addEventListener('mouseleave', () => {
-      hoveredPoint = null;
-      tooltip.classList.remove('visible');
-      draw();
-    });
+    canvas.addEventListener('mouseleave', () => { hoveredPoint = null; tooltip.classList.remove('visible'); draw(); });
 
     document.querySelectorAll('.sigma-toggle[data-sigma]').forEach(toggle => {
       toggle.addEventListener('click', () => {
@@ -1506,15 +1050,12 @@
       draw();
     });
 
-    document.getElementById('z-calc-input').addEventListener('input', calculateZScore);
-
+    document.getElementById('score-calc-input').addEventListener('input', calculateScore);
     window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('load', () => {
-      resizeCanvas();
-      targetAnimationProgress = 1;
-    });
-
+    
+    // Init
     resizeCanvas();
+    setMode('z'); // Initialize with Z-Score mode
   </script>
 </body>
 </html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Epistemic Toolbox</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #060a10;
+            --bg-primary: #0a1019;
+            --bg-elevated: #0f1621;
+            --bg-card: rgba(15, 22, 33, 0.7);
+            --fg-primary: #e8eef5;
+            --fg-secondary: #8a96a8;
+            --fg-muted: #4a5567;
+            --accent-primary: #d4a056;
+            --accent-secondary: #7dd3c0;
+            --accent-glow: rgba(212, 160, 86, 0.25);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-elevated: rgba(255, 255, 255, 0.1);
+            --border-accent: rgba(212, 160, 86, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--fg-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main { flex: 1; }
+
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Background & Atmosphere */
+        .bg-atmosphere {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 160, 86, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(125, 211, 192, 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+        }
+
+        .nav-blur {
+            background: rgba(6, 10, 16, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .accent-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 160, 86, 0.08), rgba(125, 211, 192, 0.04));
+            border: 1px solid rgba(212, 160, 86, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-box {
+            background: rgba(125, 211, 192, 0.05);
+            border: 1px solid rgba(125, 211, 192, 0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            background: rgba(212, 160, 86, 0.05);
+            border: 1px solid rgba(212, 160, 86, 0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.3rem 0.65rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 0.2rem;
+        }
+
+        .tag-primary {
+            background: rgba(212, 160, 86, 0.12);
+            border: 1px solid rgba(212, 160, 86, 0.3);
+            color: var(--accent-primary);
+        }
+
+        .tag-secondary {
+            background: rgba(125, 211, 192, 0.08);
+            border: 1px solid rgba(125, 211, 192, 0.2);
+            color: var(--accent-secondary);
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--fg-primary);
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 0.875rem;
+            color: var(--fg-primary);
+        }
+
+        h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: var(--fg-primary);
+        }
+
+        p {
+            color: var(--fg-secondary);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            color: var(--fg-secondary);
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+        }
+
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--accent-secondary);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: var(--accent-primary);
+        }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: rgba(10, 16, 25, 0.8);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--fg-secondary);
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(15, 22, 33, 0.5);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .toc-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .toc ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .toc li {
+            padding-left: 0;
+        }
+
+        .toc li::before {
+            content: '';
+        }
+
+        .toc a {
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+        }
+
+        .toc a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Tool Reference Card */
+        .tool-ref {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .tool-ref:hover {
+            background: rgba(212, 160, 86, 0.05);
+            border-color: rgba(212, 160, 86, 0.2);
+        }
+
+        .tool-ref h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-ref p {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-ref .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        /* Animations */
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.7s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.5rem; }
+            .toc ul { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Layers -->
+    <div class="bg-atmosphere"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 bg-[var(--accent-primary)] rounded-full"></div>
+                <span class="font-mono text-sm tracking-wider text-[var(--fg-secondary)]">EPISTEMIC TOOLBOX</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="font-mono text-xs text-[var(--fg-secondary)] hover:text-[var(--fg-primary)] transition-colors">Tools</a>
+                <a href="docs.html" class="font-mono text-xs text-[var(--accent-primary)]">Documentation</a>
+                <a href="about.html" class="font-mono text-xs text-[var(--fg-secondary)] hover:text-[var(--fg-primary)] transition-colors">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <header class="mb-12 animate-in stagger-1">
+                <h1 class="font-display text-5xl md:text-6xl font-semibold mb-4" style="letter-spacing: -0.03em; line-height: 1.1;">
+                    Documentation<br/><span class="text-[var(--fg-secondary)]">& Guides</span>
+                </h1>
+                <p class="text-xl text-[var(--fg-secondary)]">
+                    Learn how to use epistemic tools to parse reality and extract meaningful insights
+                </p>
+            </header>
+
+            <div class="accent-line animate-in stagger-2"></div>
+
+            <!-- Table of Contents -->
+            <div class="toc animate-in stagger-2">
+                <div class="toc-title">Quick Navigation</div>
+                <ul>
+                    <li><a href="#getting-started">Getting Started</a></li>
+                    <li><a href="#using-tools">Using the Tools</a></li>
+                    <li><a href="#tool-reference">Tool Reference</a></li>
+                    <li><a href="#best-practices">Best Practices</a></li>
+                    <li><a href="#technical">Technical Details</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Getting Started -->
+            <section id="getting-started" class="content-card animate-in stagger-2">
+                <h2>Getting Started</h2>
+                <p>
+                    Welcome to the Epistemic Toolbox! This guide will help you understand how to use the collection of epistemic tools to analyze data, discover patterns, and make informed affirmations about reality.
+                </p>
+
+                <h3>What are Epistemic Tools?</h3>
+                <p>
+                    Epistemic tools are computational instruments that help us represent aspects of reality and extract compressed descriptions. Unlike simple calculators, these tools are designed to help you explore the <em>space of possible affirmations</em>—the set of all reasonable claims you can make about a given phenomenon based on available evidence.
+                </p>
+
+                <div class="highlight-box">
+                    <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">First Steps</h4>
+                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                        1. Visit the <a href="index.html">main tools page</a> to browse the collection<br>
+                        2. Use the search bar or category filters to find relevant tools<br>
+                        3. Click on any tool card to access its interactive interface<br>
+                        4. Explore the visualization and adjust parameters to see how results change
+                    </p>
+                </div>
+
+                <h3>Understanding the Interface</h3>
+                <p>
+                    Each tool in the toolbox provides:
+                </p>
+                <ul>
+                    <li><strong>Interactive Visualizations:</strong> Real-time graphical representations of your data and analysis results</li>
+                    <li><strong>Parameter Controls:</strong> Adjust settings to explore different analytical perspectives</li>
+                    <li><strong>Epistemic Context:</strong> Explanations of what the tool reveals about reality and how to interpret results</li>
+                    <li><strong>Use Cases:</strong> Examples of when to apply the tool for maximum insight</li>
+                </ul>
+            </section>
+
+            <!-- Using the Tools -->
+            <section id="using-tools" class="content-card animate-in stagger-3">
+                <h2>Using the Tools</h2>
+                <p>
+                    Each epistemic tool is designed to answer specific types of questions about your data. Here's how to approach using them effectively:
+                </p>
+
+                <h3>Step 1: Define Your Question</h3>
+                <p>
+                    Before selecting a tool, clarify what you want to understand about your data:
+                </p>
+                <ul>
+                    <li>Are you looking for patterns or structure?</li>
+                    <li>Do you need to quantify uncertainty or variability?</li>
+                    <li>Are you exploring relationships between variables?</li>
+                    <li>Do you want to test specific hypotheses?</li>
+                    <li>Are you analyzing temporal dynamics?</li>
+                </ul>
+
+                <h3>Step 2: Choose the Right Tool</h3>
+                <p>
+                    Different tools are suited to different types of inquiry. Use the category filters to narrow down options:
+                </p>
+                <div class="info-box">
+                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                        <strong>Pattern Detection:</strong> Clustering, Dimensionality Reduction, Network Analysis<br>
+                        <strong>Statistical Analysis:</strong> Standard Deviation, Regression Analysis, Hypothesis Testing<br>
+                        <strong>Probabilistic Reasoning:</strong> Bayesian Inference, Monte Carlo Simulation<br>
+                        <strong>Temporal Analysis:</strong> Time Series Analysis<br>
+                        <strong>Visual Exploration:</strong> Data Visualization
+                    </p>
+                </div>
+
+                <h3>Step 3: Prepare Your Data</h3>
+                <p>
+                    Most tools accept data in various formats. Consider:
+                </p>
+                <ul>
+                    <li>Ensure your data is clean and properly formatted</li>
+                    <li>Consider the scale and normalization of your variables</li>
+                    <li>Identify any missing values or outliers that might affect analysis</li>
+                    <li>Understand the type of data (numerical, categorical, temporal, etc.)</li>
+                </ul>
+
+                <h3>Step 4: Interpret the Results</h3>
+                <p>
+                    Each tool provides output that should be interpreted in context:
+                </p>
+                <ul>
+                    <li>Look at both the quantitative results and visual representations</li>
+                    <li>Consider what the results <em>enable</em> you to affirm about reality</li>
+                    <li>Be aware of the limitations and assumptions of each method</li>
+                    <li>Use multiple tools to cross-validate insights when possible</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">Important Note</h4>
+                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                        Epistemic tools help you explore what can be reasonably asserted based on evidence. They do not replace critical thinking, domain knowledge, or careful consideration of context. Always interpret results in light of your specific domain and question.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Tool Reference -->
+            <section id="tool-reference" class="content-card animate-in stagger-4">
+                <h2>Tool Reference</h2>
+                <p>
+                    Quick reference for the tools available in the Epistemic Toolbox:
+                </p>
+
+                <div class="tool-ref">
+                    <h4>Data Visualization</h4>
+                    <p>Transform data into perceptually interpretable forms for pattern exploration and insight discovery.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Visual</span>
+                        <span class="tag tag-secondary">Exploration</span>
+                        <span class="tag tag-secondary">Pattern Detection</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Standard Deviation</h4>
+                    <p>Quantify variability and spread in data, enabling affirmations about consistency and volatility.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Statistical</span>
+                        <span class="tag tag-secondary">Dispersion</span>
+                        <span class="tag tag-secondary">Quantitative</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Dimensionality Reduction</h4>
+                    <p>Identify latent structures and core dynamics by finding directions of maximum variation.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Statistical</span>
+                        <span class="tag tag-secondary">Pattern Detection</span>
+                        <span class="tag tag-secondary">Structure</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Regression Analysis</h4>
+                    <p>Model relationships between variables to understand causality, trends, and dependencies.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Statistical</span>
+                        <span class="tag tag-secondary">Prediction</span>
+                        <span class="tag tag-secondary">Causal</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Clustering</h4>
+                    <p>Partition data into groups based on similarity to identify emergent categories and structures.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Unsupervised</span>
+                        <span class="tag tag-secondary">Classification</span>
+                        <span class="tag tag-secondary">Structure</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Network Analysis</h4>
+                    <p>Map and quantify relationships between entities to understand connectivity and systemic structure.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Graph</span>
+                        <span class="tag tag-secondary">Connectivity</span>
+                        <span class="tag tag-secondary">Systemic</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Bayesian Inference</h4>
+                    <p>Update beliefs about reality in light of evidence to reason under uncertainty.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Probabilistic</span>
+                        <span class="tag tag-secondary">Uncertainty</span>
+                        <span class="tag tag-secondary">Reasoning</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Time Series Analysis</h4>
+                    <p>Analyze temporal data to detect trends, seasonality, and anomalies in dynamic processes.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Temporal</span>
+                        <span class="tag tag-secondary">Trends</span>
+                        <span class="tag tag-secondary">Dynamics</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Monte Carlo Simulation</h4>
+                    <p>Estimate behavior of complex systems under uncertainty through random sampling.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Stochastic</span>
+                        <span class="tag tag-secondary">Simulation</span>
+                        <span class="tag tag-secondary">Risk Analysis</span>
+                    </div>
+                </div>
+
+                <div class="tool-ref">
+                    <h4>Hypothesis Testing</h4>
+                    <p>Assess assumptions about reality to make affirmations about effects, differences, or associations.</p>
+                    <div class="tags">
+                        <span class="tag tag-primary">Statistical</span>
+                        <span class="tag tag-secondary">Significance</span>
+                        <span class="tag tag-secondary">Testing</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Best Practices -->
+            <section id="best-practices" class="content-card animate-in stagger-4">
+                <h2>Best Practices</h2>
+                <p>
+                    To get the most value from the Epistemic Toolbox, consider these guidelines:
+                </p>
+
+                <h3>Start Simple</h3>
+                <p>
+                    Begin with basic descriptive statistics and visualizations before moving to more complex methods. Simple tools often reveal the most important patterns.
+                </p>
+
+                <h3>Use Multiple Perspectives</h3>
+                <p>
+                    Different tools highlight different aspects of reality. Combine multiple approaches to build a more comprehensive understanding.
+                </p>
+
+                <h3>Consider Assumptions</h3>
+                <p>
+                    Each tool makes specific assumptions about data structure and distribution. Be aware of these assumptions and check whether your data satisfies them.
+                </p>
+
+                <h3>Iterate and Refine</h3>
+                <p>
+                    Analysis is often iterative. Use initial results to refine your questions and select more appropriate tools.
+                </p>
+
+                <h3>Document Your Process</h3>
+                <p>
+                    Keep track of which tools you used, what parameters you selected, and what insights you gained. This documentation is valuable for reproducibility and future analysis.
+                </p>
+
+                <h3>Question Your Results</h3>
+                <p>
+                    Always maintain critical thinking. Consider alternative explanations, check for artifacts or biases, and validate findings when possible.
+                </p>
+
+                <div class="highlight-box">
+                    <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">The Epistemic Mindset</h4>
+                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                        Remember that these tools are instruments for exploration and insight. They help you navigate the space of possible affirmations, but the quality of your conclusions depends on thoughtful interpretation, domain expertise, and rigorous inquiry.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Technical Details -->
+            <section id="technical" class="content-card animate-in stagger-4">
+                <h2>Technical Details</h2>
+
+                <h3>Data Format</h3>
+                <p>
+                    Most tools accept data in common formats including:
+                </p>
+                <ul>
+                    <li>CSV (Comma-Separated Values)</li>
+                    <li>JSON (JavaScript Object Notation)</li>
+                    <li>Direct input through interactive forms</li>
+                </ul>
+
+                <h3>Browsers Supported</h3>
+                <p>
+                    The toolbox is designed to work with modern web browsers including:
+                </p>
+                <ul>
+                    <li>Chrome/Edge (latest)</li>
+                    <li>Firefox (latest)</li>
+                    <li>Safari (latest)</li>
+                    <li>Opera (latest)</li>
+                </ul>
+
+                <h3>Performance Considerations</h3>
+                <p>
+                    For best performance:
+                </p>
+                <ul>
+                    <li>Use a modern browser with JavaScript enabled</li>
+                    <li>Large datasets may take longer to process</li>
+                    <li>Some complex visualizations may be resource-intensive</li>
+                    <li>Consider downsampling very large datasets for initial exploration</li>
+                </ul>
+
+                <h3>Data Privacy</h3>
+                <p>
+                    All data processing happens locally in your browser. No data is sent to external servers, ensuring your data remains private and secure.
+                </p>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="content-card animate-in stagger-4">
+                <h2>Frequently Asked Questions</h2>
+
+                <h3>What makes these tools "epistemic"?</h3>
+                <p>
+                    These tools are designed specifically to help you explore what can be reasonably affirmed about reality based on evidence. They focus on representation, compression, and the exploration of the space of possible claims, rather than just performing calculations.
+                </p>
+
+                <h3>Can I use these tools for professional research?</h3>
+                <p>
+                    Yes, these tools implement well-established statistical and computational methods. However, always ensure you understand the underlying assumptions and limitations of each method, and consider supplementing with domain-specific analysis when needed.
+                </p>
+
+                <h3>Is there a limit to data size?</h3>
+                <p>
+                    The toolbox is designed for interactive exploration. While there's no hard limit, very large datasets may affect performance. For production analysis of big data, consider using dedicated data science platforms.
+                </p>
+
+                <h3>How do I cite the Epistemic Toolbox?</h3>
+                <p>
+                    If you use the Epistemic Toolbox in your work, we appreciate acknowledgment. Please cite the project and the specific tools you used.
+                </p>
+
+                <h3>Can I request new tools?</h3>
+                <p>
+                    Yes! We welcome suggestions for new epistemic tools. Please contact us with your ideas, and we'll consider adding them to the collection.
+                </p>
+
+                <h3>Are there tutorials available?</h3>
+                <p>
+                    Each tool includes its own documentation and use cases. Additionally, you can explore the <a href="about.html">About page</a> for more context on the philosophy behind the toolbox, and the linked <a href="https://www.notion.so/Framework-334c0f5171ec803e8cfbe7f0bc02c575?source=copy_link" target="_blank">Modelling Modelling</a> documentation for deeper theoretical foundations.
+                </p>
+            </section>
+
+            <div class="accent-line animate-in stagger-4"></div>
+
+            <!-- Footer -->
+            <footer class="text-center py-8 animate-in stagger-4">
+                <p class="font-mono text-sm text-[var(--fg-muted)]">
+                    Explore. Analyze. Understand.
+                </p>
+                <div class="flex justify-center gap-4 mt-4">
+                    <a href="index.html" class="font-mono text-xs text-[var(--fg-muted)] hover:text-[var(--accent-primary)]">Tools</a>
+                    <a href="about.html" class="font-mono text-xs text-[var(--fg-muted)] hover:text-[var(--accent-primary)]">About</a>
+                </div>
+            </footer>
+        </div>
+    </main>
+</body>
+</html>
