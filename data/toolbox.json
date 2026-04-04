@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Data Visualization",
+        "description": "A visual representation technique used to transform structured or unstructured data into perceptually interpretable forms, enabling efficient exploration of patterns, trends, and the space of possible affirmations about the underlying reality.",
+        "url": "https://www.bremontix.xyz/toolbox/tool/visualization/index.html",
+        "svg-icon": "icon-data-visualization",
+        "tags": [
+            "category",
+            "visual",
+            "representation",
+            "exploration",
+            "pattern-detection",
+            "affirmation-space"
+        ]
+    },
+    {
+        "name": "Standard Deviation",
+        "description": "A statistical measure of dispersion that quantifies the extent of variability or spread in a dataset relative to its mean, enabling affirmations about consistency, volatility, and distributional structure.",
+        "url": "https://www.bremontix.xyz/toolbox/tool/std.html",
+        "svg-icon": "icon-standard-deviation",
+        "tags": [
+            "tool",
+            "statistical",
+            "dispersion",
+            "variability",
+            "distribution",
+            "quantitative"
+        ]
+    }
+]
