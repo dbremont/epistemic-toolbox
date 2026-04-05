@@ -4,6 +4,12 @@
 
 > An **epistemic tool** or element is any instrument, construct, or method used to represent aspects of reality and extract compressed descriptions at multiple levels. It enables the exploration of the space of possible affirmations about that reality.
 
+## Working On
+
+- [ ] Number Relation
+- [ ] Rate of Change
+- [ ] Elasticity
+
 ## References
 
 - [Affirmation Space](https://www.notion.so/Affirmation-Space-336c0f5171ec80928f75ddbde09d7121?source=copy_link)
