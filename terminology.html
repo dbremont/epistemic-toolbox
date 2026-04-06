@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminology - Epistemic Toolbox</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Glossary of terms and concepts used in the Epistemic Toolbox. Understand the language of modeling, veritas, and epistemology.">
+    <meta name="keywords" content="Epistemic Toolbox, Glossary, Terminology, Data Analysis, Philosophy, Modeling">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Terminology - Epistemic Toolbox">
+    <meta property="og:description" content="Navigate the lexicon of reality modeling and epistemic analysis.">
+    
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #080a0f;
+            --bg-primary: #0d1117;
+            --bg-elevated: #151b24;
+            --bg-card: rgba(20, 26, 35, 0.65);
+            --fg-primary: #f0f4f8;
+            --fg-secondary: #b0b8c4;
+            --fg-muted: #4a5568;
+            --accent-primary: #d4a84b;
+            --accent-secondary: #5ec4b2;
+            --accent-glow: rgba(212, 168, 75, 0.15);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-elevated: rgba(255, 255, 255, 0.1);
+            --border-accent: rgba(212, 168, 75, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--fg-primary);
+            line-height: 1.8;
+            font-size: 1.125rem;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        main { flex: 1; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--fg-muted); 
+            border-radius: 10px;
+            border: 2px solid var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        .bg-atmosphere {
+            position: fixed; inset: 0; z-index: -2;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 168, 75, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(94, 196, 178, 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+        }
+        
+        .bg-pattern {
+            position: fixed; inset: 0; z-index: -1; opacity: 0.4;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 95% 70% at 50% 30%, black, transparent);
+        }
+        
+        .bg-noise {
+            position: fixed; inset: 0; z-index: -1; opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3A%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        
+        .hero-glow {
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1000px;
+            height: 500px;
+            background: radial-gradient(ellipse at center, rgba(212, 168, 75, 0.15) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(60px);
+            opacity: 0.6;
+        }
+
+        /* Navigation & Footer Shared Style */
+        .nav-blur {
+            background: rgba(8, 10, 15, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid var(--border-subtle);
+            height: 72px;
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem 1.25rem;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.15, 0.8, 0.3, 1);
+        }
+
+        .brand-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: radial-gradient(ellipse at center, rgba(212, 168, 75, 0.08), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .brand-container:hover::before { opacity: 1; }
+
+        .brand-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent-primary);
+            stroke-width: 1.5;
+            fill: none;
+            filter: drop-shadow(0 0 6px rgba(212, 168, 75, 0.4));
+            transition: all 0.4s ease;
+        }
+
+        .brand-container:hover .brand-icon svg {
+            filter: drop-shadow(0 0 12px rgba(212, 168, 75, 0.6));
+            transform: rotate(10deg) scale(1.05);
+        }
+
+        .brand-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--fg-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-text span {
+            color: var(--fg-secondary);
+            font-weight: 400;
+            margin-right: 0.25em;
+        }
+
+        /* Documentation Layout */
+        .docs-layout {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 4rem;
+            max-width: 1200px; 
+            margin: 0 auto;
+        }
+        
+        .nav-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 1.5rem;
+        }
+
+        /* Sidebar */
+        .docs-sidebar {
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 1.5rem;
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--fg-muted);
+            padding-left: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--fg-secondary);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--fg-primary);
+        }
+
+        .sidebar-link.active {
+            background: rgba(212, 168, 75, 0.08);
+            border-left-color: var(--accent-primary);
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .content-col {
+            max-width: 780px;
+            padding-bottom: 4rem;
+        }
+
+        /* Content Cards & Typography */
+        .content-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-card::before {
+            content: ''; 
+            position: absolute; 
+            inset: 0; 
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--fg-primary);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            margin-top: 3.5rem; /* Space between letter groups */
+            color: var(--accent-primary);
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        h2 .letter-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(212, 168, 75, 0.1);
+            border: 1px solid rgba(212, 168, 75, 0.3);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            color: var(--accent-primary);
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 500;
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--fg-primary);
+        }
+
+        p {
+            color: var(--fg-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 2rem;
+        }
+
+        li {
+            color: var(--fg-secondary);
+            padding-left: 1.75rem;
+            position: relative;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        li::before {
+            content: '↬';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+        }
+
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        a:hover { 
+            color: var(--accent-secondary); 
+            border-bottom-color: var(--accent-secondary);
+        }
+
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--accent-secondary);
+        }
+
+        /* Terminology Specific Styles */
+        .term-entry {
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--border-subtle);
+            transition: border-color 0.3s ease;
+        }
+
+        .term-entry:hover {
+            border-left-color: var(--accent-secondary);
+        }
+
+        .term-entry .term-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--fg-primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .term-entry p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--fg-secondary);
+            margin: 0;
+        }
+
+        /* Abececary Map Tool */
+        .abececary-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .letter-btn {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--fg-muted);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .letter-btn.has-terms {
+            color: var(--fg-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-elevated);
+        }
+
+        .letter-btn:hover {
+            background: rgba(212, 168, 75, 0.15);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .letter-btn.active {
+            background: var(--accent-primary);
+            color: var(--bg-deep);
+            border-color: var(--accent-primary);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .search-tool {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            color: var(--fg-primary);
+            font-family: 'Source Sans 3', sans-serif;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-tool::placeholder { color: var(--fg-muted); }
+        .search-tool:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Footer */
+        .site-footer {
+            position: relative;
+            padding: 0;
+            margin-top: auto;
+            background: rgba(8, 10, 15, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            height: 72px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--fg-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        .footer-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .footer-link {
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--fg-secondary);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0.5rem 0;
+        }
+        
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0.25rem;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-primary);
+            transition: width 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--fg-primary);
+        }
+        
+        .footer-link:hover::after {
+            width: 100%;
+        }
+
+        .animate-in {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeInUp 0.6s cubic-bezier(0.15, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stagger-1 { animation-delay: 0.05s; }
+        .stagger-2 { animation-delay: 0.1s; }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .docs-layout, .nav-layout {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .docs-sidebar {
+                display: none;
+            }
+            h1 { font-size: 2.5rem; }
+        }
+
+        /* Hidden utility for filtering */
+        .hidden-term { display: none; }
+    </style>
+</head>
+<body>
+    <div class="bg-atmosphere"></div>
+    <div class="bg-pattern"></div>
+    <div class="bg-noise"></div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="nav-layout h-full items-center">
+            <div class="hidden md:block"></div>
+            <a href="index.html" class="brand-container">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="brand-text"><span>Epistemic</span>Toolbox</div>
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-28 pb-16 px-6">
+        <div class="docs-layout">
+            
+            <aside class="docs-sidebar" id="docs-sidebar">
+                <div class="sidebar-title">Navigation</div>
+                <nav>
+                    <a href="#A" class="sidebar-link">A</a>
+                    <a href="#B" class="sidebar-link">B</a>
+                    <a href="#C" class="sidebar-link">C</a>
+                    <a href="#D" class="sidebar-link">D</a>
+                    <a href="#E" class="sidebar-link">E</a>
+                    <a href="#H" class="sidebar-link">H</a>
+                    <a href="#I" class="sidebar-link">I</a>
+                    <a href="#M" class="sidebar-link">M</a>
+                    <a href="#O" class="sidebar-link">O</a>
+                    <a href="#P" class="sidebar-link">P</a>
+                    <a href="#R" class="sidebar-link">R</a>
+                    <a href="#S" class="sidebar-link">S</a>
+                    <a href="#V" class="sidebar-link">V</a>
+                </nav>
+            </aside>
+
+            <div class="content-col">
+                
+                <header class="mb-12 animate-in relative">
+                    <div class="hero-glow"></div>
+                    <h1>Terminology <span class="text-[var(--fg-muted)]">& Concepts</span></h1>
+                    <p class="text-xl text-[var(--fg-secondary)] max-w-2xl">
+                        An abececary map of terms used throughout the toolbox. Use the search or select a letter to navigate the epistemic landscape.
+                    </p>
+                </header>
+
+                <!-- Tool: Search & Abececary Map -->
+                <section class="content-card animate-in stagger-1">
+                    <h2 style="margin-top:0; border:none; padding-bottom:0;">
+                        <span style="color: var(--fg-primary)">Terminology</span> Navigator
+                    </h2>
+                    <br/>
+                    <p class="text-sm text-[var(--fg-muted)] -mt-4 mb-4">Filter definitions or jump to specific letters.</p>
+                    
+                    <input type="text" id="term-search" class="search-tool" placeholder="Search terms (e.g., 'veritas', 'model')...">
+                    
+                    <div class="abececary-map" id="alphabet-grid">
+                        <!-- Populated by JS, or static for simplicity -->
+                        <a href="#A" class="letter-btn has-terms">A</a>
+                        <a href="#B" class="letter-btn has-terms">B</a>
+                        <a href="#C" class="letter-btn has-terms">C</a>
+                        <a href="#D" class="letter-btn has-terms">D</a>
+                        <a href="#E" class="letter-btn has-terms">E</a>
+                        <span class="letter-btn">F</span>
+                        <span class="letter-btn">G</span>
+                        <a href="#H" class="letter-btn has-terms">H</a>
+                        <a href="#I" class="letter-btn has-terms">I</a>
+                        <span class="letter-btn">J</span>
+                        <span class="letter-btn">K</span>
+                        <span class="letter-btn">L</span>
+                        <a href="#M" class="letter-btn has-terms">M</a>
+                        <a href="#O" class="letter-btn has-terms">O</a>
+                        <span class="letter-btn">N</span>
+                        <a href="#P" class="letter-btn has-terms">P</a>
+                        <span class="letter-btn">Q</span>
+                        <a href="#R" class="letter-btn has-terms">R</a>
+                        <a href="#S" class="letter-btn has-terms">S</a>
+                        <span class="letter-btn">T</span>
+                        <a href="#V" class="letter-btn has-terms">V</a>
+                        <span class="letter-btn">W</span>
+                        <span class="letter-btn">X</span>
+                        <span class="letter-btn">Y</span>
+                        <span class="letter-btn">Z</span>
+                    </div>
+                </section>
+
+                <!-- Glossary Content -->
+                <div id="glossary-container">
+                    
+                    <section id="A" class="content-card animate-in">
+                        <h2><span class="letter-badge">A</span>A</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Abduction</span>
+                            <p>A form of logical inference which starts with an observation or set of observations then seeks to find the simplest and most likely explanation. In the toolbox, this relates to generating hypotheses from data artifacts.</p>
+                        </div>
+
+                        <div class="term-entry">
+                            <span class="term-title">Artifact</span>
+                            <p>A construct or object produced by the application of an epistemic tool. Artifacts are the "findings" or compressed descriptions extracted from the raw data of reality.</p>
+                        </div>
+                    </section>
+
+                    <section id="B" class="content-card animate-in">
+                        <h2><span class="letter-badge">B</span>B</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Bayesian Inference</span>
+                            <p>A method of statistical inference in which Bayes' theorem is used to update the probability for a hypothesis as more evidence or information becomes available. It is a fundamental tool for modeling belief states.</p>
+                        </div>
+                    </section>
+
+                    <section id="C" class="content-card animate-in">
+                        <h2><span class="letter-badge">C</span>C</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Compression</span>
+                            <p>The process of reducing the complexity of a dataset or phenomenon while retaining its essential informational structure. In the Epistemic Toolbox, compression is the act of distilling reality into manageable models.</p>
+                        </div>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Construct</span>
+                            <p>An explanatory variable that is not directly observable but is inferred from other data. Constructs are the building blocks of theoretical models.</p>
+                        </div>
+                    </section>
+
+                    <section id="D" class="content-card animate-in">
+                        <h2><span class="letter-badge">D</span>D</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Dimensionality</span>
+                            <p>The number of parameters or variables in a model. High dimensionality often requires tools for reduction (like PCA) to make the data tractable for human understanding.</p>
+                        </div>
+                    </section>
+
+                    <section id="E" class="content-card animate-in">
+                        <h2><span class="letter-badge">E</span>E</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Epistemology</span>
+                            <p>The branch of philosophy concerned with the theory of knowledge. It studies the nature, origin, and scope of knowledge and justified belief. This toolbox is an exercise in applied epistemology.</p>
+                        </div>
+                    </section>
+
+                    <section id="H" class="content-card animate-in">
+                        <h2><span class="letter-badge">H</span>H</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Heuristic</span>
+                            <p>Any approach to problem solving or self-discovery that employs a practical method that is not guaranteed to be optimal, perfect, or rational, but is nevertheless sufficient for reaching an immediate, short-term goal or approximation.</p>
+                        </div>
+                    </section>
+
+                    <section id="I" class="content-card animate-in">
+                        <h2><span class="letter-badge">I</span>I</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Inference</span>
+                            <p>The process of drawing conclusions from premises or evidence. It is the mechanism by which we move from raw data to meaningful affirmations about reality.</p>
+                        </div>
+                    </section>
+
+                    <section id="M" class="content-card animate-in">
+                        <h2><span class="letter-badge">M</span>M</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Model</span>
+                            <p>A simplified representation of a system or phenomenon. Models are the primary output of the toolbox's analysis tools, serving as compressed descriptions of reality.</p>
+                        </div>
+                    </section>
+
+                    <section id="O" class="content-card animate-in">
+                        <h2><span class="letter-badge">O</span>O</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Ontology</span>
+                            <p>The philosophical study of the nature of being, becoming, existence, or reality. In the context of the toolbox, it asks "What actually exists?" before we apply tools to measure it.</p>
+                        </div>
+                    </section>
+
+                    <section id="P" class="content-card animate-in">
+                        <h2><span class="letter-badge">P</span>P</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Pattern Recognition</span>
+                            <p>The automated recognition of patterns and regularities in data. It is a fundamental capability of many tools in the toolbox, used to identify structure in noise.</p>
+                        </div>
+                    </section>
+
+                    <section id="R" class="content-card animate-in">
+                        <h2><span class="letter-badge">R</span>R</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Reality</span>
+                            <p>The state of things as they actually exist, as opposed to an idealistic or notional idea of them. The toolbox treats reality as the "source code" that tools attempt to read and interpret.</p>
+                        </div>
+                    </section>
+
+                    <section id="S" class="content-card animate-in">
+                        <h2><span class="letter-badge">S</span>S</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Signal-to-Noise Ratio</span>
+                            <p>A measure used in science and engineering that compares the level of a desired signal to the level of background noise. It is a metaphor for distinguishing truth (veritas) from distraction.</p>
+                        </div>
+                    </section>
+
+                    <section id="V" class="content-card animate-in">
+                        <h2><span class="letter-badge">V</span>V</h2>
+                        
+                        <div class="term-entry">
+                            <span class="term-title">Veritas</span>
+                            <p>The Roman goddess of truth, and in this toolbox, the ultimate alignment goal. It represents the objective state of affairs that our tools and models attempt to approximate.</p>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">Epistemic Toolbox</div>
+            <div class="footer-links">
+                <a href="about.html" class="footer-link">About</a>
+                <a href="docs.html" class="footer-link">Documentation</a>
+                <a href="terminology.html" class="footer-link active">Terminology</a>
+                <button class="footer-link" id="footer-help-btn">Help</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Help Modal (Simplified for brevity) -->
+    <div class="help-overlay" id="help-overlay"></div>
+    <div class="help-modal-container" id="help-modal-container" role="dialog" aria-modal="true">
+        <div class="help-modal">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-display text-lg">Glossary Help</h3>
+                <button class="text-[var(--fg-muted)] hover:text-white transition-colors" id="modal-close" aria-label="Close modal">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="text-sm text-[var(--fg-secondary)]">
+                Use the "Abececary Map" at the top to jump to specific letters of the alphabet. You can also use the search bar to instantly filter terms by keywords.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Intersection Observer for Active Links
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar-link');
+        const letterBtns = document.querySelectorAll('.letter-btn');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    
+                    // Sidebar active state
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        }
+                    });
+                    
+                    // Abececary Map active state
+                    letterBtns.forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('href') === '#' + id || btn.textContent === id) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-30% 0px -70% 0px' });
+
+        sections.forEach(section => observer.observe(section));
+
+        // Search Tool Functionality
+        const searchInput = document.getElementById('term-search');
+        const termEntries = document.querySelectorAll('.term-entry');
+        const glossarySections = document.querySelectorAll('#glossary-container > section');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+
+            termEntries.forEach(entry => {
+                const title = entry.querySelector('.term-title').textContent.toLowerCase();
+                const desc = entry.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(query) || desc.includes(query)) {
+                    entry.classList.remove('hidden-term');
+                } else {
+                    entry.classList.add('hidden-term');
+                }
+            });
+
+            // Hide empty sections
+            glossarySections.forEach(section => {
+                const visibleTerms = section.querySelectorAll('.term-entry:not(.hidden-term)');
+                if (visibleTerms.length === 0 && query !== '') {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+        });
+
+        // Help Modal
+        const helpBtn = document.getElementById('footer-help-btn');
+        const modal = document.getElementById('help-modal-container');
+        const overlay = document.getElementById('help-overlay');
+        const closeBtn = document.getElementById('modal-close');
+
+        function openModal() {
+            modal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        helpBtn.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
