@@ -4,204 +4,433 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation - Epistemic Toolbox</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Comprehensive documentation for the Epistemic Toolbox. Learn to analyze data, discover patterns, and model reality.">
+    <meta name="keywords" content="Epistemic Toolbox, Data Analysis, Modeling, Reality, Tools, Statistics">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Documentation - Epistemic Toolbox">
+    <meta property="og:description" content="Learn how to use the toolbox to parse reality in alignment with veritas.">
+    
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #060a10;
-            --bg-primary: #0a1019;
-            --bg-elevated: #0f1621;
-            --bg-card: rgba(15, 22, 33, 0.7);
-            --fg-primary: #e8eef5;
-            --fg-secondary: #8a96a8;
-            --fg-muted: #4a5567;
-            --accent-primary: #d4a056;
-            --accent-secondary: #7dd3c0;
-            --accent-glow: rgba(212, 160, 86, 0.25);
+            --bg-deep: #080a0f;
+            --bg-primary: #0d1117;
+            --bg-elevated: #151b24;
+            --bg-card: rgba(20, 26, 35, 0.65);
+            --fg-primary: #f0f4f8;
+            --fg-secondary: #b0b8c4; /* Brightened for better readability */
+            --fg-muted: #4a5568;
+            --accent-primary: #d4a84b;
+            --accent-secondary: #5ec4b2;
+            --accent-glow: rgba(212, 168, 75, 0.15);
             --border-subtle: rgba(255, 255, 255, 0.06);
             --border-elevated: rgba(255, 255, 255, 0.1);
-            --border-accent: rgba(212, 160, 86, 0.4);
+            --border-accent: rgba(212, 168, 75, 0.4);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-deep);
             color: var(--fg-primary);
-            line-height: 1.6;
+            line-height: 1.8; /* Increased for readability */
+            font-size: 1.125rem; /* Increased base size */
             overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         main { flex: 1; }
 
+        /* Improved Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--fg-muted); 
+            border-radius: 10px;
+            border: 2px solid var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Background & Atmosphere */
+        /* Enhanced Background */
         .bg-atmosphere {
-            position: fixed; inset: 0; z-index: -1;
+            position: fixed; inset: 0; z-index: -2;
             background: 
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 160, 86, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(125, 211, 192, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 168, 75, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(94, 196, 178, 0.05) 0%, transparent 50%),
                 linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
         }
+        
+        .bg-pattern {
+            position: fixed; inset: 0; z-index: -1; opacity: 0.4;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 95% 70% at 50% 30%, black, transparent);
+        }
+        
+        .bg-noise {
+            position: fixed; inset: 0; z-index: -1; opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3A%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        
+        .hero-glow {
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1000px;
+            height: 500px;
+            background: radial-gradient(ellipse at center, rgba(212, 168, 75, 0.15) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(60px);
+            opacity: 0.6;
+        }
 
+        /* Navigation */
         .nav-blur {
-            background: rgba(6, 10, 16, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(8, 10, 15, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid var(--border-subtle);
+            height: 72px;
+            display: flex;
+            align-items: center;
         }
 
-        .content-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .accent-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
             position: relative;
-            overflow: hidden;
-            margin: 2rem 0;
-        }
-
-        .highlight-box {
-            background: linear-gradient(135deg, rgba(212, 160, 86, 0.08), rgba(125, 211, 192, 0.04));
-            border: 1px solid rgba(212, 160, 86, 0.2);
+            padding: 0.5rem 1.25rem;
             border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
+            transition: all 0.4s cubic-bezier(0.15, 0.8, 0.3, 1);
         }
 
-        .info-box {
-            background: rgba(125, 211, 192, 0.05);
-            border: 1px solid rgba(125, 211, 192, 0.15);
+        .brand-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
             border-radius: 12px;
-            padding: 1.25rem;
-            margin: 1.5rem 0;
+            background: radial-gradient(ellipse at center, rgba(212, 168, 75, 0.08), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
 
-        .warning-box {
-            background: rgba(212, 160, 86, 0.05);
-            border: 1px solid rgba(212, 160, 86, 0.15);
-            border-radius: 12px;
-            padding: 1.25rem;
-            margin: 1.5rem 0;
+        .brand-container:hover::before { opacity: 1; }
+
+        .brand-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .tag {
+        .brand-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent-primary);
+            stroke-width: 1.5;
+            fill: none;
+            filter: drop-shadow(0 0 6px rgba(212, 168, 75, 0.4));
+            transition: all 0.4s ease;
+        }
+
+        .brand-container:hover .brand-icon svg {
+            filter: drop-shadow(0 0 12px rgba(212, 168, 75, 0.6));
+            transform: rotate(10deg) scale(1.05);
+        }
+
+        .brand-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--fg-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-text span {
+            color: var(--fg-secondary);
+            font-weight: 400;
+            margin-right: 0.25em;
+        }
+
+        /* Documentation Layout */
+        .docs-layout {
+            display: grid;
+            /* Fixed sidebar, fluid content, but content won't expand infinitely */
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 4rem;
+            max-width: 1200px; 
+            margin: 0 auto;
+        }
+        
+        /* Align Nav with Layout */
+        .nav-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 1.5rem;
+        }
+
+        /* Sidebar */
+        .docs-sidebar {
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 1.5rem;
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-title {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 0.3rem 0.65rem;
-            border-radius: 4px;
-            display: inline-block;
-            margin: 0.2rem;
+            letter-spacing: 0.1em;
+            color: var(--fg-muted);
+            padding-left: 0.5rem;
+            margin-bottom: 1rem;
         }
 
-        .tag-primary {
-            background: rgba(212, 160, 86, 0.12);
-            border: 1px solid rgba(212, 160, 86, 0.3);
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--fg-secondary);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--fg-primary);
+        }
+
+        .sidebar-link.active {
+            background: rgba(212, 168, 75, 0.08);
+            border-left-color: var(--accent-primary);
             color: var(--accent-primary);
+            font-weight: 500;
         }
 
-        .tag-secondary {
-            background: rgba(125, 211, 192, 0.08);
-            border: 1px solid rgba(125, 211, 192, 0.2);
-            color: var(--accent-secondary);
+        /* Content Wrapper for Readability */
+        .content-col {
+            max-width: 780px; /* Optimal reading width */
+            padding-bottom: 4rem;
+        }
+
+        /* Mobile Sidebar Toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 60;
+            cursor: pointer;
+            color: var(--bg-deep);
+        }
+
+        @media (max-width: 900px) {
+            .docs-layout, .nav-layout {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .docs-sidebar {
+                display: none;
+                position: fixed;
+                left: 0;
+                top: 72px;
+                bottom: 0;
+                width: 280px;
+                background: var(--bg-primary);
+                border-right: 1px solid var(--border-elevated);
+                z-index: 50;
+                padding: 2rem;
+            }
+            .docs-sidebar.open {
+                display: flex;
+            }
+            .sidebar-toggle {
+                display: flex;
+            }
+            .nav-layout {
+                padding: 0 1.5rem;
+            }
+            /* Reset brand position on mobile */
+            .nav-layout > .brand-container {
+                margin-left: 0;
+            }
+        }
+
+        /* Content Cards & Typography */
+        .content-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-card::before {
+            content: ''; 
+            position: absolute; 
+            inset: 0; 
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .accent-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            position: relative;
+            overflow: hidden;
+            opacity: 0.6;
+            margin: 2rem 0;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--fg-primary);
+            margin-bottom: 2rem;
         }
 
         h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 600;
-            margin-bottom: 1.25rem;
+            margin-bottom: 2rem;
+            margin-top: 0;
             color: var(--fg-primary);
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.75rem;
         }
 
         h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 500;
-            margin-bottom: 0.875rem;
-            color: var(--fg-primary);
-        }
-
-        h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
+            margin-top: 3rem;
+            margin-bottom: 1.25rem;
             color: var(--fg-primary);
         }
 
         p {
             color: var(--fg-secondary);
-            margin-bottom: 1rem;
+            margin-bottom: 1.75rem; /* Increased spacing */
+            line-height: 1.8;
         }
 
         ul {
             list-style: none;
             padding-left: 0;
+            margin-bottom: 2rem;
         }
 
         li {
             color: var(--fg-secondary);
-            padding-left: 1.5rem;
+            padding-left: 1.75rem;
             position: relative;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.7;
         }
 
         li::before {
-            content: '→';
+            content: '↬';
             position: absolute;
             left: 0;
+            top: 2px;
             color: var(--accent-primary);
+            font-size: 1.1rem;
         }
 
         a {
             color: var(--accent-primary);
             text-decoration: none;
             transition: color 0.2s;
+            border-bottom: 1px solid transparent;
         }
 
-        a:hover {
-            color: var(--accent-secondary);
+        a:hover { 
+            color: var(--accent-secondary); 
+            border-bottom-color: var(--accent-secondary);
+        }
+
+        /* Focus States for Accessibility */
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+            border-radius: 4px;
         }
 
         code {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.2rem 0.4rem;
+            font-size: 0.9em; /* Relative to text size */
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.2rem 0.5rem;
             border-radius: 4px;
-            color: var(--accent-primary);
+            color: var(--accent-secondary);
         }
 
         pre {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            background: rgba(10, 16, 25, 0.8);
+            font-size: 0.95rem;
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 1rem;
+            padding: 1.5rem;
             overflow-x: auto;
-            margin: 1rem 0;
+            margin: 2.5rem 0;
         }
 
         pre code {
@@ -210,498 +439,468 @@
             color: var(--fg-secondary);
         }
 
-        /* Table of Contents */
-        .toc {
-            background: rgba(15, 22, 33, 0.5);
-            border: 1px solid var(--border-subtle);
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 168, 75, 0.08), rgba(125, 211, 192, 0.04));
+            border: 1px solid rgba(212, 168, 75, 0.2);
             border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+        
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-box {
+            background: rgba(94, 196, 178, 0.05);
+            border-left: 3px solid var(--accent-secondary);
+            border-radius: 0 12px 12px 0;
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin: 2.5rem 0;
         }
 
-        .toc-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--accent-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
-        }
-
-        .toc ul {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .toc li {
-            padding-left: 0;
-        }
-
-        .toc li::before {
-            content: '';
-        }
-
-        .toc a {
-            font-size: 0.85rem;
-            color: var(--fg-secondary);
-        }
-
-        .toc a:hover {
-            color: var(--accent-primary);
-        }
-
-        /* Tool Reference Card */
-        .tool-ref {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            transition: all 0.2s;
-        }
-
-        .tool-ref:hover {
-            background: rgba(212, 160, 86, 0.05);
-            border-color: rgba(212, 160, 86, 0.2);
-        }
-
-        .tool-ref h4 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .tool-ref p {
-            font-size: 0.85rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .tool-ref .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.25rem;
+        .warning-box {
+            background: rgba(212, 168, 75, 0.05);
+            border-left: 3px solid var(--accent-primary);
+            border-radius: 0 12px 12px 0;
+            padding: 1.5rem;
+            margin: 2.5rem 0;
         }
 
         /* Animations */
         .animate-in {
             opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 0.7s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+            transform: translateY(16px);
+            animation: fadeInUp 0.6s cubic-bezier(0.15, 0.8, 0.3, 1) forwards;
         }
 
         @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stagger-1 { animation-delay: 0.05s; }
+        .stagger-2 { animation-delay: 0.1s; }
+
+        /* Footer - Refined & Elegant */
+        .site-footer {
+            position: relative;
+            padding: 4rem 0 2rem;
+            margin-top: auto;
+        }
+
+        .footer-bg-fade {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to top, var(--bg-deep), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-elevated), transparent);
+            margin-bottom: 2.5rem;
+            opacity: 0.5;
+        }
+        
+        .footer-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 1.5rem;
+        }
+        
+        @media (max-width: 900px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                text-align: center;
             }
         }
-
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            h2 { font-size: 1.5rem; }
-            .toc ul { flex-direction: column; gap: 0.5rem; }
+        
+        .footer-brand-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
+
+        .footer-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--fg-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .footer-link {
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--fg-secondary);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0.5rem 0;
+        }
+        
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0.25rem;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-primary);
+            transition: width 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--fg-primary);
+        }
+        
+        .footer-link:hover::after {
+            width: 100%;
+        }
+
+        /* Help Modal */
+        .help-overlay {
+            position: fixed; inset: 0;
+            background: rgba(8, 10, 15, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            opacity: 0; visibility: hidden;
+            transition: all 0.4s;
+        }
+        .help-overlay.active { opacity: 1; visibility: visible; }
+        
+        .help-modal-container {
+            position: fixed; inset: 0; z-index: 1001;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            opacity: 0; visibility: hidden;
+            transition: all 0.4s;
+        }
+        .help-modal-container.active { opacity: 1; visibility: visible; }
+        
+        .help-modal {
+            width: 100%; max-width: 500px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-elevated);
+            border-radius: 12px;
+            padding: 2rem;
+            transform: scale(0.9);
+            transition: transform 0.4s;
+        }
+        .help-modal-container.active .help-modal { transform: scale(1); }
     </style>
 </head>
 <body>
-    <!-- Background Layers -->
     <div class="bg-atmosphere"></div>
+    <div class="bg-pattern"></div>
+    <div class="bg-noise"></div>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-2 h-2 bg-[var(--accent-primary)] rounded-full"></div>
-                <span class="font-mono text-sm tracking-wider text-[var(--fg-secondary)]">EPISTEMIC TOOLBOX</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="font-mono text-xs text-[var(--fg-secondary)] hover:text-[var(--fg-primary)] transition-colors">Tools</a>
-                <a href="docs.html" class="font-mono text-xs text-[var(--accent-primary)]">Documentation</a>
-                <a href="about.html" class="font-mono text-xs text-[var(--fg-secondary)] hover:text-[var(--fg-primary)] transition-colors">About</a>
-            </div>
+    <!-- Nav: Uses matching Grid Layout -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="nav-layout h-full items-center">
+            <!-- Empty div to occupy the first grid cell (sidebar width) -->
+            <div class="hidden md:block"></div>
+            
+            <a href="index.html" class="brand-container">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="brand-text"><span>Epistemic</span>Toolbox</div>
+            </a>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="pt-24 pb-16 px-6">
-        <div class="max-w-4xl mx-auto">
-            <!-- Header -->
-            <header class="mb-12 animate-in stagger-1">
-                <h1 class="font-display text-5xl md:text-6xl font-semibold mb-4" style="letter-spacing: -0.03em; line-height: 1.1;">
-                    Documentation<br/><span class="text-[var(--fg-secondary)]">& Guides</span>
-                </h1>
-                <p class="text-xl text-[var(--fg-secondary)]">
-                    Learn how to use epistemic tools to parse reality and extract meaningful insights
-                </p>
-            </header>
+    <!-- Mobile Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
 
-            <div class="accent-line animate-in stagger-2"></div>
+    <main class="pt-28 pb-16 px-6">
+        <div class="docs-layout">
+            
+            <!-- Sidebar Navigation -->
+            <aside class="docs-sidebar" id="docs-sidebar">
+                <div class="sidebar-title">Documentation</div>
+                <nav>
+                    <a href="#getting-started" class="sidebar-link active">Getting Started</a>
+                    <a href="#using-tools" class="sidebar-link">Using the Tools</a>
+                    <a href="#best-practices" class="sidebar-link">Best Practices</a>
+                    <a href="#technical" class="sidebar-link">Technical Details</a>
+                    <a href="#faq" class="sidebar-link">FAQ</a>
+                    <a href="#references" class="sidebar-link">References</a>
+                </nav>
+            </aside>
 
-            <!-- Table of Contents -->
-            <div class="toc animate-in stagger-2">
-                <div class="toc-title">Quick Navigation</div>
-                <ul>
-                    <li><a href="#getting-started">Getting Started</a></li>
-                    <li><a href="#using-tools">Using the Tools</a></li>
-                    <li><a href="#tool-reference">Tool Reference</a></li>
-                    <li><a href="#best-practices">Best Practices</a></li>
-                    <li><a href="#technical">Technical Details</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                </ul>
+            <!-- Main Content -->
+            <div class="content-col">
+                
+                <header class="mb-12 animate-in relative">
+                    <div class="hero-glow"></div>
+                    <h1>Documentation <span class="text-[var(--fg-muted)]">& Guides</span></h1>
+                    <p class="text-xl text-[var(--fg-secondary)] max-w-2xl">
+                        Learn how to use the toolbox to parse reality in alignment with veritas.
+                    </p>
+                </header>
+
+                <!-- Getting Started -->
+                <section id="getting-started" class="content-card animate-in stagger-1">
+                    <h2>Getting Started</h2>
+                    <p>
+                        Welcome to the Epistemic Toolbox. This guide explains how to use our collection of epistemic tools to analyze data, discover patterns, and make informed affirmations about reality.
+                    </p>
+
+                    <h3>What are Epistemic Tools?</h3>
+                    <p>
+                        An epistemic tool is any instrument, construct, or method used to represent aspects of reality and extract compressed descriptions at multiple levels. These tools enable the exploration of the space of possible affirmations regarding that reality.
+                    </p>
+
+                    <div class="highlight-box">
+                        <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-3">First Steps</h4>
+                        <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                            1. Visit the <a href="index.html">main tools page</a> to browse the collection<br>
+                            2. Use the search bar or category filters to find relevant tools<br>
+                            3. Click on any tool card to access its interactive interface<br>
+                            4. Explore the visualization and adjust parameters
+                        </p>
+                    </div>
+
+                    <h3>Understanding the Interface</h3>
+                    <p>Each tool in the toolbox provides:</p>
+                    <ul>
+                        <li><strong>Interactive Visualizations:</strong> Real-time graphical representations of your data.</li>
+                        <li><strong>Parameter Controls:</strong> Adjust settings to explore different analytical perspectives.</li>
+                        <li><strong>Epistemic Context:</strong> Explanations of what the tool reveals about reality.</li>
+                        <li><strong>Use Cases:</strong> Examples of when to apply the tool for maximum insight.</li>
+                    </ul>
+                </section>
+
+                <!-- Using the Tools -->
+                <section id="using-tools" class="content-card animate-in">
+                    <h2>Using the Tools</h2>
+                    <p>
+                        Each epistemic tool is designed to answer specific types of questions about your data.
+                    </p>
+
+                    <h3>Step 1: Define Your Question</h3>
+                    <p>Before selecting a tool, clarify what you want to understand:</p>
+                    <ul>
+                        <li>Are you looking for patterns or structure?</li>
+                        <li>Do you need to quantify uncertainty or variability?</li>
+                        <li>Are you exploring relationships between variables?</li>
+                    </ul>
+
+                    <h3>Step 2: Choose the Right Tool</h3>
+                    <p>Different tools are suited to different types of inquiry:</p>
+                    <div class="info-box">
+                        <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                            <strong>Pattern Detection:</strong> Clustering, Dimensionality Reduction<br>
+                            <strong>Statistical Analysis:</strong> Standard Deviation, Regression<br>
+                            <strong>Probabilistic Reasoning:</strong> Bayesian Inference, Monte Carlo
+                        </p>
+                    </div>
+
+                    <h3>Step 3: Interpret the Results</h3>
+                    <p>Interpret the output of each tool within its proper context:</p>
+                    <ul>
+                        <li>Examine both quantitative results and visual representations.</li>
+                        <li>Consider what the results <em>enable</em> you to affirm about reality.</li>
+                        <li>Use multiple tools to cross-validate insights.</li>
+                    </ul>
+                </section>
+
+                <!-- Best Practices -->
+                <section id="best-practices" class="content-card animate-in">
+                    <h2>Best Practices</h2>
+                    <p>To maximize the value derived from the Epistemic Toolbox, consider these guidelines:</p>
+
+                    <h3>Start Simple</h3>
+                    <p>Begin with basic descriptive statistics before advancing to complex methods.</p>
+
+                    <h3>Use Multiple Perspectives</h3>
+                    <p>Combine multiple approaches to build a comprehensive understanding.</p>
+
+                    <div class="warning-box">
+                        <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">Important Note</h4>
+                        <p class="text-sm mb-0" style="color: var(--fg-secondary);">
+                            Epistemic tools facilitate the exploration of what can be reasonably asserted based on evidence; however, they do not replace critical thinking or domain knowledge.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Technical Details -->
+                <section id="technical" class="content-card animate-in">
+                    <h2>Technical Details</h2>
+
+                    <h3>Data Format</h3>
+                    <p>Most tools accept common data formats, including CSV and JSON.</p>
+
+                    <h3>Data Privacy</h3>
+                    <p>
+                        All data processing occurs locally within your browser. No data is transmitted to external servers, ensuring your information remains private and secure.
+                    </p>
+                    
+                    <h3>Browsers Supported</h3>
+                    <p>Chrome, Firefox, Safari, and Edge (latest versions).</p>
+                </section>
+
+                <!-- FAQ -->
+                <section id="faq" class="content-card animate-in">
+                    <h2>Frequently Asked Questions</h2>
+
+                    <h3>What makes these tools "epistemic"?</h3>
+                    <p>
+                        These tools focus on representation, compression, and the exploration of the space of possible claims, rather than merely performing calculations.
+                    </p>
+
+                    <h3>Is there a limit to data size?</h3>
+                    <p>
+                        While there is no hard limit, very large datasets may impact performance. For large-scale production analysis, dedicated data science platforms are recommended.
+                    </p>
+                </section>
+
+                <!-- References -->
+                <section id="references" class="content-card animate-in">
+                    <h2>References</h2>
+                    <p>
+                        The following resources provide deeper theoretical foundations for the methodologies employed.
+                    </p>
+                    <ul>
+                        <li><a href="https://www.notion.so/Framework-334c0f5171ec803e8cfbe7f0bc02c575" target="_blank">Modelling Modelling Framework (Notion)</a></li>
+                    </ul>
+                </section>
+
             </div>
-
-            <!-- Getting Started -->
-            <section id="getting-started" class="content-card animate-in stagger-2">
-                <h2>Getting Started</h2>
-                <p>
-                    Welcome to the Epistemic Toolbox! This guide will help you understand how to use the collection of epistemic tools to analyze data, discover patterns, and make informed affirmations about reality.
-                </p>
-
-                <h3>What are Epistemic Tools?</h3>
-                <p>
-                    Epistemic tools are computational instruments that help us represent aspects of reality and extract compressed descriptions. Unlike simple calculators, these tools are designed to help you explore the <em>space of possible affirmations</em>—the set of all reasonable claims you can make about a given phenomenon based on available evidence.
-                </p>
-
-                <div class="highlight-box">
-                    <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">First Steps</h4>
-                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
-                        1. Visit the <a href="index.html">main tools page</a> to browse the collection<br>
-                        2. Use the search bar or category filters to find relevant tools<br>
-                        3. Click on any tool card to access its interactive interface<br>
-                        4. Explore the visualization and adjust parameters to see how results change
-                    </p>
-                </div>
-
-                <h3>Understanding the Interface</h3>
-                <p>
-                    Each tool in the toolbox provides:
-                </p>
-                <ul>
-                    <li><strong>Interactive Visualizations:</strong> Real-time graphical representations of your data and analysis results</li>
-                    <li><strong>Parameter Controls:</strong> Adjust settings to explore different analytical perspectives</li>
-                    <li><strong>Epistemic Context:</strong> Explanations of what the tool reveals about reality and how to interpret results</li>
-                    <li><strong>Use Cases:</strong> Examples of when to apply the tool for maximum insight</li>
-                </ul>
-            </section>
-
-            <!-- Using the Tools -->
-            <section id="using-tools" class="content-card animate-in stagger-3">
-                <h2>Using the Tools</h2>
-                <p>
-                    Each epistemic tool is designed to answer specific types of questions about your data. Here's how to approach using them effectively:
-                </p>
-
-                <h3>Step 1: Define Your Question</h3>
-                <p>
-                    Before selecting a tool, clarify what you want to understand about your data:
-                </p>
-                <ul>
-                    <li>Are you looking for patterns or structure?</li>
-                    <li>Do you need to quantify uncertainty or variability?</li>
-                    <li>Are you exploring relationships between variables?</li>
-                    <li>Do you want to test specific hypotheses?</li>
-                    <li>Are you analyzing temporal dynamics?</li>
-                </ul>
-
-                <h3>Step 2: Choose the Right Tool</h3>
-                <p>
-                    Different tools are suited to different types of inquiry. Use the category filters to narrow down options:
-                </p>
-                <div class="info-box">
-                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
-                        <strong>Pattern Detection:</strong> Clustering, Dimensionality Reduction, Network Analysis<br>
-                        <strong>Statistical Analysis:</strong> Standard Deviation, Regression Analysis, Hypothesis Testing<br>
-                        <strong>Probabilistic Reasoning:</strong> Bayesian Inference, Monte Carlo Simulation<br>
-                        <strong>Temporal Analysis:</strong> Time Series Analysis<br>
-                        <strong>Visual Exploration:</strong> Data Visualization
-                    </p>
-                </div>
-
-                <h3>Step 3: Prepare Your Data</h3>
-                <p>
-                    Most tools accept data in various formats. Consider:
-                </p>
-                <ul>
-                    <li>Ensure your data is clean and properly formatted</li>
-                    <li>Consider the scale and normalization of your variables</li>
-                    <li>Identify any missing values or outliers that might affect analysis</li>
-                    <li>Understand the type of data (numerical, categorical, temporal, etc.)</li>
-                </ul>
-
-                <h3>Step 4: Interpret the Results</h3>
-                <p>
-                    Each tool provides output that should be interpreted in context:
-                </p>
-                <ul>
-                    <li>Look at both the quantitative results and visual representations</li>
-                    <li>Consider what the results <em>enable</em> you to affirm about reality</li>
-                    <li>Be aware of the limitations and assumptions of each method</li>
-                    <li>Use multiple tools to cross-validate insights when possible</li>
-                </ul>
-
-                <div class="warning-box">
-                    <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">Important Note</h4>
-                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
-                        Epistemic tools help you explore what can be reasonably asserted based on evidence. They do not replace critical thinking, domain knowledge, or careful consideration of context. Always interpret results in light of your specific domain and question.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Tool Reference -->
-            <section id="tool-reference" class="content-card animate-in stagger-4">
-                <h2>Tool Reference</h2>
-                <p>
-                    Quick reference for the tools available in the Epistemic Toolbox:
-                </p>
-
-                <div class="tool-ref">
-                    <h4>Data Visualization</h4>
-                    <p>Transform data into perceptually interpretable forms for pattern exploration and insight discovery.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Visual</span>
-                        <span class="tag tag-secondary">Exploration</span>
-                        <span class="tag tag-secondary">Pattern Detection</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Standard Deviation</h4>
-                    <p>Quantify variability and spread in data, enabling affirmations about consistency and volatility.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Statistical</span>
-                        <span class="tag tag-secondary">Dispersion</span>
-                        <span class="tag tag-secondary">Quantitative</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Dimensionality Reduction</h4>
-                    <p>Identify latent structures and core dynamics by finding directions of maximum variation.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Statistical</span>
-                        <span class="tag tag-secondary">Pattern Detection</span>
-                        <span class="tag tag-secondary">Structure</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Regression Analysis</h4>
-                    <p>Model relationships between variables to understand causality, trends, and dependencies.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Statistical</span>
-                        <span class="tag tag-secondary">Prediction</span>
-                        <span class="tag tag-secondary">Causal</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Clustering</h4>
-                    <p>Partition data into groups based on similarity to identify emergent categories and structures.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Unsupervised</span>
-                        <span class="tag tag-secondary">Classification</span>
-                        <span class="tag tag-secondary">Structure</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Network Analysis</h4>
-                    <p>Map and quantify relationships between entities to understand connectivity and systemic structure.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Graph</span>
-                        <span class="tag tag-secondary">Connectivity</span>
-                        <span class="tag tag-secondary">Systemic</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Bayesian Inference</h4>
-                    <p>Update beliefs about reality in light of evidence to reason under uncertainty.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Probabilistic</span>
-                        <span class="tag tag-secondary">Uncertainty</span>
-                        <span class="tag tag-secondary">Reasoning</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Time Series Analysis</h4>
-                    <p>Analyze temporal data to detect trends, seasonality, and anomalies in dynamic processes.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Temporal</span>
-                        <span class="tag tag-secondary">Trends</span>
-                        <span class="tag tag-secondary">Dynamics</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Monte Carlo Simulation</h4>
-                    <p>Estimate behavior of complex systems under uncertainty through random sampling.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Stochastic</span>
-                        <span class="tag tag-secondary">Simulation</span>
-                        <span class="tag tag-secondary">Risk Analysis</span>
-                    </div>
-                </div>
-
-                <div class="tool-ref">
-                    <h4>Hypothesis Testing</h4>
-                    <p>Assess assumptions about reality to make affirmations about effects, differences, or associations.</p>
-                    <div class="tags">
-                        <span class="tag tag-primary">Statistical</span>
-                        <span class="tag tag-secondary">Significance</span>
-                        <span class="tag tag-secondary">Testing</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Best Practices -->
-            <section id="best-practices" class="content-card animate-in stagger-4">
-                <h2>Best Practices</h2>
-                <p>
-                    To get the most value from the Epistemic Toolbox, consider these guidelines:
-                </p>
-
-                <h3>Start Simple</h3>
-                <p>
-                    Begin with basic descriptive statistics and visualizations before moving to more complex methods. Simple tools often reveal the most important patterns.
-                </p>
-
-                <h3>Use Multiple Perspectives</h3>
-                <p>
-                    Different tools highlight different aspects of reality. Combine multiple approaches to build a more comprehensive understanding.
-                </p>
-
-                <h3>Consider Assumptions</h3>
-                <p>
-                    Each tool makes specific assumptions about data structure and distribution. Be aware of these assumptions and check whether your data satisfies them.
-                </p>
-
-                <h3>Iterate and Refine</h3>
-                <p>
-                    Analysis is often iterative. Use initial results to refine your questions and select more appropriate tools.
-                </p>
-
-                <h3>Document Your Process</h3>
-                <p>
-                    Keep track of which tools you used, what parameters you selected, and what insights you gained. This documentation is valuable for reproducibility and future analysis.
-                </p>
-
-                <h3>Question Your Results</h3>
-                <p>
-                    Always maintain critical thinking. Consider alternative explanations, check for artifacts or biases, and validate findings when possible.
-                </p>
-
-                <div class="highlight-box">
-                    <h4 class="font-mono text-sm text-[var(--accent-primary)] mb-2">The Epistemic Mindset</h4>
-                    <p class="text-sm mb-0" style="color: var(--fg-secondary);">
-                        Remember that these tools are instruments for exploration and insight. They help you navigate the space of possible affirmations, but the quality of your conclusions depends on thoughtful interpretation, domain expertise, and rigorous inquiry.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Technical Details -->
-            <section id="technical" class="content-card animate-in stagger-4">
-                <h2>Technical Details</h2>
-
-                <h3>Data Format</h3>
-                <p>
-                    Most tools accept data in common formats including:
-                </p>
-                <ul>
-                    <li>CSV (Comma-Separated Values)</li>
-                    <li>JSON (JavaScript Object Notation)</li>
-                    <li>Direct input through interactive forms</li>
-                </ul>
-
-                <h3>Browsers Supported</h3>
-                <p>
-                    The toolbox is designed to work with modern web browsers including:
-                </p>
-                <ul>
-                    <li>Chrome/Edge (latest)</li>
-                    <li>Firefox (latest)</li>
-                    <li>Safari (latest)</li>
-                    <li>Opera (latest)</li>
-                </ul>
-
-                <h3>Performance Considerations</h3>
-                <p>
-                    For best performance:
-                </p>
-                <ul>
-                    <li>Use a modern browser with JavaScript enabled</li>
-                    <li>Large datasets may take longer to process</li>
-                    <li>Some complex visualizations may be resource-intensive</li>
-                    <li>Consider downsampling very large datasets for initial exploration</li>
-                </ul>
-
-                <h3>Data Privacy</h3>
-                <p>
-                    All data processing happens locally in your browser. No data is sent to external servers, ensuring your data remains private and secure.
-                </p>
-            </section>
-
-            <!-- FAQ -->
-            <section id="faq" class="content-card animate-in stagger-4">
-                <h2>Frequently Asked Questions</h2>
-
-                <h3>What makes these tools "epistemic"?</h3>
-                <p>
-                    These tools are designed specifically to help you explore what can be reasonably affirmed about reality based on evidence. They focus on representation, compression, and the exploration of the space of possible claims, rather than just performing calculations.
-                </p>
-
-                <h3>Can I use these tools for professional research?</h3>
-                <p>
-                    Yes, these tools implement well-established statistical and computational methods. However, always ensure you understand the underlying assumptions and limitations of each method, and consider supplementing with domain-specific analysis when needed.
-                </p>
-
-                <h3>Is there a limit to data size?</h3>
-                <p>
-                    The toolbox is designed for interactive exploration. While there's no hard limit, very large datasets may affect performance. For production analysis of big data, consider using dedicated data science platforms.
-                </p>
-
-                <h3>How do I cite the Epistemic Toolbox?</h3>
-                <p>
-                    If you use the Epistemic Toolbox in your work, we appreciate acknowledgment. Please cite the project and the specific tools you used.
-                </p>
-
-                <h3>Can I request new tools?</h3>
-                <p>
-                    Yes! We welcome suggestions for new epistemic tools. Please contact us with your ideas, and we'll consider adding them to the collection.
-                </p>
-
-                <h3>Are there tutorials available?</h3>
-                <p>
-                    Each tool includes its own documentation and use cases. Additionally, you can explore the <a href="about.html">About page</a> for more context on the philosophy behind the toolbox, and the linked <a href="https://www.notion.so/Framework-334c0f5171ec803e8cfbe7f0bc02c575?source=copy_link" target="_blank">Modelling Modelling</a> documentation for deeper theoretical foundations.
-                </p>
-            </section>
-
-            <div class="accent-line animate-in stagger-4"></div>
-
-            References:
-
-            <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#" class="font-mono text-xs text-[var(--accent-primary)] hover:text-white transition-colors duration-300 flex items-center gap-2"><span>Affirmation Space</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
-                        <a href="#" class="font-mono text-xs text-[var(--accent-primary)] hover:text-white transition-colors duration-300 flex items-center gap-2"><span>Modelling Modelling</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
-            </div>
-
-            <!-- Footer -->
-            <footer class="text-center py-8 animate-in stagger-4">
-                <p class="font-mono text-sm text-[var(--fg-muted)]">
-                    Explore. Analyze. Understand.
-                </p>
-                <div class="flex justify-center gap-4 mt-4">
-                    <a href="index.html" class="font-mono text-xs text-[var(--fg-muted)] hover:text-[var(--accent-primary)]">Tools</a>
-                    <a href="about.html" class="font-mono text-xs text-[var(--fg-muted)] hover:text-[var(--accent-primary)]">About</a>
-                </div>
-            </footer>
         </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="footer-bg-fade"></div>
+        <div class="footer-grid">
+            <!-- Grid cell 1: Empty on desktop, pushes content to align -->
+            <div class="hidden md:block"></div>
+            
+            <div class="footer-inner" style="margin: 0; width: 100%; justify-content: space-between;">
+                <div class="footer-brand-group">
+                    <span class="footer-brand">Epistemic Toolbox</span>
+                </div>
+                <div class="footer-links">
+                    <a href="about.html" class="footer-link">About</a>
+                    <a href="docs.html" class="footer-link">Documentation</a>
+                    <button class="footer-link" id="footer-help-btn">Help</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Help Modal -->
+    <div class="help-overlay" id="help-overlay"></div>
+    <div class="help-modal-container" id="help-modal-container" role="dialog" aria-modal="true">
+        <div class="help-modal">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-display text-lg">Navigation Help</h3>
+                <button class="text-[var(--fg-muted)] hover:text-white transition-colors" id="modal-close" aria-label="Close modal">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="text-sm text-[var(--fg-secondary)]">
+                Use the sidebar on the left to navigate through documentation sections. On mobile devices, tap the floating menu icon in the bottom-right corner to reveal the navigation menu.
+            </p>
+            <div class="mt-4 text-center">
+                 <span class="text-xs text-[var(--fg-muted)]">Press <code class="text-xs">ESC</code> to close</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Sidebar Toggle
+        const sidebar = document.getElementById('docs-sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Active Link Highlighting on Scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar-link');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-30% 0px -70% 0px' });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Help Modal Logic
+        const helpBtn = document.getElementById('footer-help-btn');
+        const modal = document.getElementById('help-modal-container');
+        const overlay = document.getElementById('help-overlay');
+        const closeBtn = document.getElementById('modal-close');
+
+        function openModal() {
+            modal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        helpBtn.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
 </body>
 </html>
