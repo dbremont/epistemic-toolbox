@@ -28,7 +28,7 @@
             --bg-elevated: #151b24;
             --bg-card: rgba(20, 26, 35, 0.65);
             --fg-primary: #f0f4f8;
-            --fg-secondary: #b0b8c4; /* Brightened for better readability */
+            --fg-secondary: #b0b8c4;
             --fg-muted: #4a5568;
             --accent-primary: #d4a84b;
             --accent-secondary: #5ec4b2;
@@ -45,8 +45,8 @@
             font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-deep);
             color: var(--fg-primary);
-            line-height: 1.8; /* Increased for readability */
-            font-size: 1.125rem; /* Increased base size */
+            line-height: 1.8;
+            font-size: 1.125rem;
             overflow-x: hidden;
             min-height: 100vh;
             display: flex;
@@ -57,7 +57,6 @@
 
         main { flex: 1; }
 
-        /* Improved Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { 
@@ -70,7 +69,6 @@
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Enhanced Background */
         .bg-atmosphere {
             position: fixed; inset: 0; z-index: -2;
             background: 
@@ -108,7 +106,7 @@
             opacity: 0.6;
         }
 
-        /* Navigation */
+        /* Navigation & Footer Shared Style */
         .nav-blur {
             background: rgba(8, 10, 15, 0.85);
             backdrop-filter: blur(24px) saturate(180%);
@@ -185,14 +183,12 @@
         /* Documentation Layout */
         .docs-layout {
             display: grid;
-            /* Fixed sidebar, fluid content, but content won't expand infinitely */
             grid-template-columns: 260px minmax(0, 1fr);
             gap: 4rem;
             max-width: 1200px; 
             margin: 0 auto;
         }
         
-        /* Align Nav with Layout */
         .nav-layout {
             display: grid;
             grid-template-columns: 260px 1fr;
@@ -249,13 +245,11 @@
             font-weight: 500;
         }
 
-        /* Content Wrapper for Readability */
         .content-col {
-            max-width: 780px; /* Optimal reading width */
+            max-width: 780px;
             padding-bottom: 4rem;
         }
 
-        /* Mobile Sidebar Toggle */
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -299,7 +293,6 @@
             .nav-layout {
                 padding: 0 1.5rem;
             }
-            /* Reset brand position on mobile */
             .nav-layout > .brand-container {
                 margin-left: 0;
             }
@@ -324,15 +317,6 @@
             border-radius: 16px;
             background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 50%);
             pointer-events: none;
-        }
-
-        .accent-line {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            position: relative;
-            overflow: hidden;
-            opacity: 0.6;
-            margin: 2rem 0;
         }
 
         h1 {
@@ -367,7 +351,7 @@
 
         p {
             color: var(--fg-secondary);
-            margin-bottom: 1.75rem; /* Increased spacing */
+            margin-bottom: 1.75rem;
             line-height: 1.8;
         }
 
@@ -406,7 +390,6 @@
             border-bottom-color: var(--accent-secondary);
         }
 
-        /* Focus States for Accessibility */
         a:focus-visible, button:focus-visible {
             outline: 2px solid var(--accent-primary);
             outline-offset: 2px;
@@ -415,7 +398,7 @@
 
         code {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9em; /* Relative to text size */
+            font-size: 0.9em;
             background: rgba(255, 255, 255, 0.08);
             padding: 0.2rem 0.5rem;
             border-radius: 4px;
@@ -467,7 +450,6 @@
             margin: 2.5rem 0;
         }
 
-        /* Animations */
         .animate-in {
             opacity: 0;
             transform: translateY(16px);
@@ -481,76 +463,39 @@
         .stagger-1 { animation-delay: 0.05s; }
         .stagger-2 { animation-delay: 0.1s; }
 
-        /* Footer - Refined & Elegant */
+        /* Footer - Updated to match Header Style */
         .site-footer {
             position: relative;
-            padding: 4rem 0 2rem;
+            padding: 0;
             margin-top: auto;
+            background: rgba(8, 10, 15, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-top: 1px solid var(--border-subtle);
         }
 
-        .footer-bg-fade {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60%;
-            background: linear-gradient(to top, var(--bg-deep), transparent);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .footer-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-elevated), transparent);
-            margin-bottom: 2.5rem;
-            opacity: 0.5;
-        }
-        
         .footer-inner {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 4rem;
             max-width: 1200px;
             margin: 0 auto;
-            width: 100%;
-            padding: 0 1.5rem;
-        }
-        
-        @media (max-width: 900px) {
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                text-align: center;
-            }
-        }
-        
-        .footer-brand-group {
+            padding: 0 2rem;
+            height: 72px; /* Match header height */
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            justify-content: space-between;
+            align-items: center;
         }
-
+        
         .footer-brand {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--fg-primary);
             letter-spacing: -0.02em;
         }
-
+        
         .footer-links {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }
         
         .footer-link {
@@ -585,6 +530,15 @@
         
         .footer-link:hover::after {
             width: 100%;
+        }
+
+        @media (max-width: 640px) {
+            .footer-inner {
+                flex-direction: column;
+                height: auto;
+                padding: 1.5rem 1rem;
+                gap: 1.5rem;
+            }
         }
 
         /* Help Modal */
@@ -624,12 +578,10 @@
     <div class="bg-pattern"></div>
     <div class="bg-noise"></div>
 
-    <!-- Nav: Uses matching Grid Layout -->
+    <!-- Nav -->
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
         <div class="nav-layout h-full items-center">
-            <!-- Empty div to occupy the first grid cell (sidebar width) -->
             <div class="hidden md:block"></div>
-            
             <a href="index.html" class="brand-container">
                 <div class="brand-icon">
                     <svg viewBox="0 0 24 24">
@@ -643,7 +595,6 @@
         </div>
     </nav>
 
-    <!-- Mobile Sidebar Toggle Button -->
     <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -653,7 +604,6 @@
     <main class="pt-28 pb-16 px-6">
         <div class="docs-layout">
             
-            <!-- Sidebar Navigation -->
             <aside class="docs-sidebar" id="docs-sidebar">
                 <div class="sidebar-title">Documentation</div>
                 <nav>
@@ -666,7 +616,6 @@
                 </nav>
             </aside>
 
-            <!-- Main Content -->
             <div class="content-col">
                 
                 <header class="mb-12 animate-in relative">
@@ -677,7 +626,6 @@
                     </p>
                 </header>
 
-                <!-- Getting Started -->
                 <section id="getting-started" class="content-card animate-in stagger-1">
                     <h2>Getting Started</h2>
                     <p>
@@ -709,7 +657,6 @@
                     </ul>
                 </section>
 
-                <!-- Using the Tools -->
                 <section id="using-tools" class="content-card animate-in">
                     <h2>Using the Tools</h2>
                     <p>
@@ -743,7 +690,6 @@
                     </ul>
                 </section>
 
-                <!-- Best Practices -->
                 <section id="best-practices" class="content-card animate-in">
                     <h2>Best Practices</h2>
                     <p>To maximize the value derived from the Epistemic Toolbox, consider these guidelines:</p>
@@ -762,7 +708,6 @@
                     </div>
                 </section>
 
-                <!-- Technical Details -->
                 <section id="technical" class="content-card animate-in">
                     <h2>Technical Details</h2>
 
@@ -778,7 +723,6 @@
                     <p>Chrome, Firefox, Safari, and Edge (latest versions).</p>
                 </section>
 
-                <!-- FAQ -->
                 <section id="faq" class="content-card animate-in">
                     <h2>Frequently Asked Questions</h2>
 
@@ -793,7 +737,6 @@
                     </p>
                 </section>
 
-                <!-- References -->
                 <section id="references" class="content-card animate-in">
                     <h2>References</h2>
                     <p>
@@ -808,26 +751,18 @@
         </div>
     </main>
 
+    <!-- Updated Footer -->
     <footer class="site-footer">
-        <div class="footer-bg-fade"></div>
-        <div class="footer-grid">
-            <!-- Grid cell 1: Empty on desktop, pushes content to align -->
-            <div class="hidden md:block"></div>
-            
-            <div class="footer-inner" style="margin: 0; width: 100%; justify-content: space-between;">
-                <div class="footer-brand-group">
-                    <span class="footer-brand">Epistemic Toolbox</span>
-                </div>
-                <div class="footer-links">
-                    <a href="about.html" class="footer-link">About</a>
-                    <a href="docs.html" class="footer-link">Documentation</a>
-                    <button class="footer-link" id="footer-help-btn">Help</button>
-                </div>
+        <div class="footer-inner">
+            <div class="footer-brand" style="margin-left: 20%;">Epistemic Toolbox</div>
+            <div class="footer-links">
+                <a href="about.html" class="footer-link">About</a>
+                <a href="docs.html" class="footer-link">Documentation</a>
+                <button class="footer-link" id="footer-help-btn">Help</button>
             </div>
         </div>
     </footer>
 
-    <!-- Help Modal -->
     <div class="help-overlay" id="help-overlay"></div>
     <div class="help-modal-container" id="help-modal-container" role="dialog" aria-modal="true">
         <div class="help-modal">
@@ -847,7 +782,6 @@
     </div>
 
     <script>
-        // Mobile Sidebar Toggle
         const sidebar = document.getElementById('docs-sidebar');
         const toggleBtn = document.getElementById('sidebar-toggle');
         
@@ -855,7 +789,6 @@
             sidebar.classList.toggle('open');
         });
 
-        // Active Link Highlighting on Scroll
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.sidebar-link');
 
@@ -876,7 +809,6 @@
             observer.observe(section);
         });
 
-        // Help Modal Logic
         const helpBtn = document.getElementById('footer-help-btn');
         const modal = document.getElementById('help-modal-container');
         const overlay = document.getElementById('help-overlay');
