@@ -143,5 +143,18 @@
             "affirmation-testing",
             "causal-inference"
         ]
+    },
+    {
+        "name": "Law of Large Numbers",
+        "description": "A fundamental theorem in probability stating that as the number of trials increases, the sample average converges to the expected value. It supports reasoning about statistical stability, convergence, and the reliability of empirical estimates.",
+        "url": "https://www.bremontix.xyz/toolbox/law-of-large-numbers.html",
+        "svg-icon": "icon-hypothesis",
+        "tags": [
+            "theory",
+            "statistics",
+            "probability",
+            "convergence",
+            "estimation"
+        ]
     }
 ]
