@@ -402,6 +402,26 @@
             margin: 0;
         }
 
+        .term-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .term-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.6rem;
+            background: rgba(94, 196, 178, 0.1);
+            border: 1px solid rgba(94, 196, 178, 0.25);
+            border-radius: 4px;
+            color: var(--accent-secondary);
+        }
+
         /* Abececary Map Tool */
         .abececary-map {
             display: grid;
@@ -447,6 +467,12 @@
             pointer-events: none;
         }
 
+        /* Search Tool */
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
         .search-tool {
             width: 100%;
             background: rgba(0, 0, 0, 0.3);
@@ -456,7 +482,6 @@
             font-size: 1rem;
             color: var(--fg-primary);
             font-family: 'Source Sans 3', sans-serif;
-            margin-bottom: 1.5rem;
             transition: all 0.3s ease;
         }
 
@@ -465,6 +490,113 @@
             outline: none;
             border-color: var(--accent-primary);
             background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Search Dropdown - Inline Style */
+        .search-dropdown {
+            margin-top: 0;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.25s ease,
+                        margin 0.25s ease;
+        }
+
+        .search-dropdown.visible {
+            max-height: 400px;
+            opacity: 1;
+            margin-top: 1rem;
+            overflow-y: auto;
+        }
+
+        .dropdown-header {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--fg-muted);
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-results {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 168, 75, 0.08);
+            border-color: rgba(212, 168, 75, 0.2);
+        }
+
+        .dropdown-item:focus {
+            outline: none;
+            background: rgba(212, 168, 75, 0.12);
+            border-color: rgba(212, 168, 75, 0.3);
+        }
+
+        .dropdown-item-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--fg-primary);
+        }
+
+        .dropdown-item-desc {
+            font-size: 0.85rem;
+            color: var(--fg-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .dropdown-item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
+        }
+
+        .dropdown-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.15rem 0.45rem;
+            background: rgba(94, 196, 178, 0.1);
+            border-radius: 3px;
+            color: var(--accent-secondary);
+        }
+
+        .dropdown-empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--fg-muted);
+            font-size: 0.95rem;
+        }
+
+        .dropdown-empty-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 1rem;
+            opacity: 0.4;
         }
 
         /* Footer */
@@ -790,6 +922,19 @@
 
         /* Hidden utility for filtering */
         .hidden-term { display: none; }
+
+        /* Loading state */
+        .loading-skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body>
@@ -819,20 +964,8 @@
             
             <aside class="docs-sidebar" id="docs-sidebar">
                 <div class="sidebar-title">Navigation</div>
-                <nav>
-                    <a href="#A" class="sidebar-link">A</a>
-                    <a href="#B" class="sidebar-link">B</a>
-                    <a href="#C" class="sidebar-link">C</a>
-                    <a href="#D" class="sidebar-link">D</a>
-                    <a href="#E" class="sidebar-link">E</a>
-                    <a href="#H" class="sidebar-link">H</a>
-                    <a href="#I" class="sidebar-link">I</a>
-                    <a href="#M" class="sidebar-link">M</a>
-                    <a href="#O" class="sidebar-link">O</a>
-                    <a href="#P" class="sidebar-link">P</a>
-                    <a href="#R" class="sidebar-link">R</a>
-                    <a href="#S" class="sidebar-link">S</a>
-                    <a href="#V" class="sidebar-link">V</a>
+                <nav id="sidebar-nav">
+                    <!-- Dynamically populated -->
                 </nav>
             </aside>
 
@@ -854,167 +987,26 @@
                     <br/>
                     <p class="text-sm text-[var(--fg-muted)] -mt-4 mb-4">Filter definitions or jump to specific letters.</p>
                     
-                    <input type="text" id="term-search" class="search-tool" placeholder="Search terms (e.g., 'veritas', 'model')...">
+                    <div class="search-container">
+                        <input type="text" id="term-search" class="search-tool" placeholder="Search terms (e.g., 'veritas', 'model')..." autocomplete="off">
+                        
+                        <!-- Search Dropdown -->
+                        <div id="search-dropdown" class="search-dropdown">
+                            <div class="dropdown-header" id="dropdown-header">Results</div>
+                            <div class="dropdown-results" id="dropdown-results">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="abececary-map" id="alphabet-grid">
-                        <a href="#A" class="letter-btn has-terms">A</a>
-                        <a href="#B" class="letter-btn has-terms">B</a>
-                        <a href="#C" class="letter-btn has-terms">C</a>
-                        <a href="#D" class="letter-btn has-terms">D</a>
-                        <a href="#E" class="letter-btn has-terms">E</a>
-                        <span class="letter-btn">F</span>
-                        <span class="letter-btn">G</span>
-                        <a href="#H" class="letter-btn has-terms">H</a>
-                        <a href="#I" class="letter-btn has-terms">I</a>
-                        <span class="letter-btn">J</span>
-                        <span class="letter-btn">K</span>
-                        <span class="letter-btn">L</span>
-                        <a href="#M" class="letter-btn has-terms">M</a>
-                        <a href="#O" class="letter-btn has-terms">O</a>
-                        <span class="letter-btn">N</span>
-                        <a href="#P" class="letter-btn has-terms">P</a>
-                        <span class="letter-btn">Q</span>
-                        <a href="#R" class="letter-btn has-terms">R</a>
-                        <a href="#S" class="letter-btn has-terms">S</a>
-                        <span class="letter-btn">T</span>
-                        <a href="#V" class="letter-btn has-terms">V</a>
-                        <span class="letter-btn">W</span>
-                        <span class="letter-btn">X</span>
-                        <span class="letter-btn">Y</span>
-                        <span class="letter-btn">Z</span>
+                        <!-- Dynamically populated -->
                     </div>
                 </section>
 
                 <!-- Glossary Content -->
                 <div id="glossary-container">
-                    
-                    <section id="A" class="content-card animate-in">
-                        <h2><span class="letter-badge">A</span>A</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Abduction</span>
-                            <p>A form of logical inference which starts with an observation or set of observations then seeks to find the simplest and most likely explanation. In the toolbox, this relates to generating hypotheses from data artifacts.</p>
-                        </div>
-
-                        <div class="term-entry">
-                            <span class="term-title">Artifact</span>
-                            <p>A construct or object produced by the application of an epistemic tool. Artifacts are the "findings" or compressed descriptions extracted from the raw data of reality.</p>
-                        </div>
-                    </section>
-
-                    <section id="B" class="content-card animate-in">
-                        <h2><span class="letter-badge">B</span>B</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Bayesian Inference</span>
-                            <p>A method of statistical inference in which Bayes' theorem is used to update the probability for a hypothesis as more evidence or information becomes available. It is a fundamental tool for modeling belief states.</p>
-                        </div>
-                    </section>
-
-                    <section id="C" class="content-card animate-in">
-                        <h2><span class="letter-badge">C</span>C</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Compression</span>
-                            <p>The process of reducing the complexity of a dataset or phenomenon while retaining its essential informational structure. In the Epistemic Toolbox, compression is the act of distilling reality into manageable models.</p>
-                        </div>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Construct</span>
-                            <p>An explanatory variable that is not directly observable but is inferred from other data. Constructs are the building blocks of theoretical models.</p>
-                        </div>
-                    </section>
-
-                    <section id="D" class="content-card animate-in">
-                        <h2><span class="letter-badge">D</span>D</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Dimensionality</span>
-                            <p>The number of parameters or variables in a model. High dimensionality often requires tools for reduction (like PCA) to make the data tractable for human understanding.</p>
-                        </div>
-                    </section>
-
-                    <section id="E" class="content-card animate-in">
-                        <h2><span class="letter-badge">E</span>E</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Epistemology</span>
-                            <p>The branch of philosophy concerned with the theory of knowledge. It studies the nature, origin, and scope of knowledge and justified belief. This toolbox is an exercise in applied epistemology.</p>
-                        </div>
-                    </section>
-
-                    <section id="H" class="content-card animate-in">
-                        <h2><span class="letter-badge">H</span>H</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Heuristic</span>
-                            <p>Any approach to problem solving or self-discovery that employs a practical method that is not guaranteed to be optimal, perfect, or rational, but is nevertheless sufficient for reaching an immediate, short-term goal or approximation.</p>
-                        </div>
-                    </section>
-
-                    <section id="I" class="content-card animate-in">
-                        <h2><span class="letter-badge">I</span>I</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Inference</span>
-                            <p>The process of drawing conclusions from premises or evidence. It is the mechanism by which we move from raw data to meaningful affirmations about reality.</p>
-                        </div>
-                    </section>
-
-                    <section id="M" class="content-card animate-in">
-                        <h2><span class="letter-badge">M</span>M</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Model</span>
-                            <p>A simplified representation of a system or phenomenon. Models are the primary output of the toolbox's analysis tools, serving as compressed descriptions of reality.</p>
-                        </div>
-                    </section>
-
-                    <section id="O" class="content-card animate-in">
-                        <h2><span class="letter-badge">O</span>O</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Ontology</span>
-                            <p>The philosophical study of the nature of being, becoming, existence, or reality. In the context of the toolbox, it asks "What actually exists?" before we apply tools to measure it.</p>
-                        </div>
-                    </section>
-
-                    <section id="P" class="content-card animate-in">
-                        <h2><span class="letter-badge">P</span>P</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Pattern Recognition</span>
-                            <p>The automated recognition of patterns and regularities in data. It is a fundamental capability of many tools in the toolbox, used to identify structure in noise.</p>
-                        </div>
-                    </section>
-
-                    <section id="R" class="content-card animate-in">
-                        <h2><span class="letter-badge">R</span>R</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Reality</span>
-                            <p>The state of things as they actually exist, as opposed to an idealistic or notional idea of them. The toolbox treats reality as the "source code" that tools attempt to read and interpret.</p>
-                        </div>
-                    </section>
-
-                    <section id="S" class="content-card animate-in">
-                        <h2><span class="letter-badge">S</span>S</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Signal-to-Noise Ratio</span>
-                            <p>A measure used in science and engineering that compares the level of a desired signal to the level of background noise. It is a metaphor for distinguishing truth (veritas) from distraction.</p>
-                        </div>
-                    </section>
-
-                    <section id="V" class="content-card animate-in">
-                        <h2><span class="letter-badge">V</span>V</h2>
-                        
-                        <div class="term-entry">
-                            <span class="term-title">Veritas</span>
-                            <p>The Roman goddess of truth, and in this toolbox, the ultimate alignment goal. It represents the objective state of affairs that our tools and models attempt to approximate.</p>
-                        </div>
-                    </section>
-
+                    <!-- Dynamically populated -->
                 </div>
             </div>
         </div>
@@ -1067,7 +1059,7 @@
                 </div>
                 <div class="help-feature-content">
                     <h4>Instant Search</h4>
-                    <p>Type keywords in the search bar to filter terms in real-time. Matching definitions appear instantly.</p>
+                    <p>Type keywords to see matching terms. Results appear in an inline dropdown.</p>
                 </div>
             </div>
             
@@ -1117,48 +1109,218 @@
     </div>
 
     <script>
-        // Intersection Observer for Active Links
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.sidebar-link');
-        const letterBtns = document.querySelectorAll('.letter-btn');
+        // State
+        let terminologyData = [];
+        let groupedTerms = {};
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    
-                    navLinks.forEach(link => {
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === '#' + id) {
-                            link.classList.add('active');
-                        }
-                    });
-                    
-                    letterBtns.forEach(btn => {
-                        btn.classList.remove('active');
-                        if (btn.getAttribute('href') === '#' + id || btn.textContent === id) {
-                            btn.classList.add('active');
-                        }
-                    });
-                }
-            });
-        }, { rootMargin: '-30% 0px -70% 0px' });
-
-        sections.forEach(section => observer.observe(section));
-
-        // Search Tool Functionality
+        // DOM Elements
+        const glossaryContainer = document.getElementById('glossary-container');
+        const sidebarNav = document.getElementById('sidebar-nav');
+        const alphabetGrid = document.getElementById('alphabet-grid');
         const searchInput = document.getElementById('term-search');
-        const termEntries = document.querySelectorAll('.term-entry');
-        const glossarySections = document.querySelectorAll('#glossary-container > section');
+        const searchDropdown = document.getElementById('search-dropdown');
+        const dropdownHeader = document.getElementById('dropdown-header');
+        const dropdownResults = document.getElementById('dropdown-results');
 
+        // Load terminology data
+        async function loadTerminology() {
+            try {
+                const response = await fetch('data/terminology.json');
+                if (!response.ok) throw new Error('Failed to load terminology');
+                terminologyData = await response.json();
+                
+                // Group by first letter
+                terminologyData.forEach(entry => {
+                    const letter = entry.term.charAt(0).toUpperCase();
+                    if (!groupedTerms[letter]) groupedTerms[letter] = [];
+                    groupedTerms[letter].push(entry);
+                });
+                
+                renderGlossary();
+                renderSidebar();
+                renderAlphabetGrid();
+                initObserver();
+            } catch (error) {
+                console.error('Error loading terminology:', error);
+                glossaryContainer.innerHTML = `
+                    <section class="content-card">
+                        <p style="color: var(--accent-primary);">Unable to load terminology data. Please ensure data/terminology.json exists.</p>
+                    </section>
+                `;
+            }
+        }
+
+        // Render glossary sections
+        function renderGlossary() {
+            glossaryContainer.innerHTML = '';
+            
+            const letters = Object.keys(groupedTerms).sort();
+            
+            letters.forEach((letter, index) => {
+                const section = document.createElement('section');
+                section.id = letter;
+                section.className = 'content-card animate-in';
+                section.style.animationDelay = `${0.1 + index * 0.05}s`;
+                
+                let html = `<h2><span class="letter-badge">${letter}</span>${letter}</h2>`;
+                
+                groupedTerms[letter].sort((a, b) => a.term.localeCompare(b.term)).forEach(entry => {
+                    html += `
+                        <div class="term-entry" data-term="${entry.term.toLowerCase()}">
+                            <span class="term-title">${entry.term}</span>
+                            ${entry.tags && entry.tags.length ? `
+                                <div class="term-tags">
+                                    ${entry.tags.map(tag => `<span class="term-tag">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            <p>${entry.description}</p>
+                        </div>
+                    `;
+                });
+                
+                section.innerHTML = html;
+                glossaryContainer.appendChild(section);
+            });
+        }
+
+        // Render sidebar navigation
+        function renderSidebar() {
+            const letters = Object.keys(groupedTerms).sort();
+            sidebarNav.innerHTML = letters.map(letter => 
+                `<a href="#${letter}" class="sidebar-link">${letter}</a>`
+            ).join('');
+        }
+
+        // Render alphabet grid
+        function renderAlphabetGrid() {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const lettersWithTerms = new Set(Object.keys(groupedTerms));
+            
+            alphabetGrid.innerHTML = alphabet.map(letter => {
+                const hasTerms = lettersWithTerms.has(letter);
+                if (hasTerms) {
+                    return `<a href="#${letter}" class="letter-btn has-terms">${letter}</a>`;
+                }
+                return `<span class="letter-btn">${letter}</span>`;
+            }).join('');
+        }
+
+        // Intersection Observer for active states
+        function initObserver() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.sidebar-link');
+            const letterBtns = document.querySelectorAll('.letter-btn');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                        
+                        letterBtns.forEach(btn => {
+                            const btnLetter = btn.getAttribute('href')?.slice(1) || btn.textContent;
+                            btn.classList.toggle('active', btnLetter === id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-30% 0px -70% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+        }
+
+        // Search functionality
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
+            
+            if (query.length === 0) {
+                searchDropdown.classList.remove('visible');
+                clearTermFilters();
+                return;
+            }
+            
+            // Filter terms
+            const matches = terminologyData.filter(entry => {
+                const termMatch = entry.term.toLowerCase().includes(query);
+                const descMatch = entry.description.toLowerCase().includes(query);
+                const tagMatch = entry.tags && entry.tags.some(tag => tag.toLowerCase().includes(query));
+                return termMatch || descMatch || tagMatch;
+            });
+            
+            // Render dropdown
+            renderDropdown(matches, query);
+            searchDropdown.classList.add('visible');
+            
+            // Also filter glossary
+            filterGlossary(query);
+        });
 
+        function renderDropdown(matches, query) {
+            dropdownHeader.textContent = `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${query}"`;
+            
+            if (matches.length === 0) {
+                dropdownResults.innerHTML = `
+                    <div class="dropdown-empty">
+                        <svg class="dropdown-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <p>No terms found matching your search.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            dropdownResults.innerHTML = matches.slice(0, 8).map(entry => `
+                <div class="dropdown-item" tabindex="0" data-term="${entry.term}">
+                    <span class="dropdown-item-title">${entry.term}</span>
+                    <span class="dropdown-item-desc">${entry.description}</span>
+                    ${entry.tags && entry.tags.length ? `
+                        <div class="dropdown-item-tags">
+                            ${entry.tags.map(tag => `<span class="dropdown-tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            // Add click handlers
+            dropdownResults.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', () => scrollToTerm(item.dataset.term));
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') scrollToTerm(item.dataset.term);
+                });
+            });
+        }
+
+        function scrollToTerm(term) {
+            const termEntry = document.querySelector(`.term-entry[data-term="${term.toLowerCase()}"]`);
+            if (termEntry) {
+                const section = termEntry.closest('section');
+                if (section) {
+                    section.style.display = 'block';
+                }
+                termEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                termEntry.style.background = 'rgba(212, 168, 75, 0.1)';
+                setTimeout(() => {
+                    termEntry.style.background = '';
+                }, 2000);
+            }
+            searchDropdown.classList.remove('visible');
+            searchInput.blur();
+        }
+
+        function filterGlossary(query) {
+            const termEntries = document.querySelectorAll('.term-entry');
+            const glossarySections = document.querySelectorAll('#glossary-container > section');
+            
             termEntries.forEach(entry => {
                 const title = entry.querySelector('.term-title').textContent.toLowerCase();
                 const desc = entry.querySelector('p').textContent.toLowerCase();
+                const tags = Array.from(entry.querySelectorAll('.term-tag')).map(t => t.textContent.toLowerCase()).join(' ');
                 
-                if (title.includes(query) || desc.includes(query)) {
+                if (title.includes(query) || desc.includes(query) || tags.includes(query)) {
                     entry.classList.remove('hidden-term');
                 } else {
                     entry.classList.add('hidden-term');
@@ -1167,12 +1329,24 @@
 
             glossarySections.forEach(section => {
                 const visibleTerms = section.querySelectorAll('.term-entry:not(.hidden-term)');
-                if (visibleTerms.length === 0 && query !== '') {
-                    section.style.display = 'none';
-                } else {
-                    section.style.display = 'block';
-                }
+                section.style.display = visibleTerms.length === 0 ? 'none' : 'block';
             });
+        }
+
+        function clearTermFilters() {
+            document.querySelectorAll('.term-entry').forEach(entry => {
+                entry.classList.remove('hidden-term');
+            });
+            document.querySelectorAll('#glossary-container > section').forEach(section => {
+                section.style.display = 'block';
+            });
+        }
+
+        // Close dropdown on click outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.classList.remove('visible');
+            }
         });
 
         // Help Modal
@@ -1200,8 +1374,13 @@
         overlay.addEventListener('click', closeModal);
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                closeModal();
+            if (e.key === 'Escape') {
+                if (modal.classList.contains('active')) {
+                    closeModal();
+                }
+                if (searchDropdown.classList.contains('visible')) {
+                    searchDropdown.classList.remove('visible');
+                }
             }
             // Slash key to focus search
             if (e.key === '/' && document.activeElement !== searchInput) {
@@ -1209,6 +1388,8 @@
                 searchInput.focus();
             }
         });
+
+        // Initialize
+        loadTerminology();
     </script>
 </body>
-</html>
