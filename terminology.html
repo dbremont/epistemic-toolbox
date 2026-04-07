@@ -286,7 +286,7 @@
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            margin-top: 3.5rem; /* Space between letter groups */
+            margin-top: 3.5rem;
             color: var(--accent-primary);
             border-bottom: 1px solid var(--border-subtle);
             padding-bottom: 0.75rem;
@@ -536,6 +536,222 @@
             width: 100%;
         }
 
+        /* Help Modal Styles */
+        .help-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0);
+            z-index: 100;
+            pointer-events: none;
+            transition: background 0.4s ease, backdrop-filter 0.4s ease;
+        }
+
+        .help-overlay.active {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            pointer-events: auto;
+        }
+
+        .help-modal-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 101;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .help-modal-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .help-modal {
+            position: relative;
+            width: 90%;
+            max-width: 520px;
+            background: linear-gradient(165deg, rgba(20, 28, 38, 0.95) 0%, rgba(12, 17, 23, 0.98) 100%);
+            border: 1px solid var(--border-elevated);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 100px rgba(212, 168, 75, 0.08);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .help-modal-container.active .help-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .help-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 168, 75, 0.4), transparent);
+        }
+
+        .help-modal-glow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(ellipse at center, rgba(212, 168, 75, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            filter: blur(40px);
+        }
+
+        .help-modal-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            color: var(--fg-muted);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .help-modal-close:hover {
+            background: rgba(212, 168, 75, 0.15);
+            border-color: rgba(212, 168, 75, 0.3);
+            color: var(--accent-primary);
+            transform: rotate(90deg);
+        }
+
+        .help-modal-close svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+        }
+
+        .help-modal-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 168, 75, 0.1);
+            border: 1px solid rgba(212, 168, 75, 0.25);
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+        }
+
+        .help-modal-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent-primary);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .help-modal h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--fg-primary);
+            margin: 0 0 0.5rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        .help-modal-subtitle {
+            font-size: 0.95rem;
+            color: var(--fg-muted);
+            margin-bottom: 2rem;
+        }
+
+        .help-feature {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.25s ease;
+        }
+
+        .help-feature:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-elevated);
+        }
+
+        .help-feature-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(94, 196, 178, 0.1);
+            border-radius: 10px;
+        }
+
+        .help-feature-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent-secondary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .help-feature-content h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--fg-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .help-feature-content p {
+            font-size: 0.875rem;
+            color: var(--fg-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .help-shortcuts {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .help-shortcut {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--fg-muted);
+        }
+
+        .help-shortcut kbd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-elevated);
+            border-radius: 6px;
+            color: var(--fg-secondary);
+        }
+
         .animate-in {
             opacity: 0;
             transform: translateY(16px);
@@ -561,6 +777,17 @@
             h1 { font-size: 2.5rem; }
         }
 
+        @media (max-width: 640px) {
+            .help-modal {
+                padding: 1.75rem;
+                margin: 1rem;
+            }
+            .help-shortcuts {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+
         /* Hidden utility for filtering */
         .hidden-term { display: none; }
     </style>
@@ -572,7 +799,7 @@
 
     <!-- Nav -->
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-        <div class="nav-layout h-full items-center">
+        <div class="nav-layout h-full items-center" style="margin-left: 10%;">
             <div class="hidden md:block"></div>
             <a href="index.html" class="brand-container">
                 <div class="brand-icon">
@@ -630,7 +857,6 @@
                     <input type="text" id="term-search" class="search-tool" placeholder="Search terms (e.g., 'veritas', 'model')...">
                     
                     <div class="abececary-map" id="alphabet-grid">
-                        <!-- Populated by JS, or static for simplicity -->
                         <a href="#A" class="letter-btn has-terms">A</a>
                         <a href="#B" class="letter-btn has-terms">B</a>
                         <a href="#C" class="letter-btn has-terms">C</a>
@@ -797,7 +1023,7 @@
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-inner">
-            <div class="footer-brand">Epistemic Toolbox</div>
+            <div class="footer-brand" style="margin-left: 20%;">Epistemic Toolbox</div>
             <div class="footer-links">
                 <a href="about.html" class="footer-link">About</a>
                 <a href="docs.html" class="footer-link">Documentation</a>
@@ -807,19 +1033,86 @@
         </div>
     </footer>
 
-    <!-- Help Modal (Simplified for brevity) -->
+    <!-- Help Modal Overlay -->
     <div class="help-overlay" id="help-overlay"></div>
-    <div class="help-modal-container" id="help-modal-container" role="dialog" aria-modal="true">
+    
+    <!-- Help Modal -->
+    <div class="help-modal-container" id="help-modal-container" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
         <div class="help-modal">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-display text-lg">Glossary Help</h3>
-                <button class="text-[var(--fg-muted)] hover:text-white transition-colors" id="modal-close" aria-label="Close modal">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+            <div class="help-modal-glow"></div>
+            
+            <button class="help-modal-close" id="modal-close" aria-label="Close modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            
+            <div class="help-modal-icon">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
             </div>
-            <p class="text-sm text-[var(--fg-secondary)]">
-                Use the "Abececary Map" at the top to jump to specific letters of the alphabet. You can also use the search bar to instantly filter terms by keywords.
-            </p>
+            
+            <h3 id="help-modal-title">Glossary Guide</h3>
+            <p class="help-modal-subtitle">Navigate the terminology with these tools</p>
+            
+            <div class="help-feature">
+                <div class="help-feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </div>
+                <div class="help-feature-content">
+                    <h4>Instant Search</h4>
+                    <p>Type keywords in the search bar to filter terms in real-time. Matching definitions appear instantly.</p>
+                </div>
+            </div>
+            
+            <div class="help-feature">
+                <div class="help-feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                </div>
+                <div class="help-feature-content">
+                    <h4>Abececary Map</h4>
+                    <p>Click any letter to jump directly to that section. Highlighted letters contain terms.</p>
+                </div>
+            </div>
+            
+            <div class="help-feature">
+                <div class="help-feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <line x1="8" y1="6" x2="21" y2="6"/>
+                        <line x1="8" y1="12" x2="21" y2="12"/>
+                        <line x1="8" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                </div>
+                <div class="help-feature-content">
+                    <h4>Sidebar Navigation</h4>
+                    <p>Use the sidebar on desktop for quick access to each letter section as you scroll.</p>
+                </div>
+            </div>
+            
+            <div class="help-shortcuts">
+                <div class="help-shortcut">
+                    <kbd>Esc</kbd>
+                    <span>Close modal</span>
+                </div>
+                <div class="help-shortcut">
+                    <kbd>/</kbd>
+                    <span>Focus search</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -834,7 +1127,6 @@
                 if (entry.isIntersecting) {
                     const id = entry.target.id;
                     
-                    // Sidebar active state
                     navLinks.forEach(link => {
                         link.classList.remove('active');
                         if (link.getAttribute('href') === '#' + id) {
@@ -842,7 +1134,6 @@
                         }
                     });
                     
-                    // Abececary Map active state
                     letterBtns.forEach(btn => {
                         btn.classList.remove('active');
                         if (btn.getAttribute('href') === '#' + id || btn.textContent === id) {
@@ -874,7 +1165,6 @@
                 }
             });
 
-            // Hide empty sections
             glossarySections.forEach(section => {
                 const visibleTerms = section.querySelectorAll('.term-entry:not(.hidden-term)');
                 if (visibleTerms.length === 0 && query !== '') {
@@ -895,12 +1185,14 @@
             modal.classList.add('active');
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
+            closeBtn.focus();
         }
 
         function closeModal() {
             modal.classList.remove('active');
             overlay.classList.remove('active');
             document.body.style.overflow = '';
+            helpBtn.focus();
         }
 
         helpBtn.addEventListener('click', openModal);
@@ -908,7 +1200,14 @@
         overlay.addEventListener('click', closeModal);
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+            // Slash key to focus search
+            if (e.key === '/' && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
         });
     </script>
 </body>
