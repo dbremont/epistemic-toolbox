@@ -549,6 +549,13 @@
             background: rgba(212, 168, 75, 0.12);
             border-color: rgba(212, 168, 75, 0.3);
         }
+        
+                /* Keyboard navigation active state */
+        .dropdown-item.kb-active {
+            background: rgba(212, 168, 75, 0.12);
+            border-color: rgba(212, 168, 75, 0.35);
+            box-shadow: 0 0 0 1px rgba(212, 168, 75, 0.2);
+        }
 
         .dropdown-item-title {
             font-family: 'Space Grotesk', sans-serif;
@@ -1047,8 +1054,8 @@
                 </svg>
             </div>
             
-            <h3 id="help-modal-title">Glossary Guide</h3>
-            <p class="help-modal-subtitle">Navigate the terminology with these tools</p>
+            <h3 id="help-modal-title">Keyboard Guide</h3>
+            <p class="help-modal-subtitle">Navigate the glossary efficiently</p>
             
             <div class="help-feature">
                 <div class="help-feature-icon">
@@ -1058,8 +1065,8 @@
                     </svg>
                 </div>
                 <div class="help-feature-content">
-                    <h4>Instant Search</h4>
-                    <p>Type keywords to see matching terms. Results appear in an inline dropdown.</p>
+                    <h4>Search & Select</h4>
+                    <p>Type to filter results. Use <strong>Arrow Keys</strong> to navigate the dropdown, and <strong>Enter</strong> to jump to a term.</p>
                 </div>
             </div>
             
@@ -1073,32 +1080,23 @@
                     </svg>
                 </div>
                 <div class="help-feature-content">
-                    <h4>Abececary Map</h4>
-                    <p>Click any letter to jump directly to that section. Highlighted letters contain terms.</p>
-                </div>
-            </div>
-            
-            <div class="help-feature">
-                <div class="help-feature-icon">
-                    <svg viewBox="0 0 24 24">
-                        <line x1="8" y1="6" x2="21" y2="6"/>
-                        <line x1="8" y1="12" x2="21" y2="12"/>
-                        <line x1="8" y1="18" x2="21" y2="18"/>
-                        <line x1="3" y1="6" x2="3.01" y2="6"/>
-                        <line x1="3" y1="12" x2="3.01" y2="12"/>
-                        <line x1="3" y1="18" x2="3.01" y2="18"/>
-                    </svg>
-                </div>
-                <div class="help-feature-content">
-                    <h4>Sidebar Navigation</h4>
-                    <p>Use the sidebar on desktop for quick access to each letter section as you scroll.</p>
+                    <h4>Quick Jump</h4>
+                    <p>Click any letter in the Abececary Map to scroll directly to that section.</p>
                 </div>
             </div>
             
             <div class="help-shortcuts">
                 <div class="help-shortcut">
+                    <kbd>↓</kbd><kbd>↑</kbd>
+                    <span>Navigate results</span>
+                </div>
+                <div class="help-shortcut">
+                    <kbd>Enter</kbd>
+                    <span>Select term</span>
+                </div>
+                <div class="help-shortcut">
                     <kbd>Esc</kbd>
-                    <span>Close modal</span>
+                    <span>Close/Reset</span>
                 </div>
                 <div class="help-shortcut">
                     <kbd>/</kbd>
@@ -1112,6 +1110,7 @@
         // State
         let terminologyData = [];
         let groupedTerms = {};
+        let kbHighlightIndex = -1; // Track keyboard selection in dropdown
 
         // DOM Elements
         const glossaryContainer = document.getElementById('glossary-container');
@@ -1153,7 +1152,6 @@
         // Render glossary sections
         function renderGlossary() {
             glossaryContainer.innerHTML = '';
-            
             const letters = Object.keys(groupedTerms).sort();
             
             letters.forEach((letter, index) => {
@@ -1234,6 +1232,7 @@
         // Search functionality
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
+            kbHighlightIndex = -1; // Reset keyboard selection on new input
             
             if (query.length === 0) {
                 searchDropdown.classList.remove('visible');
@@ -1249,13 +1248,52 @@
                 return termMatch || descMatch || tagMatch;
             });
             
-            // Render dropdown
             renderDropdown(matches, query);
             searchDropdown.classList.add('visible');
-            
-            // Also filter glossary
             filterGlossary(query);
         });
+
+        // Keyboard Navigation for Dropdown
+        searchInput.addEventListener('keydown', (e) => {
+            const items = dropdownResults.querySelectorAll('.dropdown-item');
+            const isVisible = searchDropdown.classList.contains('visible');
+            
+            if (!isVisible || items.length === 0) {
+                // Allow Enter to submit naturally if dropdown not visible? 
+                // No specific form action, so ignore.
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                kbHighlightIndex++;
+                if (kbHighlightIndex >= items.length) kbHighlightIndex = 0;
+                updateKbHighlight(items);
+            } 
+            else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                kbHighlightIndex--;
+                if (kbHighlightIndex < 0) kbHighlightIndex = items.length - 1;
+                updateKbHighlight(items);
+            } 
+            else if (e.key === 'Enter') {
+                if (kbHighlightIndex > -1 && items[kbHighlightIndex]) {
+                    e.preventDefault();
+                    items[kbHighlightIndex].click();
+                }
+            }
+        });
+
+        function updateKbHighlight(items) {
+            items.forEach((item, idx) => {
+                if (idx === kbHighlightIndex) {
+                    item.classList.add('kb-active');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('kb-active');
+                }
+            });
+        }
 
         function renderDropdown(matches, query) {
             dropdownHeader.textContent = `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${query}"`;
@@ -1288,9 +1326,6 @@
             // Add click handlers
             dropdownResults.querySelectorAll('.dropdown-item').forEach(item => {
                 item.addEventListener('click', () => scrollToTerm(item.dataset.term));
-                item.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') scrollToTerm(item.dataset.term);
-                });
             });
         }
 
@@ -1374,15 +1409,33 @@
         overlay.addEventListener('click', closeModal);
         
         document.addEventListener('keydown', (e) => {
+        	
+	    // Toggle Help Modal with '?' key (Shift + /)
+            if (e.key === '?' || e.key === 'F1' ) {
+                // Don't trigger if user is typing in an input/textarea
+                const isTyping = document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA';
+                
+                if (!isTyping) {
+                    e.preventDefault();
+                    if (modal.classList.contains('active')) {
+                        closeModal();
+                    } else {
+                        openModal();
+                    }
+                }
+                return;
+            }
+        
+        
             if (e.key === 'Escape') {
                 if (modal.classList.contains('active')) {
                     closeModal();
-                }
-                if (searchDropdown.classList.contains('visible')) {
+                } else if (searchDropdown.classList.contains('visible')) {
                     searchDropdown.classList.remove('visible');
+                    searchInput.blur();
                 }
             }
-            // Slash key to focus search
+            // Slash key to focus search (if not already typing in input)
             if (e.key === '/' && document.activeElement !== searchInput) {
                 e.preventDefault();
                 searchInput.focus();
@@ -1392,4 +1445,5 @@
         // Initialize
         loadTerminology();
     </script>
+
 </body>
