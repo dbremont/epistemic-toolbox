@@ -1,160 +1,234 @@
 [
     {
+        "name": "Concept (Category)",
+        "description": "Primitive unit partitioning reality",
+        "url": "",
+        "svg-icon": "icon-concept",
+        "tags": ["categorization", "abstraction", "ontology", "taxonomy", "reification", "vagueness", "category-error", "class"]
+    },
+    {
+        "name": "Definition",
+        "description": "Explicit semantic specification",
+        "url": "",
+        "svg-icon": "icon-definition",
+        "tags": ["semantic-fixation", "definition", "glossary", "circularity", "ambiguity", "tool"]
+    },
+    {
+        "name": "Abstraction Operator",
+        "description": "Removes detail while preserving structure",
+        "url": "",
+        "svg-icon": "icon-abstraction",
+        "tags": ["abstraction", "modeling", "generalization", "over-abstraction", "tool"]
+    },
+    {
+        "name": "Idealization",
+        "description": "Controlled simplification of reality",
+        "url": "",
+        "svg-icon": "icon-idealization",
+        "tags": ["simplification", "modeling", "idealized-model", "unrealistic-assumptions", "tool"]
+    },
+    {
+        "name": "State Representation",
+        "description": "Encodes system configuration",
+        "url": "",
+        "svg-icon": "icon-state",
+        "tags": ["representation", "state-space", "dynamics", "omitted-variables", "tool"]
+    },
+    {
+        "name": "Variable",
+        "description": "Measurable system property",
+        "url": "",
+        "svg-icon": "icon-variable",
+        "tags": ["measurement", "variable-schema", "quantification", "proxy-mismatch", "tool"]
+    },
+    {
+        "name": "Parameter",
+        "description": "Fixed model quantity",
+        "url": "",
+        "svg-icon": "icon-parameter",
+        "tags": ["parameterization", "calibration", "identifiability", "non-identifiability", "tool"]
+    },
+    {
+        "name": "Function",
+        "description": "Mapping between sets",
+        "url": "",
+        "svg-icon": "icon-function",
+        "tags": ["functional-modeling", "mapping", "dependency", "misspecification", "tool"]
+    },
+    {
+        "name": "Equation",
+        "description": "Equality constraint between expressions",
+        "url": "",
+        "svg-icon": "icon-equation",
+        "tags": ["problem-solving", "constraint", "system-solving", "ill-posed", "tool"]
+    },
+    {
+        "name": "Matrix",
+        "description": "Representation of linear transformations",
+        "url": "",
+        "svg-icon": "icon-matrix",
+        "tags": ["linear-algebra", "representation", "transformation", "ill-conditioning", "tool"]
+    },
+    {
+        "name": "Derivative",
+        "description": "Rate of change",
+        "url": "",
+        "svg-icon": "icon-derivative",
+        "tags": ["differentiation", "local-analysis", "change", "non-differentiable", "tool"]
+    },
+    {
+        "name": "Integral",
+        "description": "Aggregation over a domain",
+        "url": "",
+        "svg-icon": "icon-integral",
+        "tags": ["integration", "aggregation", "accumulation", "divergence", "tool"]
+    },
+    {
+        "name": "Differential Equation",
+        "description": "Dynamics defined via derivatives",
+        "url": "",
+        "svg-icon": "icon-differential-equation",
+        "tags": ["dynamical-systems", "ode", "pde", "evolution", "instability", "tool"]
+    },
+    {
+        "name": "Probability Distribution",
+        "description": "Model of uncertainty over outcomes",
+        "url": "",
+        "svg-icon": "icon-distribution",
+        "tags": ["uncertainty", "probability", "distribution", "modeling", "wrong-assumption", "tool"]
+    },
+    {
+        "name": "Estimator",
+        "description": "Rule for inferring parameters",
+        "url": "",
+        "svg-icon": "icon-estimator",
+        "tags": ["estimation", "inference", "approximation", "bias", "inconsistency", "tool"]
+    },
+    {
+        "name": "Likelihood Function",
+        "description": "Measures data fit under parameters",
+        "url": "",
+        "svg-icon": "icon-likelihood",
+        "tags": ["inference", "likelihood", "model-fitting", "identifiability", "tool"]
+    },
+    {
+        "name": "Algorithm",
+        "description": "Finite computational procedure",
+        "url": "",
+        "svg-icon": "icon-algorithm",
+        "tags": ["computation", "procedure", "automation", "opacity", "tool"]
+    },
+    {
+        "name": "Data Structure",
+        "description": "Organized data representation",
+        "url": "",
+        "svg-icon": "icon-data-structure",
+        "tags": ["representation", "data-organization", "efficiency", "inefficiency", "tool"]
+    },
+    {
+        "name": "Numerical Method",
+        "description": "Approximation techniques for computation",
+        "url": "",
+        "svg-icon": "icon-numerical",
+        "tags": ["approximation", "numerical-solution", "computation", "error-propagation", "tool"]
+    },
+    {
+        "name": "Optimization Problem",
+        "description": "Objective function with constraints",
+        "url": "",
+        "svg-icon": "icon-optimization",
+        "tags": ["optimization", "objective", "constraints", "search", "local-minima", "tool"]
+    },
+    {
+        "name": "Simulation",
+        "description": "Execution of a model to study behavior",
+        "url": "",
+        "svg-icon": "icon-simulation",
+        "tags": ["simulation", "experimentation", "model-execution", "gigo", "class"]
+    },
+    {
+        "name": "Model",
+        "description": "Abstract representation of a system",
+        "url": "",
+        "svg-icon": "icon-model",
+        "tags": ["modeling", "representation", "prediction", "overfitting", "underfitting", "class"]
+    },
+
+    {
         "name": "Data Visualization",
-        "description": "A visual representation technique used to transform structured or unstructured data into perceptually interpretable forms, enabling efficient exploration of patterns, trends, and the space of possible affirmations about the underlying reality.",
+        "description": "Visual representation of data",
         "url": "https://www.bremontix.xyz/toolbox/tool/visualization/index.html",
         "svg-icon": "icon-data-visualization",
-        "tags": [
-            "category",
-            "visual",
-            "representation",
-            "exploration",
-            "pattern-detection",
-            "affirmation-space"
-        ]
+        "tags": ["visual", "representation", "exploration", "pattern-detection", "class"]
     },
     {
         "name": "Standard Deviation",
-        "description": "A statistical measure of dispersion that quantifies the extent of variability or spread in a dataset relative to its mean, enabling affirmations about consistency, volatility, and distributional structure.",
+        "description": "Measure of dispersion",
         "url": "https://www.bremontix.xyz/toolbox/tool/std.html",
         "svg-icon": "icon-standard-deviation",
-        "tags": [
-            "category",
-            "statistical",
-            "dispersion",
-            "variability",
-            "distribution",
-            "quantitative"
-        ]
+        "tags": ["statistics", "dispersion", "variability", "distribution", "class"]
     },
     {
         "name": "Dimensionality Reduction",
-        "description": "A technique that identifies the directions (principal components) along which the variation in the data is maximized, facilitating recognition of latent structures and core dynamics in complex datasets.",
+        "description": "Extract latent structure",
         "url": "https://www.bremontix.xyz/toolbox/tool/pca.html",
         "svg-icon": "icon-pca",
-        "tags": [
-            "category",
-            "statistical",
-            "dimensionality-reduction",
-            "latent-structure",
-            "pattern-detection"
-        ]
+        "tags": ["statistics", "dimensionality-reduction", "latent-structure", "pattern-detection", "class"]
     },
     {
         "name": "Regression Analysis",
-        "description": "A method to model and quantify the relationship between variables, allowing affirmations about causality, predictive trends, and dependency structures in data.",
+        "description": "Model relationships between variables",
         "url": "https://www.bremontix.xyz/toolbox/tool/regression.html",
         "svg-icon": "icon-regression",
-        "tags": [
-            "category",
-            "statistical",
-            "causal-inference",
-            "prediction",
-            "trend-analysis"
-        ]
+        "tags": ["statistics", "prediction", "causal-inference", "trend-analysis", "class"]
     },
     {
         "name": "Clustering",
-        "description": "A technique to partition data into groups based on similarity, supporting the identification of emergent categories, coherent patterns, and structural organization in complex reality.",
+        "description": "Group data by similarity",
         "url": "https://www.bremontix.xyz/toolbox/tool/clustering.html",
         "svg-icon": "icon-clustering",
-        "tags": [
-            "category",
-            "unsupervised",
-            "pattern-detection",
-            "classification",
-            "structure-exploration"
-        ]
+        "tags": ["unsupervised", "pattern-detection", "classification", "structure", "class"]
     },
     {
         "name": "Network Analysis",
-        "description": "A framework for mapping and quantifying relationships and interactions between entities, enabling affirmations about connectivity, influence, and systemic structure.",
+        "description": "Analyze relational structures",
         "url": "https://www.bremontix.xyz/toolbox/tool/network.html",
         "svg-icon": "icon-network",
-        "tags": [
-            "category",
-            "graph",
-            "connectivity",
-            "systemic-structure",
-            "relation-mapping"
-        ]
+        "tags": ["graph", "connectivity", "structure", "relations", "class"]
     },
     {
         "name": "Bayesian Inference",
-        "description": "A probabilistic reasoning method that updates beliefs about reality in light of evidence, facilitating affirmations under uncertainty and modeling conditional dependencies.",
+        "description": "Probabilistic belief updating",
         "url": "https://www.bremontix.xyz/toolbox/tool/bayesian.html",
         "svg-icon": "icon-bayesian",
-        "tags": [
-            "category",
-            "probabilistic",
-            "uncertainty",
-            "belief-updating",
-            "conditional-structure"
-        ]
+        "tags": ["probability", "uncertainty", "belief-updating", "inference", "class"]
     },
     {
         "name": "Time Series Analysis",
-        "description": "A set of methods to analyze temporal data, detect trends, seasonality, and anomalies, and generate affirmations about dynamic processes evolving over time.",
+        "description": "Analysis of temporal data",
         "url": "https://www.bremontix.xyz/toolbox/tool/timeseries.html",
         "svg-icon": "icon-timeseries",
-        "tags": [
-            "category",
-            "temporal",
-            "trend-detection",
-            "dynamics",
-            "anomaly-detection"
-        ]
+        "tags": ["temporal", "dynamics", "trend", "anomaly-detection", "class"]
     },
     {
         "name": "Monte Carlo Simulation",
-        "description": "A computational method to estimate the behavior of complex systems under uncertainty by random sampling, enabling affirmations about distributions, risks, and expected outcomes.",
+        "description": "Random sampling simulation",
         "url": "https://www.bremontix.xyz/toolbox/tool/montecarlo.html",
         "svg-icon": "icon-montecarlo",
-        "tags": [
-            "category",
-            "stochastic",
-            "simulation",
-            "risk-analysis",
-            "probabilistic-modeling"
-        ]
+        "tags": ["stochastic", "simulation", "risk-analysis", "probability", "class"]
     },
     {
         "name": "Hypothesis Testing",
-        "description": "A statistical procedure to assess assumptions about reality, facilitating affirmations about the presence of effects, differences, or associations in data.",
+        "description": "Statistical decision procedure",
         "url": "https://www.bremontix.xyz/toolbox/tool/hypothesis.html",
         "svg-icon": "icon-hypothesis",
-        "tags": [
-            "category",
-            "statistical",
-            "significance",
-            "affirmation-testing",
-            "causal-inference"
-        ]
-    },
-    {
-        "name": "Burstiness Index",
-        "description": "A statistical measure that quantifies the degree of temporal clustering in a sequence of events. It facilitates reasoning about variability and regularity in event arrivals, supporting affirmations about patterns, dependencies, and deviations from expected randomness.",
-        "url": "https://www.bremontix.xyz/toolbox/burstiness.html",
-        "svg-icon": "icon-hypothesis",
-        "tags": [
-            "tool",
-            "statistic",
-            "temporal-patterns",
-            "affirmation-testing",
-            "causal-inference"
-        ]
+        "tags": ["statistics", "testing", "significance", "inference", "class"]
     },
     {
         "name": "Law of Large Numbers",
-        "description": "A fundamental theorem in probability stating that as the number of trials increases, the sample average converges to the expected value. It supports reasoning about statistical stability, convergence, and the reliability of empirical estimates.",
+        "description": "Convergence of averages",
         "url": "https://www.bremontix.xyz/toolbox/law-of-large-numbers.html",
-        "svg-icon": "icon-hypothesis",
-        "tags": [
-            "theory",
-            "statistics",
-            "probability",
-            "convergence",
-            "estimation"
-        ]
+        "svg-icon": "icon-law",
+        "tags": ["probability", "convergence", "statistics", "theory"]
     }
 ]

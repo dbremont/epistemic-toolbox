@@ -1,133 +1,82 @@
 [
   {
     "term": "Abduction",
-    "description": "A form of logical inference which starts with an observation or set of observations then seeks to find the simplest and most likely explanation. In the toolbox, this relates to generating hypotheses from data artifacts.",
-    "tags": [
-      "Logic",
-      "Inference",
-      "Hypothesis"
-    ]
-  },
-  {
-    "term": "Artifact",
-    "description": "A construct or object produced by the application of an epistemic tool. Artifacts are the \"findings\" or compressed descriptions extracted from the raw data of reality.",
-    "tags": [
-      "Output",
-      "Epistemic Tool"
-    ]
+    "description": "A form of logical inference which starts with observations and seeks the most plausible explanation. In the toolbox, this relates to generating hypotheses from data artifacts.",
+    "tags": ["#activity",  "hypothesis-generation"]
   },
   {
     "term": "Bayesian Inference",
-    "description": "A method of statistical inference in which Bayes' theorem is used to update the probability for a hypothesis as more evidence or information becomes available. It is a fundamental tool for modeling belief states.",
-    "tags": [
-      "Statistics",
-      "Probability",
-      "Modeling"
-    ]
+    "description": "A method of statistical inference using Bayes' theorem to update probabilities as evidence accumulates.",
+    "tags": ["*class", "probability", "belief-updating"]
   },
   {
     "term": "Compression",
-    "description": "The process of reducing the complexity of a dataset or phenomenon while retaining its essential informational structure. In the Epistemic Toolbox, compression is the act of distilling reality into manageable models.",
-    "tags": [
-      "Information Theory",
-      "Complexity",
-      "Modeling"
-    ]
-  },
-  {
-    "term": "Construct",
-    "description": "An explanatory variable that is not directly observable but is inferred from other data. Constructs are the building blocks of theoretical models.",
-    "tags": [
-      "Theory",
-      "Variables"
-    ]
+    "description": "Reduction of complexity while preserving essential informational structure; distillation of reality into models.",
+    "tags": ["*class", "information-theory", "complexity-reduction", "modeling"]
   },
   {
     "term": "Dimensionality",
-    "description": "The number of parameters or variables in a model. High dimensionality often requires tools for reduction (like PCA) to make the data tractable for human understanding.",
-    "tags": [
-      "Data Science",
-      "Parameters"
-    ]
+    "description": "The number of variables or parameters in a model.",
+    "tags": ["concept", "model-structure"]
   },
   {
     "term": "Epistemology",
-    "description": "The branch of philosophy concerned with the theory of knowledge. It studies the nature, origin, and scope of knowledge and justified belief. This toolbox is an exercise in applied epistemology.",
-    "tags": [
-      "Philosophy",
-      "Knowledge"
-    ]
+    "description": "The study of knowledge, its origin, scope, and justification.",
+    "tags": ["$meta"]
   },
   {
     "term": "Heuristic",
-    "description": "Any approach to problem solving or self-discovery that employs a practical method that is not guaranteed to be optimal, perfect, or rational, but is nevertheless sufficient for reaching an immediate, short-term goal or approximation.",
-    "tags": [
-      "Problem Solving",
-      "Methodology"
-    ]
+    "description": "A practical problem-solving method that is not guaranteed optimal but is efficient.",
+    "tags": ["*class", "problem-solving", "approximation-method"]
   },
   {
     "term": "Inference",
-    "description": "The process of drawing conclusions from premises or evidence. It is the mechanism by which we move from raw data to meaningful affirmations about reality.",
-    "tags": [
-      "Logic",
-      "Analysis"
-    ]
+    "description": "The process of deriving conclusions from premises or evidence.",
+    "tags": ["#activity", "logic", "reasoning"]
   },
   {
     "term": "Model",
-    "description": "A simplified representation of a system or phenomenon. Models are the primary output of the toolbox's analysis tools, serving as compressed descriptions of reality.",
-    "tags": [
-      "Output",
-      "Systems"
-    ]
+    "description": "A simplified representation of a system or phenomenon.",
+    "tags": ["@artifact", "representation", "systems"]
   },
   {
     "term": "Ontology",
-    "description": "The philosophical study of the nature of being, becoming, existence, or reality. In the context of the toolbox, it asks \"What actually exists?\" before we apply tools to measure it.",
-    "tags": [
-      "Philosophy",
-      "Reality"
-    ]
+    "description": "The study of what exists; defines the entities in a domain.",
+    "tags": ["$meta"]
   },
   {
     "term": "Pattern Recognition",
-    "description": "The automated recognition of patterns and regularities in data. It is a fundamental capability of many tools in the toolbox, used to identify structure in noise.",
-    "tags": [
-      "Data Analysis",
-      "Automation"
-    ]
+    "description": "Identification of regularities and structure in data.",
+    "tags": ["*class", "data-analysis", "automation"]
   },
   {
     "term": "Reality",
-    "description": "The state of things as they actually exist, as opposed to an idealistic or notional idea of them. The toolbox treats reality as the \"source code\" that tools attempt to read and interpret.",
-    "tags": [
-      "Existence",
-      "Truth"
-    ]
+    "description": "The total set of phenomena independent of representation.",
+    "tags": []
   },
   {
     "term": "Signal-to-Noise Ratio",
-    "description": "A measure used in science and engineering that compares the level of a desired signal to the level of background noise. It is a metaphor for distinguishing truth (veritas) from distraction.",
-    "tags": [
-      "Science",
-      "Engineering",
-      "Metaphor"
-    ]
-  },
-  {
-    "term": "Veritas",
-    "description": "The Roman goddess of truth, and in this toolbox, the ultimate alignment goal. It represents the objective state of affairs that our tools and models attempt to approximate.",
-    "tags": [
-      "Truth",
-      "Alignment"
-    ]
+    "description": "Measure comparing meaningful signal to background noise.",
+    "tags": ["metric", "science", "engineering"]
   },
   {
     "term": "Epistemic Tool",
-    "description": "An epistemic tool is any technique, method, or formal mechanism used by an observer to construct, represent, and validate descriptions of reality.",
-    "tags": [
-      "Meta"
-    ]
+    "description": "Any method or mechanism used to construct, represent, or validate knowledge.",
+    "tags": ["$meta"]
+  },
+  {
+    "term": "Epistemic Artifact",
+    "description": "An externalized construct that embodies a representation of reality.",
+    "tags": ["$meta"]
+  },
+  {
+    "term": "Epistemic Activity",
+    "description": "Any operation performed to construct, transform, or evaluate knowledge.",
+    "tags": ["$meta"]
+  },
+  {
+    "term": "Epistemic Pathology",
+    "description": "The study of failure modes in epistemic processes.",
+    "tags": ["$meta"]
   }
 ]

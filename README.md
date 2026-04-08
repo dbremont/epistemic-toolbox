@@ -9,6 +9,7 @@
 - [ ] Number Relation
 - [ ] Rate of Change
 - [ ] Elasticity
+- [ ] Make the number of elements per page in the index - dynamic.
 
 ## References
 
