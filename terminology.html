@@ -45,14 +45,16 @@
             font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-deep);
             color: var(--fg-primary);
-            line-height: 1.8;
-            font-size: 1.125rem;
+            /* Improved line-height and font-size for readability */
+            line-height: 1.7;
+            font-size: 1.15rem; 
             overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         main { flex: 1; }
@@ -271,14 +273,30 @@
             pointer-events: none;
         }
 
-        h1 {
+        /* IMPROVED TITLE STYLES */
+        h1.hero-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 600;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
+            font-size: clamp(3.5rem, 8vw, 5rem); /* Increased size significantly */
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
             color: var(--fg-primary);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 20%, #d4a84b 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 2px 20px rgba(212, 168, 75, 0.15);
+        }
+
+        h1.hero-title span.subtitle {
+            display: block; /* Break to new line if needed, or keep inline */
+            font-size: 0.5em; /* Relative to the big title */
+            font-weight: 400;
+            color: var(--fg-muted);
+            background: none;
+            -webkit-text-fill-color: var(--fg-muted);
+            margin-top: 0.25em;
+            letter-spacing: 0.02em;
         }
 
         h2 {
@@ -388,7 +406,7 @@
 
         .term-entry .term-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.35rem; /* Increased slightly */
             font-weight: 600;
             color: var(--fg-primary);
             margin-bottom: 0.5rem;
@@ -396,7 +414,7 @@
         }
 
         .term-entry p {
-            font-size: 0.95rem;
+            font-size: 1.05rem; /* Improved readability */
             line-height: 1.7;
             color: var(--fg-secondary);
             margin: 0;
@@ -891,6 +909,57 @@
             color: var(--fg-secondary);
         }
 
+        /* SCROLL TO TOP BUTTON */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-elevated);
+            color: var(--fg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 90;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .scroll-top-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--accent-primary);
+            stroke-width: 2;
+            fill: none;
+            transition: transform 0.3s ease;
+        }
+
+        .scroll-top-btn:hover {
+            background: rgba(212, 168, 75, 0.15);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(212, 168, 75, 0.25);
+        }
+
+        .scroll-top-btn:hover svg {
+            transform: translateY(-2px);
+        }
+
+        .scroll-top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
         .animate-in {
             opacity: 0;
             transform: translateY(16px);
@@ -913,7 +982,7 @@
             .docs-sidebar {
                 display: none;
             }
-            h1 { font-size: 2.5rem; }
+            h1.hero-title { font-size: 3rem; }
         }
 
         @media (max-width: 640px) {
@@ -924,6 +993,12 @@
             .help-shortcuts {
                 flex-direction: column;
                 gap: 0.75rem;
+            }
+            .scroll-top-btn {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                width: 44px;
+                height: 44px;
             }
         }
 
@@ -980,7 +1055,11 @@
                 
                 <header class="mb-12 animate-in relative">
                     <div class="hero-glow"></div>
-                    <h1>Terminology <span class="text-[var(--fg-muted)]">& Concepts</span></h1>
+                    <!-- Updated Title Structure -->
+                    <h1 class="hero-title">
+                        Terminology
+                        <span class="subtitle">& Concepts</span>
+                    </h1>
                     <p class="text-xl text-[var(--fg-secondary)] max-w-2xl">
                         An abececary map of terms used throughout the toolbox. Use the search or select a letter to navigate the epistemic landscape.
                     </p>
@@ -1031,6 +1110,13 @@
             </div>
         </div>
     </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scroll-top-btn" aria-label="Scroll to top">
+        <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+        </svg>
+    </button>
 
     <!-- Help Modal Overlay -->
     <div class="help-overlay" id="help-overlay"></div>
@@ -1120,6 +1206,7 @@
         const searchDropdown = document.getElementById('search-dropdown');
         const dropdownHeader = document.getElementById('dropdown-header');
         const dropdownResults = document.getElementById('dropdown-results');
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
 
         // Load terminology data
         async function loadTerminology() {
@@ -1240,13 +1327,19 @@
                 return;
             }
             
-            // Filter terms
-            const matches = terminologyData.filter(entry => {
-                const termMatch = entry.term.toLowerCase().includes(query);
-                const descMatch = entry.description.toLowerCase().includes(query);
-                const tagMatch = entry.tags && entry.tags.some(tag => tag.toLowerCase().includes(query));
-                return termMatch || descMatch || tagMatch;
-            });
+            // Calculate Relevance Score
+            // Title = 6 points, Tags = 3 points, Content = 1 points
+            const matches = terminologyData.map(entry => {
+                let score = 0;
+                
+                if (entry.term.toLowerCase().includes(query)) score += 6;
+                if (entry.tags && entry.tags.some(tag => tag.toLowerCase().includes(query))) score += 3;
+                if (entry.description.toLowerCase().includes(query)) score += 1;
+                
+                return { ...entry, score };
+            })
+            .filter(entry => entry.score > 0)
+            .sort((a, b) => b.score - a.score); 
             
             renderDropdown(matches, query);
             searchDropdown.classList.add('visible');
@@ -1258,11 +1351,7 @@
             const items = dropdownResults.querySelectorAll('.dropdown-item');
             const isVisible = searchDropdown.classList.contains('visible');
             
-            if (!isVisible || items.length === 0) {
-                // Allow Enter to submit naturally if dropdown not visible? 
-                // No specific form action, so ignore.
-                return;
-            }
+            if (!isVisible || items.length === 0) return;
 
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
@@ -1333,14 +1422,11 @@
             const termEntry = document.querySelector(`.term-entry[data-term="${term.toLowerCase()}"]`);
             if (termEntry) {
                 const section = termEntry.closest('section');
-                if (section) {
-                    section.style.display = 'block';
-                }
+                if (section) section.style.display = 'block';
+                
                 termEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 termEntry.style.background = 'rgba(212, 168, 75, 0.1)';
-                setTimeout(() => {
-                    termEntry.style.background = '';
-                }, 2000);
+                setTimeout(() => termEntry.style.background = '', 2000);
             }
             searchDropdown.classList.remove('visible');
             searchInput.blur();
@@ -1369,12 +1455,8 @@
         }
 
         function clearTermFilters() {
-            document.querySelectorAll('.term-entry').forEach(entry => {
-                entry.classList.remove('hidden-term');
-            });
-            document.querySelectorAll('#glossary-container > section').forEach(section => {
-                section.style.display = 'block';
-            });
+            document.querySelectorAll('.term-entry').forEach(entry => entry.classList.remove('hidden-term'));
+            document.querySelectorAll('#glossary-container > section').forEach(section => section.style.display = 'block');
         }
 
         // Close dropdown on click outside
@@ -1384,7 +1466,7 @@
             }
         });
 
-        // Help Modal
+        // Help Modal Logic
         const helpBtn = document.getElementById('footer-help-btn');
         const modal = document.getElementById('help-modal-container');
         const overlay = document.getElementById('help-overlay');
@@ -1408,25 +1490,31 @@
         closeBtn.addEventListener('click', closeModal);
         overlay.addEventListener('click', closeModal);
         
+        // Scroll to Top Logic
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        
         document.addEventListener('keydown', (e) => {
-        	
-	    // Toggle Help Modal with '?' key (Shift + /)
+            // Toggle Help Modal with '?' key
             if (e.key === '?' || e.key === 'F1' ) {
-                // Don't trigger if user is typing in an input/textarea
                 const isTyping = document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA';
-                
                 if (!isTyping) {
                     e.preventDefault();
-                    if (modal.classList.contains('active')) {
-                        closeModal();
-                    } else {
-                        openModal();
-                    }
+                    modal.classList.contains('active') ? closeModal() : openModal();
                 }
                 return;
             }
-        
-        
+            
             if (e.key === 'Escape') {
                 if (modal.classList.contains('active')) {
                     closeModal();
@@ -1435,7 +1523,8 @@
                     searchInput.blur();
                 }
             }
-            // Slash key to focus search (if not already typing in input)
+            
+            // Slash key to focus search
             if (e.key === '/' && document.activeElement !== searchInput) {
                 e.preventDefault();
                 searchInput.focus();
@@ -1447,3 +1536,4 @@
     </script>
 
 </body>
+</html>
