@@ -210,7 +210,7 @@
             border: 1px solid var(--border-subtle);
             border-radius: 14px;
             position: relative;
-            padding: 1.1rem;
+            padding: 1.25rem 1.35rem;
             transition: all 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
             cursor: pointer;
             overflow: hidden;
@@ -245,13 +245,13 @@
         .card-header {
             display: flex;
             align-items: flex-start;
-            gap: 0.85rem;
-            margin-bottom: 0.75rem;
+            gap: 0.9rem;
+            margin-bottom: 0.85rem;
         }
 
         .icon-wrapper {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             background: rgba(212, 168, 75, 0.08);
             border: 1px solid rgba(212, 168, 75, 0.15);
             border-radius: 10px;
@@ -269,8 +269,8 @@
         }
 
         .icon-wrapper svg {
-            width: 16px;
-            height: 16px;
+            width: 17px;
+            height: 17px;
             stroke: var(--accent-primary);
             stroke-width: 1.5;
             fill: none;
@@ -278,19 +278,19 @@
 
         .card-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             color: var(--fg-primary);
             letter-spacing: -0.02em;
             line-height: 1.3;
             flex: 1;
-            margin-top: 0.3rem;
+            margin-top: 0.35rem;
         }
 
         .card-desc {
-            font-size: 0.825rem;
+            font-size: 0.85rem;
             color: var(--fg-secondary);
-            line-height: 1.55;
+            line-height: 1.6;
             margin-bottom: 1rem;
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -427,7 +427,7 @@
             }
         }
 
-        /* ========== SEARCH SECTION (from terminology page) ========== */
+        /* ========== SEARCH SECTION ========== */
         .search-section {
             position: relative;
             background: linear-gradient(145deg, rgba(20, 26, 35, 0.8), rgba(12, 16, 22, 0.95));
@@ -535,7 +535,6 @@
             font-size: 0.65rem;
         }
 
-        /* The inner search box - container gets the highlight */
         .search-box {
             position: relative;
             display: flex;
@@ -1835,7 +1834,7 @@
                 measuredCardHeight = card.offsetHeight;
                 return measuredCardHeight;
             }
-            return 210;
+            return 220;
         }
 
         function computeGridConfig() {
@@ -1847,11 +1846,10 @@
             const containerPad = vw < 768 ? 48 : 64;
             const effectiveWidth = Math.min(vw, maxContainerWidth) - containerPad;
 
-            // Determine columns based on effective content width
+            // Determine columns — MAX 3 per row
             let cols;
             if (effectiveWidth < 500) cols = 2;
-            else if (effectiveWidth < 900) cols = 3;
-            else cols = 4;
+            else cols = 3;
 
             // Measure actual header height from DOM
             const header = document.querySelector('header');
@@ -1893,14 +1891,12 @@
                 updateGridLayout();
 
                 if (changed) {
-                    // If perPage decreased, current page might be invalid
                     const maxPage = Math.max(1, Math.ceil(filteredTools.length / toolsPerPage));
                     if (currentPage > maxPage) currentPage = maxPage;
                     renderTools(filteredTools);
                 }
             }
 
-            // Flash the viewport info
             flashViewportInfo(config);
         }
 
@@ -1976,12 +1972,10 @@
                     const newH = firstCard.offsetHeight;
                     if (measuredCardHeight === null || Math.abs(newH - measuredCardHeight) > 2) {
                         measuredCardHeight = newH;
-                        // Re-check if config needs update with real height
                         const newConfig = computeGridConfig();
                         if (newConfig.perPage !== toolsPerPage) {
                             toolsPerPage = newConfig.perPage;
                             currentGridConfig = newConfig;
-                            // Re-render with correct count if it changed
                             const maxPage = Math.max(1, Math.ceil(filteredTools.length / toolsPerPage));
                             if (currentPage > maxPage) currentPage = maxPage;
                             renderTools(filteredTools);
@@ -2197,7 +2191,6 @@
                     return selectedTags.every(st => toolTags.includes(st));
                 });
 
-            // Build header text
             let headerText = `${matches.length} result${matches.length !== 1 ? 's' : ''}`;
             const parts = [];
             if (selectedTags.length > 0) parts.push(selectedTags.map(t => `@${t}`).join(' + '));
@@ -2237,7 +2230,6 @@
             hideTagAutocomplete();
             dropdown.classList.add('visible');
 
-            // Also update the grid
             const gridResults = getFilteredTools();
             renderTools(gridResults);
         }
@@ -2266,7 +2258,6 @@
         }
 
         document.getElementById('search-input').addEventListener('keydown', (e) => {
-            // Tag autocomplete keyboard navigation
             if (activeDropdown === 'tags') {
                 const items = document.getElementById('tag-autocomplete').querySelectorAll('.tag-ac-item');
                 if (e.key === 'ArrowDown') {
@@ -2298,7 +2289,6 @@
                 }
             }
 
-            // Results dropdown keyboard navigation
             if (activeDropdown === 'results') {
                 const items = document.getElementById('dropdown-results').querySelectorAll('.dropdown-item');
                 if (e.key === 'ArrowDown') {
@@ -2326,7 +2316,6 @@
                 }
             }
 
-            // Backspace on empty input removes last chip
             if (e.key === 'Backspace' && document.getElementById('search-input').value === '' && selectedTags.length > 0) {
                 e.preventDefault();
                 removeTag(selectedTags[selectedTags.length - 1]);
@@ -2340,14 +2329,6 @@
             });
         }
 
-        function TagKbHighlight(items) {
-            items.forEach((item, idx) => {
-                item.classList.toggle('kb-active', idx === tagKbHighlightIndex);
-                if (idx === tagKbHighlightIndex) item.scrollIntoView({ block: 'nearest' });
-            });
-        }
-
-        // Close dropdowns when clicking outside search section
         document.addEventListener('click', (e) => {
             const searchSection = document.getElementById('search-section');
             if (!searchSection.contains(e.target)) {
@@ -2401,12 +2382,10 @@
                 }
             });
 
-            // Global keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 const isTyping = document.activeElement === searchInput;
                 const isModal = document.getElementById('help-modal-container').classList.contains('active');
 
-                // Focus search
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
                     searchInput.focus();
@@ -2418,14 +2397,12 @@
                     return;
                 }
 
-                // Help modal
                 if ((e.key === '?' || e.key === 'F1') && !isTyping) {
                     e.preventDefault();
                     isModal ? closeModal() : openModal();
                     return;
                 }
 
-                // Escape
                 if (e.key === 'Escape') {
                     if (isModal) { closeModal(); return; }
                     if (document.getElementById('search-dropdown').classList.contains('visible')) {
@@ -2437,7 +2414,6 @@
                         hideTagAutocomplete();
                         return;
                     }
-                    // Clear search input if focused
                     if (isTyping) {
                         searchInput.value = '';
                         triggerSearch();
@@ -2445,14 +2421,12 @@
                     }
                 }
 
-                // Clear all tags
                 if ((e.metaKey || e.ctrlKey) && e.key === 'Backspace') {
                     e.preventDefault();
                     clearAllTags();
                     return;
                 }
 
-                // Page navigation (only when not typing and not in modal)
                 if (!isTyping && !isModal && activeDropdown === 'none') {
                     const totalPages = Math.ceil(filteredTools.length / toolsPerPage);
                     if (e.key === 'j' || e.key === 'ArrowRight') {
@@ -2474,7 +2448,6 @@
                 }
             });
 
-            // Dynamic viewport: recalculate on resize
             let resizeTimer;
             const resizeObserver = new ResizeObserver(() => {
                 clearTimeout(resizeTimer);
@@ -2484,7 +2457,6 @@
             });
             resizeObserver.observe(document.documentElement);
 
-            // Also listen to window resize as a fallback
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(() => {
@@ -2504,11 +2476,9 @@
                 collectTags();
                 renderTagChips();
 
-                // Initial grid setup
                 currentGridConfig = { cols: 0, perPage: 0 };
                 applyGridConfig(true);
 
-                // Render with full list
                 const allTools = getFilteredTools();
                 renderTools(allTools);
             } else {
