@@ -185,18 +185,24 @@
         }
 
         .modal-close {
-            background: transparent;
-            border: none;
-            color: #8b95a5;
+            width: 34px !important;
+            height: 34px !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #8b95a5 !important;
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            padding: 0 !important;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
         .modal-close:hover {
-            color: #f0f4f8;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(212, 168, 75, 0.2) !important;
+            border-color: #d4a84b !important;
+            color: #d4a84b !important;
         }
 
         .modal-body {
@@ -316,8 +322,8 @@
         <div id="event-log-entries"></div>
     </div>
 
-    <!-- Help Section (Hidden by default) -->
-    <div class="help-section" id="help-section" style="display: none;">
+    <!-- Help Section (Modal Overlay) -->
+    <div class="modal-overlay" id="help-section">
         <div class="modal">
             <div class="modal-header">
                 <div class="modal-title">Tool Communication Protocol</div>
@@ -447,7 +453,10 @@ document.dispatchEvent(new CustomEvent('tool-ready', {
         // TOOL STATE MANAGEMENT
         // ============================================
 
-        /**
+        const initialState = {
+            counter: 0,
+            lastAction: null,
+            timestamp: Date.now()
         };
 
         let toolState = { ...initialState };
@@ -603,13 +612,9 @@ document.dispatchEvent(new CustomEvent('tool-ready', {
         function toggleHelp() {
             const helpSection = root ? root.getElementById('help-section') : null;
             if (helpSection) {
-                if (helpSection.style.display === 'none') {
-                    helpSection.style.display = 'block';
-                    logEvent('Help section opened');
-                } else {
-                    helpSection.style.display = 'none';
-                    logEvent('Help section closed');
-                }
+                helpSection.classList.toggle('show');
+                const isOpen = helpSection.classList.contains('show');
+                logEvent(isOpen ? 'Help section opened' : 'Help section closed');
             } else {
                 console.error('Help section element not found');
             }
@@ -705,6 +710,58 @@ document.dispatchEvent(new CustomEvent('tool-ready', {
         }
 
         // ============================================
+        // COMMAND REGISTRATION
+        // ============================================
+        function registerToolCommands() {
+            document.dispatchEvent(new CustomEvent('tool-registerCommands', {
+                detail: {
+                    commands: [
+                        {
+                            toolName: 'Example Tool',
+                            command: 'increment',
+                            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+                            label: 'Increment',
+                            description: 'Increment the counter by 1'
+                        },
+                        {
+                            toolName: 'Example Tool',
+                            command: 'decrement',
+                            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+                            label: 'Decrement',
+                            description: 'Decrement the counter by 1'
+                        }
+                    ]
+                },
+                bubbles: true,
+                composed: true
+            }));
+        }
+
+        // ============================================
+        // CUSTOM COMMAND HANDLERS
+        // ============================================
+        document.addEventListener('tool-increment', (e) => {
+            logEvent('Received command: tool-increment');
+            toolState.counter++;
+            toolState.lastAction = 'incremented';
+            updateUI();
+            showStatus(`Counter: ${toolState.counter}`);
+            
+            // Emit state change for significant updates
+            if (toolState.counter % 5 === 0) {
+                emitStateChange('increment', { counter: toolState.counter });
+            }
+        });
+
+        document.addEventListener('tool-decrement', (e) => {
+            logEvent('Received command: tool-decrement');
+            toolState.counter = Math.max(0, toolState.counter - 1);
+            toolState.lastAction = 'decremented';
+            updateUI();
+            showStatus(`Counter: ${toolState.counter}`);
+        });
+
+        // ============================================
         // INITIALIZATION
         // ============================================
 
@@ -718,13 +775,16 @@ document.dispatchEvent(new CustomEvent('tool-ready', {
             // Initialize UI
             updateUI();
             
+            // Register commands with viewer (before tool-ready)
+            registerToolCommands();
+            
             // Notify viewer that tool is ready
             document.dispatchEvent(new CustomEvent('tool-ready', {
                 detail: {
                     name: 'Example Tool',
                     version: '1.0.0',
                     description: 'Reference implementation of Epistemic Toolbox communication protocol',
-                    capabilities: ['counter', 'help', 'reset', 'refresh']
+                    capabilities: ['counter', 'help', 'reset', 'refresh', 'increment', 'decrement']
                 },
                 bubbles: true,
                 composed: true

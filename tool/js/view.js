@@ -2,14 +2,14 @@
 const ToolAPI = {
     // Reference to the shadow root
     shadowRoot: null,
-    
+
     // Send a command to the tool by dispatching an event
-    sendCommand: function(command, data = {}) {
+    sendCommand: function (command, data = {}) {
         if (!this.shadowRoot) {
             console.warn('Tool not loaded yet');
             return;
         }
-        
+
         // Dispatch event that the tool's event listeners will catch
         console.log(`Dispatching event: tool-${command}`);
         const event = new CustomEvent(`tool-${command}`, {
@@ -19,46 +19,54 @@ const ToolAPI = {
         });
         this.shadowRoot.dispatchEvent(event);
     },
-    
+
     // Open the tool's help
-    openHelp: function() {
+    openHelp: function () {
         this.sendCommand('openHelp');
     },
-    
+
     // Reset the tool
-    reset: function() {
+    reset: function () {
         this.sendCommand('reset');
     },
-    
+
     // Refresh the tool
-    refresh: function() {
+    refresh: function () {
         this.sendCommand('refresh');
     },
-    
+
     // Send a custom command
-    custom: function(command, data) {
+    custom: function (command, data) {
         this.sendCommand(command, data);
     }
 };
 
-    // Execute tool script with access to shadow root
-    function executeScript(root, scriptCode) {
+// Store registered commands
+let registeredCommands = [];
+
+// Execute tool script with access to shadow root
+function executeScript(root, scriptCode) {
+    try {
+        // Create a script element within the shadow DOM
         const scriptEl = document.createElement('script');
-        scriptEl.textContent = `(function(root) {
-            window.__toolShadowRoot__ = root;
+        scriptEl.textContent = `(function() {
             try {
                 ${scriptCode}
             } catch (err) {
                 console.error('Error executing tool script:', err);
             }
-        })(window.__toolShadowRoot__);`;
+        })();`;
         
-        document.head.appendChild(scriptEl);
-        document.head.removeChild(scriptEl);
+        // Append to shadow DOM to execute
+        // Script executes immediately and stays in DOM so event listeners persist
+        root.appendChild(scriptEl);
+    } catch (err) {
+        console.error('Error in executeScript:', err);
     }
+}
 
-    // Load the tool from the URL parameter
-    async function loadTool() {
+// Load the tool from the URL parameter
+async function loadTool() {
     const loading = document.getElementById('loading');
     const error = document.getElementById('error');
     const toolContentWrapper = document.getElementById('tool-content-wrapper');
@@ -104,6 +112,25 @@ const ToolAPI = {
 
         const html = await response.text();
 
+        // Listen for command registration
+        // Set up the global event listener for tools to register their commands
+        console.log('Setting up listener for tool-registerCommands');
+        document.addEventListener('tool-registerCommands', (e) => {
+            console.log('Received command registration from tool:', e.detail);
+            const { commands } = e.detail;
+            registeredCommands = commands;
+            
+            // Clear existing dropdown items (except standard ones)
+            clearCustomCommands();
+            
+            // Add custom commands to dropdown
+            commands.forEach(cmd => {
+                addCommandToDropdown(cmd);
+            });
+            
+            console.log('Registered commands:', commands);
+        });
+
         // Parse the HTML
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
@@ -112,7 +139,13 @@ const ToolAPI = {
         const shadowRoot = toolContentHost.attachShadow({ mode: 'open' });
         ToolAPI.shadowRoot = shadowRoot;
 
-        // Extract and copy all style elements
+        // Inject HTML body content (without scripts) FIRST
+        const bodyClone = doc.body.cloneNode(true);
+        const scripts = bodyClone.querySelectorAll('script');
+        scripts.forEach(script => script.remove());
+        shadowRoot.innerHTML = bodyClone.innerHTML;
+
+        // NOW extract and copy all style elements (after innerHTML so they're not overwritten)
         const styles = doc.querySelectorAll('style');
         styles.forEach(style => {
             const newStyle = document.createElement('style');
@@ -130,29 +163,23 @@ const ToolAPI = {
             shadowRoot.appendChild(newLink);
         });
 
-        // Inject HTML body content (without scripts)
-        const bodyClone = doc.body.cloneNode(true);
-        const scripts = bodyClone.querySelectorAll('script');
-        scripts.forEach(script => script.remove());
-        shadowRoot.innerHTML = bodyClone.innerHTML;
-
         // Make shadowRoot globally accessible for script execution
         window.__toolShadowRoot__ = shadowRoot;
-        
+
         // Execute scripts with proper scope
         const originalScripts = doc.body.querySelectorAll('script');
         console.log('Found', originalScripts.length, 'scripts to execute');
-        
+
         originalScripts.forEach((script) => {
             const code = script.textContent;
             console.log('Script code length:', code.length);
-            
+
             if (code.trim()) {
                 executeScript(shadowRoot, code);
                 console.log('Script executed');
             }
         });
-        
+
         // Clean up global variable
         delete window.__toolShadowRoot__;
 
@@ -189,6 +216,53 @@ const ToolAPI = {
         error.style.display = 'flex';
         errorMessage.textContent = err.message || 'Failed to load the tool. Please try again.';
     }
+}
+
+// Add command to dropdown menu
+function addCommandToDropdown(cmd) {
+    const menu = document.getElementById('tool-options-menu');
+    if (!menu) return;
+    
+    // Create button element
+    const btn = document.createElement('button');
+    btn.className = 'tool-option-btn';
+    btn.setAttribute('data-custom', 'true');
+    btn.title = cmd.description || cmd.label || cmd.command;
+    
+    // Set button content with icon and label
+    btn.innerHTML = `
+        ${cmd.icon}
+        <span>${cmd.label || cmd.command}</span>
+    `;
+    
+    // Add click handler
+    btn.addEventListener('click', () => {
+        // Dispatch command to tool
+        ToolAPI.sendCommand(cmd.command, cmd.data || {});
+        
+        // Close menu
+        const optionsMenu = document.getElementById('tool-options-menu');
+        const menuBtn = document.getElementById('tool-menu-btn');
+        if (optionsMenu) optionsMenu.classList.remove('show');
+        if (menuBtn) menuBtn.classList.remove('active');
+    });
+    
+    // Insert before the divider (if exists) or append
+    const divider = menu.querySelector('.tool-option-divider');
+    if (divider) {
+        menu.insertBefore(btn, divider);
+    } else {
+        menu.appendChild(btn);
+    }
+}
+
+// Clear custom commands from dropdown
+function clearCustomCommands() {
+    const menu = document.getElementById('tool-options-menu');
+    if (!menu) return;
+    
+    const customButtons = menu.querySelectorAll('.tool-option-btn[data-custom="true"]');
+    customButtons.forEach(btn => btn.remove());
 }
 
 // Set up control panel event listeners

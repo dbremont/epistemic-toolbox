@@ -164,7 +164,7 @@
     {
         "name": "Standard Deviation",
         "description": "Measure of dispersion",
-        "url": "https://www.bremontix.xyz/toolbox/tool/std.html",
+        "url": "https://www.bremontix.xyz/toolbox/tool/view.html?tool=standard-deviation",
         "svg-icon": "icon-standard-deviation",
         "tags": ["statistics", "dispersion", "variability", "distribution", "class"]
     },
