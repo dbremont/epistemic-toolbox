@@ -436,18 +436,18 @@ document.dispatchEvent(new CustomEvent('tool-ready', {
         // ============================================
 
         // ============================================
+        // GET SHADOW ROOT REFERENCE
+        // ============================================
+        
+        // The viewer sets window.__toolShadowRoot__ before executing this script
+        // This gives us access to the Shadow DOM for element queries
+        const root = window.__toolShadowRoot__;
+
+        // ============================================
         // TOOL STATE MANAGEMENT
         // ============================================
 
-t
         /**
-         * Tool state object - centralize all state here
-         * Makes reset operations easy and predictable
-         */
-        const initialState = {
-            counter: 0,
-            lastAction: null,
-            timestamp: Date.now()
         };
 
         let toolState = { ...initialState };
