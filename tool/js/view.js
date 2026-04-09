@@ -98,7 +98,7 @@ async function loadTool() {
         // Update title, path, and navigation display
         const formattedName = sanitizedName.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         toolTitle.textContent = formattedName;
-        toolPath.textContent = `/tool/src/${sanitizedName}.html`;
+        toolPath.textContent = `/toolbox/tool/src/${sanitizedName}.html`;
         navToolName.textContent = formattedName;
 
         // Hide the duplicate tool header section
