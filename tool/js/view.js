@@ -93,12 +93,12 @@ async function loadTool() {
     try {
         // Sanitize the tool name to prevent directory traversal
         const sanitizedName = toolName.replace(/[^a-zA-Z0-9_-]/g, '');
-        const toolUrl = `/tool/src/${sanitizedName}.html`;
+        const toolUrl = `/toolbox/tool/src/${sanitizedName}.html`;
 
         // Update title, path, and navigation display
         const formattedName = sanitizedName.replace(/-/g, ' ').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         toolTitle.textContent = formattedName;
-        toolPath.textContent = `/toolbox/tool/src/${sanitizedName}.html`;
+        toolPath.textContent = toolUrl;
         navToolName.textContent = formattedName;
 
         // Hide the duplicate tool header section
