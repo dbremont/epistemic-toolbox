@@ -2,6 +2,17 @@
 
 This is a **sample markdown note** to demonstrate the note viewer functionality.
 
+Guiding questions:
+
+- What is a concept? What is the concept of a concept?
+- What is the role of concepts and conceptualization in epistemic praxis?
+- Are concepts artifacts used to represent reality, or are they intermediate cognitive artifacts primarily serving the internal economy of cognition? Are concepts primarily useful for one’s own cognition and for joint cognition with other agents, or can they also serve as the basis for rigorous representation of the world?
+
+  - This is to abstract - because we can say that **everything cognitive (epistemic)** is a concept, idea - and by that token any description of reality - is based on tokens.
+  - Raw perception is not directly intelligible; it becomes cognitively usable only when it is parsed, segmented, and stabilized by existing conceptual structures, which organize it into a scaffolded representational field.
+  - This is like to say that every card is made of atoms.
+  - ...
+
 ## Features
 
 The note viewer supports:
