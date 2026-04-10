@@ -230,5 +230,12 @@
         "url": "https://www.bremontix.xyz/toolbox/law-of-large-numbers.html",
         "svg-icon": "icon-law",
         "tags": ["probability", "convergence", "statistics", "theory"]
+    },
+    {
+        "name": "Abduction",
+        "description": "Abduction is an epistemic process aimed at inferring and ranking candidate explanations for a given set of observations, based on how likely those observations would be under each hypothesis in a space of possible worlds.",
+        "url": null,
+        "svg-icon": "icon-law",
+        "tags": ["#activity"]
     }
 ]
