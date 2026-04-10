@@ -11,7 +11,13 @@ Guiding questions:
   - This is to abstract - because we can say that **everything cognitive (epistemic)** is a concept, idea - and by that token any description of reality - is based on tokens.
   - Raw perception is not directly intelligible; it becomes cognitively usable only when it is parsed, segmented, and stabilized by existing conceptual structures, which organize it into a scaffolded representational field.
   - This is like to say that every card is made of atoms.
-  - ...
+  - It is more like a **sufficient statistic** over the distribution of possible states the system has encountered or expects to encounter, rather than a model of the temporal evolution of those states.
+  - It is more like a **sufficient statistic—a** kind of stable barycenter (or attractor) of a distribution over perceptual states, capturing the central tendency of a class of experiences while discarding irrelevant variation.
+
+- How can conceptualization be guided to produce better results?
+- How can concepts be evaluated and validated?
+- What epistemic tools are used in conceptualization?
+- What other deep questions am I missing?
 
 ## Features
 
