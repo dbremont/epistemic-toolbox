@@ -23,6 +23,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
+    
+    <!-- Outstanding Markdown Rendering Styles -->
+    <link rel="stylesheet" href="note.css">
 
     <style>
         :root {
@@ -399,152 +402,6 @@
             backdrop-filter: blur(8px);
         }
 
-        /* Markdown Content Styles */
-        .markdown-body h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--fg-primary);
-            margin: 2.5rem 0 1rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-elevated);
-        }
-
-        .markdown-body h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--fg-primary);
-            margin: 2rem 0 0.75rem 0;
-            padding-bottom: 0.4rem;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .markdown-body h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--fg-primary);
-            margin: 1.75rem 0 0.5rem 0;
-        }
-
-        .markdown-body h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--fg-primary);
-            margin: 1.5rem 0 0.5rem 0;
-        }
-
-        .markdown-body p {
-            font-size: 1rem;
-            line-height: 1.75;
-            color: var(--fg-secondary);
-            margin: 1.25rem 0;
-        }
-
-        .markdown-body a {
-            color: var(--accent-primary);
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .markdown-body a:hover {
-            text-decoration: underline;
-            text-decoration-thickness: 2px;
-        }
-
-        .markdown-body ul,
-        .markdown-body ol {
-            margin: 1.25rem 0;
-            padding-left: 2rem;
-        }
-
-        .markdown-body li {
-            font-size: 1rem;
-            line-height: 1.75;
-            color: var(--fg-secondary);
-            margin: 0.5rem 0;
-        }
-
-        .markdown-body code {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(94, 196, 178, 0.1);
-            color: var(--accent-secondary);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        .markdown-body pre {
-            background: rgba(8, 10, 15, 0.8);
-            border: 1px solid var(--border-elevated);
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin: 1.5rem 0;
-            overflow-x: auto;
-        }
-
-        .markdown-body pre code {
-            background: transparent;
-            padding: 0;
-            color: var(--fg-primary);
-            font-size: 0.9em;
-            line-height: 1.6;
-        }
-
-        .markdown-body blockquote {
-            border-left: 3px solid var(--accent-primary);
-            padding: 1rem 1.5rem;
-            margin: 1.5rem 0;
-            background: rgba(212, 168, 75, 0.05);
-            border-radius: 0 8px 8px 0;
-        }
-
-        .markdown-body blockquote p {
-            margin: 0;
-            font-style: italic;
-            color: var(--fg-secondary);
-        }
-
-        .markdown-body table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-        }
-
-        .markdown-body th,
-        .markdown-body td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border: 1px solid var(--border-elevated);
-        }
-
-        .markdown-body th {
-            background: rgba(212, 168, 75, 0.1);
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            color: var(--fg-primary);
-        }
-
-        .markdown-body td {
-            color: var(--fg-secondary);
-        }
-
-        .markdown-body img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-        }
-
-        .markdown-body hr {
-            border: none;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            margin: 2rem 0;
-            opacity: 0.5;
-        }
-
         /* Loading State */
         .loading-state {
             display: flex;
@@ -877,7 +734,7 @@
             try {
                 // Sanitize note name to prevent directory traversal
                 const sanitizedName = noteName.replace(/[^a-zA-Z0-9_-]/g, '');
-                const notePath = `/toolbox/data/note/${sanitizedName}.md`;
+                const notePath = `../data/note/${sanitizedName}.md`;
 
                 const response = await fetch(notePath);
 
