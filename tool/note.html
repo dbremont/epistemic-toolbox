@@ -877,7 +877,7 @@
             try {
                 // Sanitize note name to prevent directory traversal
                 const sanitizedName = noteName.replace(/[^a-zA-Z0-9_-]/g, '');
-                const notePath = `/data/note/${sanitizedName}.md`;
+                const notePath = `/toolbox/data/note/${sanitizedName}.md`;
 
                 const response = await fetch(notePath);
 
