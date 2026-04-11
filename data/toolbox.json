@@ -95,7 +95,7 @@
         "description": "Model of uncertainty over outcomes",
         "url": "",
         "svg-icon": "icon-distribution",
-        "tags": ["uncertainty", "probability", "distribution", "modeling", "wrong-assumption", "tool"]
+        "tags": ["stochastic", "distribution", "modeling", "wrong-assumption", "tool"]
     },
     {
         "name": "Estimator",
@@ -109,7 +109,7 @@
         "description": "Measures data fit under parameters",
         "url": "",
         "svg-icon": "icon-likelihood",
-        "tags": ["inference", "likelihood", "model-fitting", "identifiability", "tool"]
+        "tags": ["inference", "stochastic", "model-fitting", "identifiability", "tool"]
     },
     {
         "name": "Algorithm",
@@ -201,7 +201,7 @@
         "description": "Probabilistic belief updating",
         "url": "https://www.bremontix.xyz/toolbox/tool/bayesian.html",
         "svg-icon": "icon-bayesian",
-        "tags": ["probability", "uncertainty", "belief-updating", "inference", "class"]
+        "tags": ["stochastic", "belief-updating", "inference", "class"]
     },
     {
         "name": "Time Series Analysis",
@@ -215,7 +215,7 @@
         "description": "Random sampling simulation",
         "url": "https://www.bremontix.xyz/toolbox/tool/montecarlo.html",
         "svg-icon": "icon-montecarlo",
-        "tags": ["stochastic", "simulation", "risk-analysis", "probability", "class"]
+        "tags": ["stochastic", "simulation", "risk-analysis", "class"]
     },
     {
         "name": "Hypothesis Testing",
@@ -229,7 +229,7 @@
         "description": "Convergence of averages",
         "url": "https://www.bremontix.xyz/toolbox/law-of-large-numbers.html",
         "svg-icon": "icon-law",
-        "tags": ["probability", "convergence", "statistics", "theory"]
+        "tags": ["stochastic", "convergence", "statistics", "theory"]
     },
     {
         "name": "Abduction",
