@@ -65,6 +65,11 @@
     "tags": ["$meta"]
   },
   {
+    "term": "Epistemic Prior",
+    "description": "An epistemic prior (aka inductive bias) is a modeling practical assumption (not affirmation) about the underlying segment of reality that can informs the selection, solution, and validation of the resulting epistemic artifact, as well as the epistemic tools (representational forms, etc.) used to derive it.",
+    "tags": ["$meta"]
+  },
+  {
     "term": "Epistemic Artifact",
     "description": "An externalized construct that embodies a representation of reality.",
     "tags": ["$meta"]
