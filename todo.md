@@ -9,4 +9,3 @@ Money is:
 - a temporal bridge (intertemporal claims)
 - a network structure (balance sheets)
 - a control signal (prices guiding allocation)
-
