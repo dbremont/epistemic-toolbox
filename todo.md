@@ -2,6 +2,7 @@
 
 - A dynamically evolving, trust-backed, state-supported system of symbolic claims on a bounded, physically constrained production process, coordinated through time via credit networks.
 
+
 Money is:
 
 - a symbolic layer (representation)
@@ -9,3 +10,6 @@ Money is:
 - a temporal bridge (intertemporal claims)
 - a network structure (balance sheets)
 - a control signal (prices guiding allocation)
+
+- [Scoring Rule](https://en.wikipedia.org/wiki/Scoring_rule)
+- 
