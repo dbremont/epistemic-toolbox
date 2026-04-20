@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poisson Process · Window Subdivision Intuition</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #f7f9fc 0%, #e9ecf2 100%);
+      font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .tutorial-card {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 10, 20, 0.12), 0 6px 12px rgba(0, 0, 0, 0.05);
+      padding: 2rem 2rem 2.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    h1 {
+      font-weight: 500;
+      font-size: 2.4rem;
+      margin: 0 0 0.2rem;
+      color: #1a2e3b;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .subhead {
+      font-size: 1.1rem;
+      color: #3a4c5a;
+      margin-bottom: 2rem;
+      border-left: 4px solid #3a7ca5;
+      padding-left: 1.3rem;
+      font-weight: 350;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 800px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+    .explanation-panel {
+      background: #ffffffd6;
+      border-radius: 1.8rem;
+      padding: 1.6rem 1.8rem;
+      box-shadow: inset 0 1px 3px #ffffff, 0 8px 18px -6px rgba(30, 50, 70, 0.12);
+      border: 1px solid #ffffff;
+    }
+    .explanation-panel h2 {
+      font-weight: 450;
+      margin-top: 0.2rem;
+      margin-bottom: 1rem;
+      color: #1e3b4f;
+      font-size: 1.6rem;
+    }
+    .explanation-panel p {
+      line-height: 1.5;
+      color: #1f3a4b;
+      margin-bottom: 1.2rem;
+    }
+    .insight-box {
+      background: #e6f0f8;
+      border-radius: 1.2rem;
+      padding: 1rem 1.3rem;
+      margin: 1.5rem 0;
+      border-left: 6px solid #2a6d8c;
+      font-style: normal;
+    }
+    .control-panel {
+      background: #ffffffd6;
+      border-radius: 1.8rem;
+      padding: 1.6rem 1.8rem;
+      box-shadow: inset 0 1px 3px #fff, 0 8px 18px -6px #1e324122;
+      border: 1px solid #fff;
+    }
+    .slider-group {
+      margin-bottom: 1.8rem;
+    }
+    .slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+      color: #1e3b4f;
+      margin-bottom: 0.3rem;
+    }
+    input[type=range] {
+      width: 100%;
+      margin: 8px 0;
+      accent-color: #2a6d8c;
+    }
+    .value-badge {
+      background: #1e3b4f;
+      color: white;
+      padding: 0.2rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .canvas-wrapper {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 0.8rem 0.5rem 0.3rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      margin-top: 0.5rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: transparent;
+      border-radius: 12px;
+    }
+    .stats-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      margin-top: 1.2rem;
+      font-size: 0.95rem;
+    }
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .stat-label {
+      color: #385e73;
+      font-weight: 450;
+    }
+    .stat-number {
+      background: #eef3f7;
+      padding: 0.2rem 0.9rem;
+      border-radius: 24px;
+      font-family: 'JetBrains Mono', 'Cascadia Code', monospace;
+      font-weight: 500;
+      color: #0a1c26;
+    }
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin: 1.2rem 0 0.5rem;
+    }
+    .btn {
+      background: #ffffff;
+      border: 1px solid #b6cdde;
+      padding: 0.6rem 1.4rem;
+      border-radius: 60px;
+      font-weight: 500;
+      color: #1e3b4f;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      font-size: 0.95rem;
+    }
+    .btn-primary {
+      background: #1e3b4f;
+      border-color: #1e3b4f;
+      color: white;
+      box-shadow: 0 8px 14px -8px #1e3b4f80;
+    }
+    .btn-primary:hover {
+      background: #2a5068;
+    }
+    .btn:hover {
+      background: #e5ecf3;
+    }
+    .btn-primary:hover {
+      background: #2a5068;
+    }
+    .legend-note {
+      font-size: 0.85rem;
+      color: #3c5a70;
+      margin-top: 0.8rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .legend-color {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    footer {
+      margin-top: 2.2rem;
+      text-align: center;
+      color: #4b677b;
+      font-size: 0.9rem;
+    }
+    .katex-style {
+      font-family: 'KaTeX_Math', 'Times New Roman', serif;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+<div class="tutorial-card">
+  <h1>
+    <span>🪟 Window Subdivision</span>
+    <span style="font-size: 1.4rem; margin-left: auto; opacity: 0.7;">λ·Poisson</span>
+  </h1>
+  <div class="subhead">
+    From static total count → independent windows → infinite path measure
+  </div>
+
+  <div class="grid-container">
+    <!-- LEFT: Explanation & Theory -->
+    <div class="explanation-panel">
+      <h2>📐 Why windows define probability</h2>
+      <p>
+        A Poisson process with rate <strong>λ</strong> has no natural “density” on exact event times.
+        Instead, the probability measure is <strong>built from finite-dimensional windows</strong>.
+      </p>
+      <div class="insight-box">
+        <strong>🧠 Core idea:</strong> For any disjoint intervals <em>I₁, I₂, …</em> the counts
+        <em>N(I₁), N(I₂), …</em> are <strong>independent Poisson</strong> with mean λ·|I|.
+        <br>➜ This fully determines the infinite‑path behavior (Kolmogorov extension).
+      </div>
+      <p>
+        <strong>Subdivision reveals structure:</strong><br>
+        • <strong>1 window</strong> → only total count (static regime).<br>
+        • <strong>Many windows</strong> → local rate fluctuations become visible.<br>
+        • <strong>Limit of infinitesimal windows</strong> → each interval of length dt behaves like a biased coin (prob λ·dt of a click).
+      </p>
+      <p style="margin-bottom: 0.2rem;">
+        <span class="legend-color" style="background: #1e3b4f;"></span> Events (clicks) 
+        <span class="legend-color" style="background: #d4a373; margin-left: 16px;"></span> Window boundaries 
+        <span class="legend-color" style="background: #7a9eb1; margin-left: 16px;"></span> Count / bar
+      </p>
+      <p style="margin-top: 1.2rem; font-size: 0.95rem; background: #fafbfc; border-radius: 16px; padding: 0.9rem;">
+        <strong>🎯 Interactive intuition:</strong> Change the number of windows <em>N</em> and watch the bar chart.
+        The variance of counts ≈ mean. With more windows, you see local detail — the process “comes alive”.
+      </p>
+    </div>
+
+    <!-- RIGHT: Simulation + Controls -->
+    <div class="control-panel">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 style="margin:0; font-size:1.5rem;">📊 Live simulation</h2>
+        <span style="background:#eef3f7; padding:4px 12px; border-radius:30px; font-weight:450;">λ = <span id="lambdaDisplay">1.8</span></span>
+      </div>
+      
+      <div class="slider-group">
+        <label>
+          <span>⏱️ Rate λ (events / time unit)</span>
+          <span class="value-badge" id="lambdaValue">1.8</span>
+        </label>
+        <input type="range" id="lambdaSlider" min="0.3" max="4.0" value="1.8" step="0.1">
+      </div>
+
+      <div class="slider-group">
+        <label>
+          <span>🪟 Number of windows <em>N</em> (subdivisions)</span>
+          <span class="value-badge" id="windowsValue">8</span>
+        </label>
+        <input type="range" id="windowsSlider" min="1" max="24" value="8" step="1">
+      </div>
+
+      <div class="slider-group">
+        <label>
+          <span>📏 Time horizon T</span>
+          <span class="value-badge" id="timeValue">10.0</span>
+        </label>
+        <input type="range" id="timeSlider" min="4.0" max="20.0" value="10.0" step="0.5">
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-primary" id="regenerateBtn">⟳ New realization</button>
+        <button class="btn" id="resetDefaultBtn">↺ Default (λ=1.8, N=8)</button>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="processCanvas" width="600" height="220"></canvas>
+      </div>
+
+      <!-- Statistics -->
+      <div class="stats-bar">
+        <div class="stat-item"><span class="stat-label">Total events:</span><span class="stat-number" id="totalEvents">17</span></div>
+        <div class="stat-item"><span class="stat-label">Empirical rate:</span><span class="stat-number" id="empRate">1.70</span></div>
+        <div class="stat-item"><span class="stat-label">Mean count / window:</span><span class="stat-number" id="meanCount">2.12</span></div>
+        <div class="stat-item"><span class="stat-label">Variance / window:</span><span class="stat-number" id="varCount">1.84</span></div>
+      </div>
+
+      <div style="margin-top: 0.8rem; color: #2e546a;">
+        <span style="font-weight:500;">📌 Window counts:</span> 
+        <span id="countsPreview" style="font-family: monospace;">[3, 1, 4, 2, ...]</span>
+      </div>
+
+      <p style="font-size:0.88rem; margin-top:1.2rem; border-top:1px dashed #b8cfde; padding-top:0.9rem;">
+        <strong>💡 Observation:</strong> As N increases, the bar heights approximate the local intensity.
+        For large N, each bar is ~ Poisson(λ·T/N). This is the <em>window subdivision</em> that builds the path measure.
+      </p>
+    </div>
+  </div>
+  <footer>
+    ⚡ Each window is independent · The limit of finer windows defines the infinite‑dimensional probability space
+  </footer>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ----- DOM elements -----
+    const canvas = document.getElementById('processCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const lambdaSlider = document.getElementById('lambdaSlider');
+    const lambdaDisplay = document.getElementById('lambdaDisplay');
+    const lambdaValue = document.getElementById('lambdaValue');
+    const windowsSlider = document.getElementById('windowsSlider');
+    const windowsValue = document.getElementById('windowsValue');
+    const timeSlider = document.getElementById('timeSlider');
+    const timeValue = document.getElementById('timeValue');
+    
+    const totalEventsSpan = document.getElementById('totalEvents');
+    const empRateSpan = document.getElementById('empRate');
+    const meanCountSpan = document.getElementById('meanCount');
+    const varCountSpan = document.getElementById('varCount');
+    const countsPreviewSpan = document.getElementById('countsPreview');
+
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    const resetDefaultBtn = document.getElementById('resetDefaultBtn');
+
+    // ----- state -----
+    let currentLambda = 1.8;
+    let currentWindows = 8;
+    let currentT = 10.0;
+    
+    // Store event times (sorted)
+    let eventTimes = [];
+    
+    // ----- helper: generate Poisson process via exponential interarrivals -----
+    function generatePoissonEvents(lambda, T) {
+      const events = [];
+      let t = 0;
+      while (true) {
+        // interarrival ~ Exp(lambda)
+        const u = Math.random();
+        // avoid log(0) just in case
+        const dt = -Math.log(1 - u + 1e-12) / lambda;
+        t += dt;
+        if (t > T) break;
+        events.push(t);
+      }
+      return events;
+    }
+
+    // ----- compute window counts -----
+    function computeWindowCounts(events, T, numWindows) {
+      const counts = new Array(numWindows).fill(0);
+      const windowWidth = T / numWindows;
+      for (const et of events) {
+        const idx = Math.min(Math.floor(et / windowWidth), numWindows - 1);
+        counts[idx]++;
+      }
+      return { counts, windowWidth };
+    }
+
+    // ----- update UI sliders & displays -----
+    function updateSliderDisplays() {
+      lambdaDisplay.textContent = currentLambda.toFixed(2);
+      lambdaValue.textContent = currentLambda.toFixed(2);
+      windowsValue.textContent = currentWindows;
+      timeValue.textContent = currentT.toFixed(1);
+    }
+
+    // ----- draw canvas: timeline + bar chart + window boundaries -----
+    function drawCanvas(events, T, numWindows, lambda) {
+      const width = canvas.width;
+      const height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+      
+      // Layout constants
+      const timelineTop = 28;
+      const timelineBottom = 92;
+      const timelineY = (timelineTop + timelineBottom) / 2;
+      const barTop = 110;
+      const barBottom = height - 18;
+      const barMaxHeight = barBottom - barTop;
+      
+      const leftMargin = 48;
+      const rightMargin = 32;
+      const graphWidth = width - leftMargin - rightMargin;
+      
+      const windowWidthPx = graphWidth / numWindows;
+      
+      // 1. Draw window boundaries (vertical lines) & background
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = '#d4a373';
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      for (let i = 0; i <= numWindows; i++) {
+        const x = leftMargin + i * windowWidthPx;
+        ctx.moveTo(x, timelineTop - 4);
+        ctx.lineTo(x, barBottom + 2);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]); // reset
+      
+      // 2. Draw timeline axis
+      ctx.beginPath();
+      ctx.strokeStyle = '#1e3b4f';
+      ctx.lineWidth = 2.2;
+      ctx.moveTo(leftMargin - 4, timelineY);
+      ctx.lineTo(leftMargin + graphWidth + 4, timelineY);
+      ctx.stroke();
+      
+      // Time labels
+      ctx.fillStyle = '#2e546a';
+      ctx.font = '11px "Segoe UI", monospace';
+      ctx.textAlign = 'center';
+      for (let i = 0; i <= numWindows; i++) {
+        const x = leftMargin + i * windowWidthPx;
+        const tVal = (i * T / numWindows).toFixed(1);
+        ctx.fillText(tVal, x, timelineBottom + 14);
+      }
+      ctx.fillText('time →', leftMargin + graphWidth/2, barBottom + 15);
+      
+      // 3. Plot events as ticks on timeline
+      ctx.fillStyle = '#1e3b4f';
+      ctx.strokeStyle = '#0f2c3b';
+      ctx.lineWidth = 2.0;
+      for (const et of events) {
+        const x = leftMargin + (et / T) * graphWidth;
+        // small tick
+        ctx.beginPath();
+        ctx.moveTo(x, timelineY - 8);
+        ctx.lineTo(x, timelineY + 8);
+        ctx.stroke();
+        // tiny dot
+        ctx.beginPath();
+        ctx.arc(x, timelineY, 3.5, 0, 2*Math.PI);
+        ctx.fillStyle = '#1e3b4f';
+        ctx.fill();
+        ctx.shadowColor = '#aaccdd';
+        ctx.shadowBlur = 6;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      // 4. Compute counts & draw bar chart
+      const { counts } = computeWindowCounts(events, T, numWindows);
+      
+      // Find max count for scaling (avoid zero)
+      const maxCount = Math.max(...counts, 1);
+      const scale = barMaxHeight / (maxCount * 1.05); // little headroom
+      
+      ctx.fillStyle = '#7a9eb1';
+      ctx.strokeStyle = '#3a5e74';
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < numWindows; i++) {
+        const x = leftMargin + i * windowWidthPx;
+        const barHeight = counts[i] * scale;
+        const y = barBottom - barHeight;
+        ctx.fillRect(x + 2, y, windowWidthPx - 4, barHeight);
+        ctx.strokeRect(x + 2, y, windowWidthPx - 4, barHeight);
+        
+        // display count inside/above bar
+        ctx.fillStyle = '#0b222e';
+        ctx.font = 'bold 10px "Segoe UI", monospace';
+        ctx.textAlign = 'center';
+        if (barHeight > 18) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(counts[i], x + windowWidthPx/2, y + 18);
+        } else {
+          ctx.fillStyle = '#1e3b4f';
+          ctx.fillText(counts[i], x + windowWidthPx/2, y - 5);
+        }
+        ctx.fillStyle = '#7a9eb1'; // reset for next bar
+      }
+      
+      // 5. Draw expected line (lambda * windowWidth)
+      const windowWidthTime = T / numWindows;
+      const expectedPerWindow = lambda * windowWidthTime;
+      const expectedY = barBottom - (expectedPerWindow * scale);
+      ctx.beginPath();
+      ctx.strokeStyle = '#b04632';
+      ctx.lineWidth = 2.0;
+      ctx.setLineDash([6, 4]);
+      ctx.moveTo(leftMargin, expectedY);
+      ctx.lineTo(leftMargin + graphWidth, expectedY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // label expected
+      ctx.font = '10px "Segoe UI"';
+      ctx.fillStyle = '#b04632';
+      ctx.textAlign = 'right';
+      ctx.fillText(`E[count]=${expectedPerWindow.toFixed(2)}`, leftMargin + graphWidth - 6, expectedY - 6);
+      
+      // 6. Title / lambda annotation
+      ctx.font = '500 13px "Segoe UI"';
+      ctx.fillStyle = '#1e3b4f';
+      ctx.textAlign = 'left';
+      ctx.fillText(`λ = ${lambda.toFixed(2)}  ·  ${events.length} events`, leftMargin, 20);
+      
+      return counts;
+    }
+
+    // ----- update statistics & preview -----
+    function updateStats(events, T, numWindows, lambda) {
+      const { counts, windowWidth } = computeWindowCounts(events, T, numWindows);
+      const total = events.length;
+      const empRate = total / T;
+      
+      let sum = 0;
+      for (let c of counts) sum += c;
+      const mean = sum / numWindows;
+      
+      let variance = 0;
+      for (let c of counts) variance += (c - mean) ** 2;
+      variance /= numWindows;
+      
+      totalEventsSpan.textContent = total;
+      empRateSpan.textContent = empRate.toFixed(3);
+      meanCountSpan.textContent = mean.toFixed(3);
+      varCountSpan.textContent = variance.toFixed(3);
+      
+      // preview counts (first 6 windows, ellipsis if many)
+      let previewStr = '';
+      const maxShow = 7;
+      if (counts.length <= maxShow) {
+        previewStr = '[' + counts.join(', ') + ']';
+      } else {
+        previewStr = '[' + counts.slice(0, 5).join(', ') + ', … , ' + counts[counts.length-1] + ']';
+      }
+      countsPreviewSpan.textContent = previewStr;
+    }
+
+    // ----- full refresh: generate, draw, update stats -----
+    function refreshProcess() {
+      // generate new events based on current params
+      eventTimes = generatePoissonEvents(currentLambda, currentT);
+      
+      // draw and get counts
+      const counts = drawCanvas(eventTimes, currentT, currentWindows, currentLambda);
+      updateStats(eventTimes, currentT, currentWindows, currentLambda);
+    }
+
+    // ----- update without regenerating events (only when sliders change except lambda/T) 
+    // but we might want to keep same events when changing windows only — this is valuable:
+    // It shows that the same underlying point pattern is just binned differently.
+    function redrawWithSameEvents() {
+      if (eventTimes.length === 0) {
+        // fallback
+        eventTimes = generatePoissonEvents(currentLambda, currentT);
+      }
+      drawCanvas(eventTimes, currentT, currentWindows, currentLambda);
+      updateStats(eventTimes, currentT, currentWindows, currentLambda);
+    }
+
+    // ----- event listeners -----
+    lambdaSlider.addEventListener('input', (e) => {
+      currentLambda = parseFloat(e.target.value);
+      updateSliderDisplays();
+      // Changing lambda → new realization (rate changes the process)
+      refreshProcess();
+    });
+    
+    windowsSlider.addEventListener('input', (e) => {
+      currentWindows = parseInt(e.target.value, 10);
+      updateSliderDisplays();
+      // Keep same events, just re-bin — better intuition!
+      redrawWithSameEvents();
+    });
+    
+    timeSlider.addEventListener('input', (e) => {
+      currentT = parseFloat(e.target.value);
+      updateSliderDisplays();
+      // T changes → regenerate because horizon changes
+      refreshProcess();
+    });
+    
+    regenerateBtn.addEventListener('click', () => {
+      refreshProcess();
+    });
+    
+    resetDefaultBtn.addEventListener('click', () => {
+      currentLambda = 1.8;
+      currentWindows = 8;
+      currentT = 10.0;
+      lambdaSlider.value = currentLambda;
+      windowsSlider.value = currentWindows;
+      timeSlider.value = currentT;
+      updateSliderDisplays();
+      refreshProcess();
+    });
+
+    // ----- initial load -----
+    function initialize() {
+      updateSliderDisplays();
+      eventTimes = generatePoissonEvents(currentLambda, currentT);
+      drawCanvas(eventTimes, currentT, currentWindows, currentLambda);
+      updateStats(eventTimes, currentT, currentWindows, currentLambda);
+    }
+    
+    initialize();
+
+    // Make canvas resize-aware? We'll keep fixed size; it's fine.
+    // For extra clarity: re-draw on window resize not needed.
+    window.addEventListener('resize', () => { 
+      // no action, canvas pixel dimensions fixed
+    });
+    
+  })();
+</script>
+</body>
+</html>

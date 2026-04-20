@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poisson · the atom of counting</title>
+  <!-- Fonts & base styling -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Newsreader:opsz@14..32&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f2ef;
+      background-image: radial-gradient(circle at 20% 30%, rgba(210, 230, 245, 0.3) 0%, transparent 30%),
+                        radial-gradient(circle at 80% 70%, rgba(200, 210, 230, 0.25) 0%, transparent 40%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      padding: 2rem 1.5rem;
+      color: #1a2a3a;
+    }
+
+    .poisson-container {
+      max-width: 1300px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 3.5rem;
+      box-shadow: 0 25px 45px -8px rgba(20, 40, 60, 0.2), 
+                  0 8px 20px -6px rgba(0,0,0,0.05),
+                  inset 0 0 0 1px rgba(255,255,255,0.7);
+      padding: 2.5rem 2.8rem;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    h1 {
+      font-family: 'Newsreader', serif;
+      font-weight: 450;
+      font-size: 3.2rem;
+      letter-spacing: -0.02em;
+      color: #13222e;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      font-weight: 340;
+      color: #3a5568;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(100, 130, 160, 0.2);
+      padding-bottom: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .subtitle span:last-child {
+      font-family: 'Inter', monospace;
+      background: #d9e2ec70;
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 400;
+      color: #1f4057;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1.8fr;
+      gap: 2.2rem;
+    }
+
+    @media (max-width: 850px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+      }
+      .poisson-container {
+        padding: 1.8rem;
+      }
+      h1 { font-size: 2.5rem; }
+    }
+
+    /* Left panel — explanation & deep insight */
+    .theory-panel {
+      background: rgba(255,255,255,0.4);
+      border-radius: 2.2rem;
+      padding: 1.8rem 2rem;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: inset 0 1px 4px #ffffff, 0 8px 18px -8px rgba(30, 50, 70, 0.08);
+    }
+
+    .theory-panel h2 {
+      font-weight: 470;
+      font-size: 1.7rem;
+      letter-spacing: -0.01em;
+      color: #1f3a4e;
+      margin-bottom: 1.4rem;
+    }
+
+    .formula-card {
+      background: #1e3a4f;
+      color: white;
+      padding: 1.3rem 1.8rem;
+      border-radius: 2rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 12px 18px -10px #10212b80;
+    }
+
+    .formula {
+      font-size: 2rem;
+      font-weight: 400;
+      text-align: center;
+      letter-spacing: 1px;
+      font-family: 'Newsreader', serif;
+    }
+
+    .formula-sub {
+      text-align: center;
+      opacity: 0.85;
+      margin-top: 0.3rem;
+      font-style: italic;
+    }
+
+    .insight-block {
+      background: #e7eef5b0;
+      border-radius: 1.5rem;
+      padding: 1.3rem 1.6rem;
+      margin-top: 1.8rem;
+      border-left: 6px solid #2f6680;
+    }
+
+    .insight-block p {
+      margin-bottom: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .property-list {
+      list-style: none;
+      margin-top: 0.8rem;
+    }
+    .property-list li {
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .bullet {
+      color: #1f4b63;
+      font-weight: 600;
+      width: 1.5rem;
+    }
+
+    /* Right panel — interactive viz */
+    .interact-panel {
+      background: rgba(255,255,255,0.5);
+      border-radius: 2.2rem;
+      padding: 1.8rem 1.8rem 2rem;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid #ffffffd0;
+      box-shadow: inset 0 1px 4px #ffffff, 0 8px 18px -8px #1e324120;
+    }
+
+    .slider-block {
+      margin-bottom: 2rem;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 480;
+      margin-bottom: 6px;
+      color: #1d3f55;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: #2a6d8c;
+      height: 6px;
+    }
+
+    .lambda-value-large {
+      font-size: 2.2rem;
+      font-weight: 350;
+      font-family: 'Newsreader', serif;
+      background: #1e3a4f;
+      color: white;
+      display: inline-block;
+      padding: 0.2rem 1.5rem;
+      border-radius: 60px;
+      margin-top: 0.2rem;
+    }
+
+    .canvas-container {
+      background: #ffffffc0;
+      border-radius: 1.8rem;
+      padding: 1rem 0.5rem 0.2rem;
+      box-shadow: inset 0 2px 6px #ffffff, 0 4px 12px rgba(0,0,0,0.02);
+      margin: 1.2rem 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+    }
+
+    .stats-mini {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 2rem;
+      margin: 1rem 0 0.8rem;
+    }
+
+    .stat-badge {
+      background: #e2eaf1;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      font-weight: 450;
+      color: #153e53;
+    }
+
+    .prob-calc {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 1.2rem 0 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .prob-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prob-input input {
+      width: 75px;
+      padding: 0.5rem 0.8rem;
+      border: 1px solid #b4c8d9;
+      border-radius: 36px;
+      font-size: 1.1rem;
+      text-align: center;
+      background: white;
+      font-weight: 450;
+    }
+
+    .btn {
+      background: white;
+      border: 1px solid #b3c9db;
+      padding: 0.5rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #1f3f55;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .btn-primary {
+      background: #1e3a4f;
+      border-color: #1e3a4f;
+      color: white;
+      box-shadow: 0 8px 14px -8px #1e3a4fa0;
+    }
+
+    .btn-primary:hover {
+      background: #2c506a;
+    }
+
+    .btn:hover {
+      background: #dfe9f2;
+    }
+
+    .empirical-note {
+      font-size: 0.9rem;
+      margin-top: 0.8rem;
+      color: #315f77;
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      text-align: center;
+      color: #386582;
+      font-weight: 350;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+<div class="poisson-container">
+  <h1>
+    Poisson distribution 
+    <span style="font-size:1.7rem; font-weight:300; margin-left:10px; opacity:0.7;">X ~ Poi(λ)</span>
+  </h1>
+  <div class="subtitle">
+    <span>the fundamental atom of counts · independent increments · rare events</span>
+    <span>λ = mean = variance</span>
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT COLUMN: Grounded, sophisticated explanation -->
+    <div class="theory-panel">
+      <h2>⚛️ Why Poisson anchors everything</h2>
+      <p style="margin-bottom:1.2rem; line-height:1.5;">
+        The Poisson distribution describes the number of events occurring in a <strong>fixed interval</strong> 
+        when these events happen independently at a constant average rate λ.
+      </p>
+      <div class="formula-card">
+        <div class="formula">P(X = k) = e<sup>–λ</sup> · λ<sup>k</sup> / k!</div>
+        <div class="formula-sub">k ∈ {0, 1, 2, … }  ·  λ > 0</div>
+      </div>
+      <p>
+        This single discrete distribution is the <strong>building block</strong> of the Poisson <em>process</em>. 
+        Every window count in a homogeneous Poisson process follows exactly this distribution.
+      </p>
+      
+      <div class="insight-block">
+        <p style="font-weight:600; margin-bottom:0.6rem;">✨ Deep properties (why it's the atom)</p>
+        <ul class="property-list">
+          <li><span class="bullet">①</span> <strong>Mean = Variance = λ</strong> — unique among common distributions.</li>
+          <li><span class="bullet">②</span> <strong>Sum of Poissons</strong> : X₁~Poi(λ₁) + X₂~Poi(λ₂) = Poi(λ₁+λ₂) (independent).</li>
+          <li><span class="bullet">③</span> <strong>Thinning</strong> : randomly keeping each event with prob p yields Poi(p·λ).</li>
+          <li><span class="bullet">④</span> <strong>Rare event limit</strong> : Binomial(n, p) → Poisson(λ) when n→∞, p→0, np→λ.</li>
+        </ul>
+      </div>
+
+      <p style="margin-top:1.2rem; font-style:italic; border-left:3px solid #2a6d8c; padding-left:1rem;">
+        “To know the Poisson process, you must first befriend the Poisson distribution.”
+      </p>
+    </div>
+
+    <!-- RIGHT COLUMN: Interactive simulation & PMF -->
+    <div class="interact-panel">
+      <div style="display:flex; align-items: baseline; justify-content: space-between;">
+        <h2 style="font-weight:470; font-size:1.7rem; color:#1f3a4e;">📊 Interactive PMF</h2>
+        <span class="lambda-value-large" id="lambdaDisplayLarge">λ = 3.5</span>
+      </div>
+      
+      <!-- Lambda slider -->
+      <div class="slider-block">
+        <div class="slider-label">
+          <span>adjust rate λ (intensity)</span>
+          <span id="lambdaValueSpan" style="background:#d4e1eb; padding:2px 14px; border-radius:40px;">3.5</span>
+        </div>
+        <input type="range" id="lambdaSlider" min="0.5" max="12.0" value="3.5" step="0.1">
+      </div>
+
+      <!-- Canvas for PMF + empirical overlay -->
+      <div class="canvas-container">
+        <canvas id="pmfCanvas" width="580" height="260"></canvas>
+      </div>
+
+      <!-- Quick stats & probability lookup -->
+      <div class="stats-mini">
+        <span class="stat-badge">📐 mean = <span id="meanStat">3.50</span></span>
+        <span class="stat-badge">📏 variance = <span id="varStat">3.50</span></span>
+        <span class="stat-badge">🎯 mode = ⌊λ⌋, ⌈λ⌉</span>
+      </div>
+
+      <!-- Probability calculator + sample generator -->
+      <div class="prob-calc">
+        <div class="prob-input">
+          <label for="kInput" style="font-weight:450;">P(X =</label>
+          <input type="number" id="kInput" min="0" max="40" value="3" step="1">
+          <span style="font-weight:450;">) =</span>
+          <span id="probResult" style="min-width:90px; font-weight:600; background:#eef3f7; padding:0.2rem 1rem; border-radius:30px;">0.215</span>
+        </div>
+        <button class="btn btn-primary" id="sampleBtn">🎲 generate samples</button>
+        <button class="btn" id="resetSamplesBtn">clear samples</button>
+      </div>
+
+      <!-- Empirical info -->
+      <div class="empirical-note" id="sampleStatsDisplay">
+        <span>📋 empirical mean: —  ·  variance: —  ·  samples: 0</span>
+      </div>
+
+      <p style="margin-top:1.3rem; font-size:0.9rem; color:#2e5f7a;">
+        <strong>↓</strong> The bars show the theoretical PMF. The translucent overlay (when you generate samples) 
+        shows the empirical histogram — it converges to the PMF.
+      </p>
+    </div>
+  </div>
+  <div class="footer-note">
+    ⏤  Poisson is the only distribution where mean = variance  ⏤  <br class="mobile-break">
+    every Poisson process interval count reduces to this atomic law
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ----- elements -----
+    const canvas = document.getElementById('pmfCanvas');
+    const ctx = canvas.getContext('2d');
+    const lambdaSlider = document.getElementById('lambdaSlider');
+    const lambdaValueSpan = document.getElementById('lambdaValueSpan');
+    const lambdaDisplayLarge = document.getElementById('lambdaDisplayLarge');
+    const meanStat = document.getElementById('meanStat');
+    const varStat = document.getElementById('varStat');
+    
+    const kInput = document.getElementById('kInput');
+    const probResult = document.getElementById('probResult');
+    const sampleBtn = document.getElementById('sampleBtn');
+    const resetSamplesBtn = document.getElementById('resetSamplesBtn');
+    const sampleStatsDisplay = document.getElementById('sampleStatsDisplay');
+
+    // state
+    let currentLambda = 3.5;
+    let empiricalCounts = [];        // array of counts from samples
+    let totalSamples = 0;
+    let maxKDisplay = 20;            // we show up to k=20 on canvas (adjust if lambda high)
+
+    // ----- helper: poisson PMF -----
+    function poissonPMF(lambda, k) {
+      if (k < 0 || !Number.isInteger(k)) return 0;
+      // compute log to avoid overflow
+      let logP = -lambda + k * Math.log(lambda);
+      for (let i = 2; i <= k; i++) logP -= Math.log(i);
+      return Math.exp(logP);
+    }
+
+    // ----- compute theoretical PMF array up to maxK -----
+    function getTheoreticalPMF(lambda, maxK) {
+      const pmf = [];
+      for (let k = 0; k <= maxK; k++) {
+        pmf.push(poissonPMF(lambda, k));
+      }
+      return pmf;
+    }
+
+    // ----- draw canvas: theoretical bars + empirical overlay (if any)-----
+    function drawCanvas() {
+      const width = canvas.width;
+      const height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+      
+      // determine max K to show based on lambda (ensure we see bulk)
+      let maxK = Math.max(15, Math.floor(currentLambda * 2.5) + 5);
+      maxK = Math.min(maxK, 35); // keep canvas readable
+      maxKDisplay = maxK;
+      
+      const pmf = getTheoreticalPMF(currentLambda, maxK);
+      const maxProb = Math.max(...pmf, 0.01);
+      
+      // layout
+      const leftMargin = 42;
+      const rightMargin = 28;
+      const barAreaWidth = width - leftMargin - rightMargin;
+      const barWidth = barAreaWidth / (maxK + 1);
+      
+      const baselineY = height - 28;
+      const maxBarHeight = height - 60; 
+      
+      // draw axes
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#2e5770';
+      ctx.beginPath();
+      ctx.moveTo(leftMargin - 6, baselineY);
+      ctx.lineTo(width - rightMargin + 6, baselineY);
+      ctx.stroke();
+      
+      // y-axis
+      ctx.beginPath();
+      ctx.moveTo(leftMargin - 4, baselineY);
+      ctx.lineTo(leftMargin - 4, 20);
+      ctx.stroke();
+      
+      // y ticks
+      ctx.fillStyle = '#1d3f55';
+      ctx.font = '10px "Inter", sans-serif';
+      ctx.textAlign = 'right';
+      for (let p = 0; p <= 1.0; p+=0.1) {
+        const y = baselineY - (p / maxProb) * maxBarHeight;
+        if (y > 15) {
+          ctx.fillText(p.toFixed(1), leftMargin - 10, y+4);
+          ctx.beginPath();
+          ctx.strokeStyle = '#b0c8da';
+          ctx.lineWidth = 0.6;
+          ctx.moveTo(leftMargin-6, y);
+          ctx.lineTo(width-rightMargin+2, y);
+          ctx.stroke();
+        }
+      }
+      
+      // draw theoretical bars (PMF)
+      for (let k = 0; k <= maxK; k++) {
+        const prob = pmf[k];
+        const barHeight = (prob / maxProb) * maxBarHeight;
+        const x = leftMargin + k * barWidth;
+        const y = baselineY - barHeight;
+        
+        // gradient fill
+        const gradient = ctx.createLinearGradient(x, y, x + barWidth-2, baselineY);
+        gradient.addColorStop(0, '#2a6d8c');
+        gradient.addColorStop(1, '#4f8aa8');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+        
+        // stroke
+        ctx.strokeStyle = '#1f4b63';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x + 1, y, barWidth - 2, barHeight);
+        
+        // k label
+        ctx.fillStyle = '#1e3e52';
+        ctx.font = '11px "Inter", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(k, x + barWidth/2, baselineY + 16);
+      }
+      
+      // overlay empirical histogram (if samples exist)
+      if (totalSamples > 0) {
+        const maxEmpiricalCount = Math.max(...empiricalCounts.slice(0, maxK+1), 1);
+        const scaleEmpirical = maxBarHeight / maxProb; // same scaling as theoretical (prob space)
+        
+        for (let k = 0; k <= maxK; k++) {
+          const empiricalProb = empiricalCounts[k] / totalSamples;
+          const barHeight = (empiricalProb / maxProb) * maxBarHeight;
+          if (barHeight < 0.5) continue;
+          const x = leftMargin + k * barWidth;
+          const y = baselineY - barHeight;
+          
+          ctx.fillStyle = '#d49b6a90';
+          ctx.strokeStyle = '#a65d2c';
+          ctx.lineWidth = 1.5;
+          ctx.fillRect(x + 4, y, barWidth - 8, barHeight);
+          ctx.strokeRect(x + 4, y, barWidth - 8, barHeight);
+        }
+        
+        // legend for overlay
+        ctx.fillStyle = '#a65d2c';
+        ctx.font = '10px "Inter", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('⧆ empirical (samples)', leftMargin + 10, 38);
+      }
+      
+      // Title & lambda
+      ctx.fillStyle = '#1a3a4e';
+      ctx.font = '500 13px "Inter", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Poisson(λ=${currentLambda.toFixed(2)})`, leftMargin, 22);
+      
+      // update k probability display
+      updateProbForK();
+    }
+
+    // ----- update probability for selected k -----
+    function updateProbForK() {
+      let k = parseInt(kInput.value, 10);
+      if (isNaN(k) || k < 0) k = 0;
+      const prob = poissonPMF(currentLambda, k);
+      probResult.textContent = prob.toFixed(6);
+    }
+
+    // ----- update UI numbers & redraw -----
+    function refreshAll() {
+      const lambda = currentLambda;
+      lambdaValueSpan.textContent = lambda.toFixed(2);
+      lambdaDisplayLarge.textContent = `λ = ${lambda.toFixed(2)}`;
+      meanStat.textContent = lambda.toFixed(2);
+      varStat.textContent = lambda.toFixed(2);
+      drawCanvas();
+      updateSampleStatsDisplay();
+    }
+
+    // ----- generate Poisson samples (using Knuth / simple method) -----
+    function generatePoissonSample(lambda) {
+      // using multiplication method with exp (for moderate lambda)
+      const L = Math.exp(-lambda);
+      let k = 0;
+      let p = 1.0;
+      do {
+        k++;
+        p *= Math.random();
+      } while (p > L);
+      return k - 1;
+    }
+
+    function addSamples(n = 150) {
+      if (!empiricalCounts.length) {
+        // initialize array up to some safe max
+        empiricalCounts = new Array(60).fill(0);
+      }
+      for (let i = 0; i < n; i++) {
+        const s = generatePoissonSample(currentLambda);
+        if (s < empiricalCounts.length) {
+          empiricalCounts[s]++;
+        } else {
+          // extend array
+          for (let j = empiricalCounts.length; j <= s; j++) empiricalCounts[j] = 0;
+          empiricalCounts[s]++;
+        }
+        totalSamples++;
+      }
+      drawCanvas();
+      updateSampleStatsDisplay();
+    }
+
+    function resetSamples() {
+      empiricalCounts = [];
+      totalSamples = 0;
+      drawCanvas();
+      updateSampleStatsDisplay();
+    }
+
+    function updateSampleStatsDisplay() {
+      if (totalSamples === 0) {
+        sampleStatsDisplay.innerHTML = `<span>📋 empirical mean: —  ·  variance: —  ·  samples: 0</span>`;
+        return;
+      }
+      // compute empirical mean & variance
+      let sum = 0;
+      let sumSq = 0;
+      let countNonZero = 0;
+      for (let k = 0; k < empiricalCounts.length; k++) {
+        const c = empiricalCounts[k];
+        if (c > 0) {
+          sum += k * c;
+          sumSq += k * k * c;
+          countNonZero += c;
+        }
+      }
+      const mean = sum / totalSamples;
+      const variance = (sumSq / totalSamples) - (mean * mean);
+      sampleStatsDisplay.innerHTML = `<span>📋 empirical mean: ${mean.toFixed(3)}  ·  variance: ${variance.toFixed(3)}  ·  samples: ${totalSamples}</span>`;
+    }
+
+    // ----- event listeners -----
+    lambdaSlider.addEventListener('input', (e) => {
+      currentLambda = parseFloat(e.target.value);
+      // when lambda changes, reset empirical samples (they correspond to old lambda)
+      resetSamples();
+      refreshAll();
+    });
+
+    kInput.addEventListener('input', () => {
+      updateProbForK();
+    });
+
+    sampleBtn.addEventListener('click', () => {
+      addSamples(200);  // add 200 samples per click
+    });
+
+    resetSamplesBtn.addEventListener('click', () => {
+      resetSamples();
+    });
+
+    // Also update prob when lambda changes
+    // refreshAll calls updateProbForK via drawCanvas -> updateProbForK, but we need explicit
+    const originalDraw = drawCanvas;
+    drawCanvas = function() {
+      originalDraw();
+      updateProbForK();
+    };
+    // ensure it's bound correctly
+    drawCanvas = drawCanvas.bind(this);
+
+    // initial load
+    function init() {
+      currentLambda = 3.5;
+      lambdaSlider.value = currentLambda;
+      resetSamples();
+      refreshAll();
+      kInput.value = 3;
+      updateProbForK();
+    }
+
+    init();
+    
+    // handle k input change via arrow keys etc.
+    kInput.addEventListener('change', updateProbForK);
+    
+    // if window resizes, canvas stays sharp (we set width/height in html)
+    // add a small resize safeguard (not needed)
+  })();
+</script>
+</body>
+</html>

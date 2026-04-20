@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hawkes · conditional window distribution</title>
+  <!-- Fonts & base -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0f1a24;
+      background-image: radial-gradient(circle at 15% 30%, #1a3343 0%, #0a141c 90%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      padding: 2rem 1.5rem;
+      color: #eef3f7;
+    }
+
+    .hawkes-container {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(20, 35, 50, 0.65);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 3rem;
+      box-shadow: 0 30px 45px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(120, 180, 220, 0.15);
+      padding: 2.2rem 2.5rem;
+      border: 1px solid rgba(210, 230, 250, 0.1);
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 2.8rem;
+      letter-spacing: -0.02em;
+      color: #e4eef7;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    h1 span {
+      background: #2f5670;
+      padding: 0.1rem 1.2rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      color: #d9e9fa;
+    }
+
+    .subhead {
+      font-size: 1.1rem;
+      color: #b0cde0;
+      margin-bottom: 2rem;
+      border-left: 4px solid #6ea5c9;
+      padding-left: 1.5rem;
+      font-weight: 350;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1.8fr;
+      gap: 1.8rem;
+    }
+
+    @media (max-width: 800px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      .hawkes-container { padding: 1.8rem; }
+    }
+
+    /* LEFT panel — theory & controls */
+    .theory-panel {
+      background: rgba(18, 30, 42, 0.7);
+      border-radius: 2rem;
+      padding: 1.6rem 1.8rem;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(200, 220, 240, 0.1);
+    }
+
+    .theory-panel h2 {
+      font-weight: 400;
+      font-size: 1.7rem;
+      color: #cde2f5;
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .formula-badge {
+      background: #142b3c;
+      padding: 1rem 1.4rem;
+      border-radius: 1.5rem;
+      margin: 1.2rem 0;
+      font-family: monospace;
+      border-left: 6px solid #7ab3d9;
+    }
+
+    .slider-group {
+      margin: 1.5rem 0;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 450;
+      margin-bottom: 6px;
+      color: #b9d5ed;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: #6ea5c9;
+      background: #1e4058;
+      height: 5px;
+      border-radius: 10px;
+    }
+
+    .window-selector {
+      background: #10243360;
+      border-radius: 1.5rem;
+      padding: 1.2rem 1.2rem;
+      margin: 1.5rem 0;
+      border: 1px solid #3e6885;
+    }
+
+    .condition-box {
+      background: #0e2635;
+      border-radius: 1.2rem;
+      padding: 1rem 1.2rem;
+      margin-top: 1rem;
+      border: 1px solid #4f7f9c;
+    }
+
+    .window-row {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .window-input {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0b1a26;
+      padding: 0.2rem 0.8rem;
+      border-radius: 40px;
+      border: 1px solid #38658a;
+    }
+    .window-input input {
+      width: 70px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      padding: 6px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .btn {
+      background: #1d4057;
+      border: 1px solid #6e9fc0;
+      color: #ecf3fa;
+      padding: 0.6rem 1.4rem;
+      border-radius: 60px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.15s;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 12px -6px #00000050;
+    }
+    .btn-primary {
+      background: #3e7a9e;
+      border-color: #a3c6e3;
+      color: white;
+      box-shadow: 0 8px 16px -8px #1e4b66;
+    }
+    .btn-primary:hover { background: #5a98c0; }
+    .btn:hover { background: #2c5777; }
+
+    /* RIGHT panel — histogram only */
+    .viz-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .canvas-card {
+      background: #0f212fb0;
+      border-radius: 1.8rem;
+      padding: 1.5rem 1rem 1rem;
+      backdrop-filter: blur(4px);
+      border: 1px solid #2a506b;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+    }
+
+    .histo-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.8rem;
+      color: #b8d2e8;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .legend-inline {
+      display: flex;
+      gap: 1.8rem;
+      font-size: 0.85rem;
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+
+    .footer-note {
+      margin-top: 1.8rem;
+      text-align: right;
+      font-style: italic;
+      color: #7da5c4;
+    }
+  </style>
+</head>
+<body>
+<div class="hawkes-container">
+  <h1>
+    Hawkes · conditional window counts 
+    <span>P( N(W) | N(W₋) = k )</span>
+  </h1>
+  <div class="subhead">
+    λ(t) = μ + ∑ α e<sup>–β(t – tᵢ)</sup>  ·  explicit conditioning on the previous window
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT: theory & controls -->
+    <div class="theory-panel">
+      <h2>⚡ self‑exciting intensity</h2>
+      <p style="margin-bottom:0.8rem; line-height:1.5; color:#c1d8ec;">
+        Events increase future rate. Here we show <strong>conditional distribution</strong>: given exactly <em>k</em> events in the previous window, what is the distribution in the current window?
+      </p>
+      <div class="formula-badge">
+        λ(t | ℋₜ) = μ + α ∑<sub>tᵢ < t</sub> e<sup>–β (t – tᵢ)</sup>
+      </div>
+      
+      <div class="slider-group">
+        <div class="slider-label"><span>μ · baseline rate</span><span id="muVal">0.8</span></div>
+        <input type="range" id="muSlider" min="0.2" max="2.5" value="0.8" step="0.1">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>α · excitation strength</span><span id="alphaVal">0.9</span></div>
+        <input type="range" id="alphaSlider" min="0.0" max="2.0" value="0.9" step="0.1">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>β · decay rate</span><span id="betaVal">1.5</span></div>
+        <input type="range" id="betaSlider" min="0.5" max="3.5" value="1.5" step="0.1">
+      </div>
+      
+      <div class="window-selector">
+        <div style="display:flex; justify-content:space-between;">
+          <span style="font-weight:500;">📅 analysis window</span>
+          <span style="opacity:0.8;">(horizon T = 15)</span>
+        </div>
+        <div class="window-row">
+          <div class="window-input"><span>start</span><input type="number" id="windowStart" min="2" max="13" value="6.0" step="0.5"></div>
+          <div class="window-input"><span>end</span><input type="number" id="windowEnd" min="3" max="15" value="10.0" step="0.5"></div>
+        </div>
+        
+        <div class="condition-box">
+          <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+            <span style="font-weight:500;">🔮 condition on previous window:</span>
+            <div class="window-input" style="background:#0a1f2c;">
+              <span>N(prev) =</span>
+              <input type="number" id="prevCountInput" min="0" max="20" value="4" step="1">
+            </div>
+            <span style="opacity:0.8; font-size:0.9rem;">(window [start–len, start])</span>
+          </div>
+          <p style="font-size:0.8rem; margin-top:0.6rem; opacity:0.7;">
+            Only paths where the previous window count exactly matches this value are kept.
+          </p>
+        </div>
+        
+        <div class="window-row" style="margin-top:1.2rem;">
+          <button class="btn btn-primary" id="simulateBtn">⟳ sample conditional</button>
+          <button class="btn" id="resetHistBtn">🗑️ clear</button>
+        </div>
+      </div>
+      
+      <div style="margin-top:1rem; font-size:0.9rem; color:#aac6df;">
+        <span id="acceptanceInfo">Accepted: 0 / 0 attempts</span>
+      </div>
+      <p style="margin-top:1rem; font-size:0.9rem; color:#aac6df;">
+        <span style="display:inline-block; width:12px; height:12px; background:#d99b58; border-radius:3px; margin-right:6px;"></span> conditional Hawkes  
+        <span style="display:inline-block; width:12px; height:12px; background:#5f9db2; border-radius:3px; margin-left:16px; margin-right:6px;"></span> Poisson (unconditional mean)
+      </p>
+    </div>
+
+    <!-- RIGHT: histogram only -->
+    <div class="viz-panel">
+      <div class="canvas-card">
+        <canvas id="histCanvas" width="700" height="280"></canvas>
+        <div class="histo-stats">
+          <span>📊 count distribution in window [<span id="winStartDisplay">6.0</span>, <span id="winEndDisplay">10.0</span>]</span>
+          <span>trials: <span id="trialCount">0</span> &nbsp; | &nbsp; mean: <span id="empMean">—</span> &nbsp; var: <span id="empVar">—</span></span>
+        </div>
+        <div style="margin-top: 0.5rem; font-size:0.85rem; color:#9bb9d3;">
+          ⚡ Conditional on N(prev) = <span id="condValueDisplay">4</span>. Higher past activity → higher rate now.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">
+    ⏤ each click generates paths until enough satisfy the condition · conditioning makes history explicit ⏤
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ----- DOM refs -----
+    const histCanvas = document.getElementById('histCanvas');
+    const ctxHist = histCanvas.getContext('2d');
+
+    // sliders
+    const muSlider = document.getElementById('muSlider');
+    const alphaSlider = document.getElementById('alphaSlider');
+    const betaSlider = document.getElementById('betaSlider');
+    const muVal = document.getElementById('muVal');
+    const alphaVal = document.getElementById('alphaVal');
+    const betaVal = document.getElementById('betaVal');
+
+    const windowStartInput = document.getElementById('windowStart');
+    const windowEndInput = document.getElementById('windowEnd');
+    const winStartDisplay = document.getElementById('winStartDisplay');
+    const winEndDisplay = document.getElementById('winEndDisplay');
+    const prevCountInput = document.getElementById('prevCountInput');
+    const condValueDisplay = document.getElementById('condValueDisplay');
+    
+    const trialCountSpan = document.getElementById('trialCount');
+    const empMeanSpan = document.getElementById('empMean');
+    const empVarSpan = document.getElementById('empVar');
+    const acceptanceInfo = document.getElementById('acceptanceInfo');
+
+    const simulateBtn = document.getElementById('simulateBtn');
+    const resetHistBtn = document.getElementById('resetHistBtn');
+
+    // parameters
+    let mu = 0.8, alpha = 0.9, beta = 1.5;
+    const T = 15.0;
+    
+    // window
+    let winStart = 6.0, winEnd = 10.0;
+    let prevCountTarget = 4;
+    
+    // histogram data
+    let histCounts = [];
+    let totalAccepted = 0;
+    let totalAttempts = 0;
+
+    // ----- generate Hawkes process (thinning) -----
+    function generateHawkes(mu, alpha, beta, T, maxEvents=2000) {
+      const events = [];
+      let t = 0;
+      
+      function intensity(s, history) {
+        let val = mu;
+        for (let ti of history) {
+          if (ti < s) {
+            val += alpha * Math.exp(-beta * (s - ti));
+          }
+        }
+        return val;
+      }
+
+      while (t < T) {
+        const currentLambda = intensity(t, events);
+        let bound = mu + alpha * events.filter(ti => (t - ti) < 5.0/beta).length + 1.0;
+        bound = Math.max(bound, currentLambda * 1.2, mu + 0.5);
+        
+        const u1 = Math.random();
+        const dt = -Math.log(u1) / bound;
+        t += dt;
+        if (t > T) break;
+        
+        const u2 = Math.random();
+        const lambdaAtT = intensity(t, events);
+        if (u2 <= lambdaAtT / bound) {
+          events.push(t);
+          if (events.length > maxEvents) break;
+        }
+      }
+      return events;
+    }
+
+    // ----- count events in interval -----
+    function countInWindow(events, a, b) {
+      let cnt = 0;
+      for (let t of events) if (t >= a && t <= b) cnt++;
+      return cnt;
+    }
+
+    // ----- histogram drawing -----
+    function drawHistogram() {
+      const w = histCanvas.width, h = histCanvas.height;
+      ctxHist.clearRect(0, 0, w, h);
+      
+      if (totalAccepted === 0) {
+        ctxHist.font = '14px Inter';
+        ctxHist.fillStyle = '#aac6df';
+        ctxHist.textAlign = 'center';
+        ctxHist.fillText('run simulation to see conditional distribution', w/2, h/2);
+        return;
+      }
+      
+      const padL = 50, padR = 30, padT = 25, padB = 40;
+      const graphW = w - padL - padR, graphH = h - padT - padB;
+      
+      let maxCount = 0;
+      for (let c of histCounts) if (c > maxCount) maxCount = c;
+      maxCount = Math.max(maxCount, 1);
+      
+      const barWidth = graphW / (histCounts.length || 20);
+      
+      // empirical bars
+      for (let k = 0; k < histCounts.length; k++) {
+        const count = histCounts[k];
+        if (count === 0) continue;
+        const barH = (count / maxCount) * graphH;
+        const x = padL + k * barWidth;
+        const y = padT + graphH - barH;
+        ctxHist.fillStyle = '#d99b58';
+        ctxHist.fillRect(x+1, y, barWidth-2, barH);
+        ctxHist.strokeStyle = '#b07a42';
+        ctxHist.lineWidth = 1;
+        ctxHist.strokeRect(x+1, y, barWidth-2, barH);
+      }
+      
+      // compute empirical mean / var
+      let sumCounts = 0, sumSq = 0;
+      for (let k=0; k<histCounts.length; k++) {
+        sumCounts += k * histCounts[k];
+        sumSq += k*k * histCounts[k];
+      }
+      const empMean = sumCounts / totalAccepted;
+      const empVar = (sumSq/totalAccepted) - empMean*empMean;
+      
+      // Poisson overlay (same unconditional mean? or mean of conditional)
+      const poissonMean = empMean;
+      const maxProb = Math.max(...histCounts.map(c => c/totalAccepted), 0.05);
+      const scaleProbToHeight = graphH / maxProb;
+      
+      ctxHist.beginPath();
+      ctxHist.strokeStyle = '#5f9db2';
+      ctxHist.lineWidth = 2.2;
+      let first = true;
+      for (let k=0; k<=Math.min(35, histCounts.length+5); k++) {
+        let poissP = Math.exp(-poissonMean + k*Math.log(poissonMean) - lnFact(k));
+        const barX = padL + k * barWidth + barWidth/2;
+        const barY = padT + graphH - poissP * scaleProbToHeight;
+        if (first) { ctxHist.moveTo(barX, barY); first = false; }
+        else ctxHist.lineTo(barX, barY);
+      }
+      ctxHist.stroke();
+      
+      // axes labels
+      ctxHist.fillStyle = '#cde2f5';
+      ctxHist.font = '10px Inter';
+      ctxHist.textAlign = 'center';
+      for (let k=0; k<=Math.min(histCounts.length, 30); k+=2) {
+        const x = padL + k * barWidth + barWidth/2;
+        ctxHist.fillText(k, x, padT+graphH+18);
+      }
+      
+      // update stats
+      empMeanSpan.textContent = empMean.toFixed(3);
+      empVarSpan.textContent = empVar.toFixed(3);
+      trialCountSpan.textContent = totalAccepted;
+    }
+
+    function lnFact(n) {
+      if (n <= 1) return 0;
+      let sum = 0;
+      for (let i=2; i<=n; i++) sum += Math.log(i);
+      return sum;
+    }
+
+    // ----- run simulations with conditioning -----
+    function runConditionalSimulations(targetSamples = 200) {
+      const windowLen = winEnd - winStart;
+      const prevStart = winStart - windowLen;
+      const prevEnd = winStart;
+      
+      let accepted = 0;
+      let attempts = 0;
+      const maxAttempts = targetSamples * 30; // avoid infinite loops
+      
+      while (accepted < targetSamples && attempts < maxAttempts) {
+        const events = generateHawkes(mu, alpha, beta, T);
+        const prevCount = countInWindow(events, prevStart, prevEnd);
+        if (prevCount === prevCountTarget) {
+          const currCount = countInWindow(events, winStart, winEnd);
+          while (histCounts.length <= currCount) histCounts.push(0);
+          histCounts[currCount]++;
+          accepted++;
+        }
+        attempts++;
+      }
+      
+      totalAccepted += accepted;
+      totalAttempts += attempts;
+      
+      drawHistogram();
+      updateAcceptanceInfo(accepted, attempts);
+    }
+
+    function updateAcceptanceInfo(addedAccepted, addedAttempts) {
+      const rate = totalAttempts > 0 ? (totalAccepted / totalAttempts * 100).toFixed(1) : '0.0';
+      acceptanceInfo.textContent = `Accepted: ${totalAccepted} / ${totalAttempts} attempts (${rate}% match condition)`;
+    }
+
+    // ----- update UI from sliders -----
+    function updateParams() {
+      mu = parseFloat(muSlider.value);
+      alpha = parseFloat(alphaSlider.value);
+      beta = parseFloat(betaSlider.value);
+      muVal.textContent = mu.toFixed(2);
+      alphaVal.textContent = alpha.toFixed(2);
+      betaVal.textContent = beta.toFixed(2);
+    }
+
+    function updateWindowDisplay() {
+      winStart = parseFloat(windowStartInput.value);
+      winEnd = parseFloat(windowEndInput.value);
+      if (winStart >= winEnd) { winEnd = Math.min(winStart+0.5, T); windowEndInput.value = winEnd; }
+      // ensure window start at least 2 to have previous window
+      if (winStart < 2) { winStart = 2; windowStartInput.value = winStart; }
+      
+      winStartDisplay.textContent = winStart.toFixed(1);
+      winEndDisplay.textContent = winEnd.toFixed(1);
+      
+      // update condition display
+      prevCountTarget = parseInt(prevCountInput.value, 10);
+      condValueDisplay.textContent = prevCountTarget;
+    }
+
+    // ----- reset histogram -----
+    function resetHistogram() {
+      histCounts = [];
+      totalAccepted = 0;
+      totalAttempts = 0;
+      drawHistogram();
+      empMeanSpan.textContent = '—';
+      empVarSpan.textContent = '—';
+      trialCountSpan.textContent = '0';
+      acceptanceInfo.textContent = 'Accepted: 0 / 0 attempts';
+    }
+
+    // ----- event wiring -----
+    muSlider.addEventListener('input', updateParams);
+    alphaSlider.addEventListener('input', updateParams);
+    betaSlider.addEventListener('input', updateParams);
+    
+    windowStartInput.addEventListener('change', updateWindowDisplay);
+    windowEndInput.addEventListener('change', updateWindowDisplay);
+    prevCountInput.addEventListener('input', () => {
+      prevCountTarget = parseInt(prevCountInput.value, 10);
+      condValueDisplay.textContent = prevCountTarget;
+    });
+    
+    simulateBtn.addEventListener('click', () => {
+      runConditionalSimulations(200);
+    });
+    
+    resetHistBtn.addEventListener('click', resetHistogram);
+    
+    // initialise
+    function init() {
+      updateParams();
+      updateWindowDisplay();
+      resetHistogram();
+    }
+    init();
+    
+  })();
+</script>
+</body>
+</html>
