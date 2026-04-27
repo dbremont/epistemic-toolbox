@@ -1,0 +1,1443 @@
+[
+  {
+    "id": "cat_obs_iface",
+    "name": "Observation Interface & Recoding",
+    "inheritanceLevel": 0,
+    "description": "The sensorimotor boundary + inscription process that transduces a Domain Snapshot into a persistent encoded artifact.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_artifact",
+    "name": "Epistemic Artifact",
+    "inheritanceLevel": 0,
+    "description": "Structured object that encodes claims, constraints, or distributions over reality; the primary carrier of semantic content.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_interp",
+    "name": "Interpretation Layer",
+    "inheritanceLevel": 0,
+    "description": "Interpretation function that assigns meaning to an epistemic artifact.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_tool",
+    "name": "Epistemic Tool",
+    "inheritanceLevel": 0,
+    "description": "Formal or procedural mechanism used to construct, transform, or validate epistemic artifacts.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_agent",
+    "name": "Epistemic Agent",
+    "inheritanceLevel": 0,
+    "description": "Entity that performs epistemic operations by applying tools to artifacts.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_process",
+    "name": "Epistemic Process (Activity)",
+    "inheritanceLevel": 0,
+    "description": "Ordered sequence of tool applications over time; defines the dynamics of knowledge construction.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_standard",
+    "name": "Epistemic Standard",
+    "inheritanceLevel": 0,
+    "description": "Normative criteria used to evaluate validity, correctness, or acceptability of artifacts and processes.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_substrate",
+    "name": "Encoding Substrate",
+    "inheritanceLevel": 0,
+    "description": "Encoding format or substrate in which artifacts are expressed; constrains manipulation and interpretation.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_domain",
+    "name": "Epistemic Domain (Segment of Reality)",
+    "inheritanceLevel": 0,
+    "description": "Segment of reality that the epistemic practice targets or models.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_constraint",
+    "name": "Epistemic Constraint",
+    "inheritanceLevel": 0,
+    "description": "Limitation that bounds what can be known or inferred within the system.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_infra",
+    "name": "Epistemic Infrastructure",
+    "inheritanceLevel": 0,
+    "description": "Supporting environment that enables storage, computation, measurement, and communication of artifacts.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_meta",
+    "name": "Meta‑Epistemic Layer",
+    "inheritanceLevel": 0,
+    "description": "Material, energetic, social, and institutional environment enabling artifact handling over time.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_feedback",
+    "name": "Epistemic Feedback",
+    "inheritanceLevel": 0,
+    "description": "Signal from reality (or another artifact) that resists or confirms prior predictions, driving learning.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "cat_act",
+    "name": "Epistemic Act",
+    "inheritanceLevel": 0,
+    "description": "Primitive, non‑decomposable operation performed by an agent.",
+    "roles": ["abstract_category"],
+    "specific": {},
+    "edges": [],
+    "meta": { "tags": ["top-level"], "confidence": 1.0, "source": "taxonomy" }
+  },
+  {
+    "id": "obs_iface_01",
+    "name": "CMOS Sensor + ADC + JPEG pipeline",
+    "inheritanceLevel": 1,
+    "description": "Transduces light → digital image, compresses and stores as JPEG.",
+    "roles": ["sensor", "encoder"],
+    "specific": {
+      "modality": "sensorimotor",
+      "structure": "photon → charge → ADC → JPEG file",
+      "noise_model": "Poisson-Gaussian"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_obs_iface", "meta": {} },
+      { "type": "encodes", "node": "artifact_01", "meta": {} }
+    ],
+    "meta": { "tags": ["imaging"], "confidence": 0.95, "source": "curated" }
+  },
+  {
+    "id": "obs_iface_02",
+    "name": "Human Visual Observation + Working Memory",
+    "inheritanceLevel": 1,
+    "description": "Retina → V1 → working memory buffer; volatile encoded snapshot.",
+    "roles": ["biological sensor"],
+    "specific": {
+      "modality": "cognitive",
+      "structure": "retina → LGN → V1 → memory",
+      "noise_model": "Weber-Fechner"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_obs_iface", "meta": {} },
+      { "type": "encodes", "node": "artifact_07", "meta": {} }
+    ],
+    "meta": { "tags": ["human"], "confidence": 0.92, "source": "cogsci" }
+  },
+  {
+    "id": "artifact_01",
+    "name": "Digital Image",
+    "inheritanceLevel": 1,
+    "description": "2D RGB pixel array + metadata.",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "sensorimotor",
+      "structure": "raster (R,G,B)",
+      "noise_model": "per-pixel Gaussian"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} },
+      { "type": "instantiates", "node": "artifact_06", "meta": {} }
+    ],
+    "meta": { "tags": ["image"], "confidence": 1.0 }
+  },
+  {
+    "id": "artifact_02",
+    "name": "Numerical Measurement (scalar + uncertainty)",
+    "inheritanceLevel": 1,
+    "description": "e.g., 9.81 ± 0.01 m/s².",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "sensorimotor",
+      "structure": "value, unit, uncertainty",
+      "noise_model": "Gaussian"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": { "tags": ["measurement"], "confidence": 1.0 }
+  },
+  {
+    "id": "artifact_03",
+    "name": "Scientific Hypothesis (Proposition)",
+    "inheritanceLevel": 1,
+    "description": "Falsifiable claim in natural/formal language.",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "cognitive",
+      "structure": "logical form",
+      "noise_model": "none"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": { "tags": ["hypothesis"], "confidence": 1.0 }
+  },
+  {
+    "id": "artifact_04",
+    "name": "Bayesian Network Model",
+    "inheritanceLevel": 1,
+    "description": "DAG with conditional probability tables.",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "computational",
+      "structure": "nodes, edges, CPDs",
+      "noise_model": "probabilistic"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": { "tags": ["bayesian"], "confidence": 0.98 }
+  },
+  {
+    "id": "artifact_05",
+    "name": "Time Series Dataset",
+    "inheritanceLevel": 1,
+    "description": "Ordered (t, value) pairs.",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "sensorimotor",
+      "structure": "timestamped sequence",
+      "noise_model": "correlated + white"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": { "tags": ["time series"], "confidence": 1.0 }
+  },
+  {
+    "id": "artifact_06",
+    "name": "Differential Equation Model",
+    "inheritanceLevel": 1,
+    "description": "ODE/PDE system with parameters.",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "computational",
+      "structure": "equations, ICs",
+      "noise_model": "process noise"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": { "tags": ["dynamics"], "confidence": 1.0 }
+  },
+  {
+    "id": "artifact_07",
+    "name": "Visual Mental Image",
+    "inheritanceLevel": 1,
+    "description": "Ephemeral working-memory trace.",
+    "roles": ["artifact"],
+    "specific": {
+      "modality": "cognitive",
+      "structure": "feature sketch",
+      "noise_model": "decay + interference"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": { "tags": ["memory"], "confidence": 0.85 }
+  },
+  {
+    "id": "interp_01",
+    "name": "Semantic Interpretation Mapping",
+    "inheritanceLevel": 0,
+    "description": "Maps artifact → meaning, linking to domain claims.",
+    "roles": ["interpretation"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_interp", "meta": {} }
+    ],
+    "meta": { "tags": ["semantics"], "confidence": 0.9 }
+  },
+  {
+    "id": "tool_01",
+    "name": "Linear Regression",
+    "inheritanceLevel": 1,
+    "description": "Fits linear model by OLS.",
+    "roles": ["inference tool"],
+    "specific": {
+      "inputs": ["scalar measurements"],
+      "operation_class": "infer",
+      "preconditions": ["linearity", "homoscedasticity"],
+      "guarantees": ["BLUE"],
+      "determinism": "deterministic",
+      "composability": "high"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": { "tags": ["regression"], "confidence": 1.0 }
+  },
+  {
+    "id": "tool_02",
+    "name": "t-test (Statistical Hypothesis Test)",
+    "inheritanceLevel": 1,
+    "description": "Evaluates null hypothesis, produces p‑value.",
+    "roles": ["validation tool"],
+    "specific": {
+      "inputs": ["dataset", "hypothesis"],
+      "operation_class": "validate",
+      "preconditions": ["random sample", "normality"],
+      "guarantees": ["type I error control"],
+      "determinism": "deterministic",
+      "composability": "medium"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": { "tags": ["hypothesis test"], "confidence": 1.0 }
+  },
+  {
+    "id": "tool_03",
+    "name": "Bayesian Updating Rule",
+    "inheritanceLevel": 1,
+    "description": "Prior × likelihood → posterior.",
+    "roles": ["inference tool"],
+    "specific": {
+      "inputs": ["prior", "likelihood", "data"],
+      "operation_class": "infer",
+      "preconditions": ["proper prior"],
+      "guarantees": ["coherence"],
+      "determinism": "deterministic",
+      "composability": "high"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": { "tags": ["bayesian"], "confidence": 1.0 }
+  },
+  {
+    "id": "tool_04",
+    "name": "Measurement Calibration Procedure",
+    "inheritanceLevel": 1,
+    "description": "Maps raw readings to calibrated units.",
+    "roles": ["measurement tool"],
+    "specific": {
+      "inputs": ["raw output", "reference"],
+      "operation_class": "transform",
+      "preconditions": ["known reference"],
+      "guarantees": ["traceable accuracy"],
+      "determinism": "deterministic",
+      "composability": "medium"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": { "tags": ["calibration"], "confidence": 1.0 }
+  },
+  {
+    "id": "tool_05",
+    "name": "Runge‑Kutta ODE Solver",
+    "inheritanceLevel": 1,
+    "description": "Numerical ODE simulation.",
+    "roles": ["simulation tool"],
+    "specific": {
+      "inputs": ["ODE model", "ICs"],
+      "operation_class": "simulate",
+      "preconditions": ["Lipschitz"],
+      "guarantees": ["order-4 convergence"],
+      "determinism": "deterministic",
+      "composability": "high"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": { "tags": ["simulation"], "confidence": 1.0 }
+  },
+  {
+    "id": "agent_01",
+    "name": "Human Scientist",
+    "inheritanceLevel": 1,
+    "description": "Biological cognitive agent capable of experimentation, theorizing, and learning.",
+    "roles": ["agent"],
+    "specific": {
+      "agent_type": "human",
+      "capabilities": ["perception", "inference", "intervention"],
+      "goal_structure": "adaptive",
+      "memory_model": "episodic + externalized",
+      "autonomy_level": "deliberative"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_agent", "meta": {} }
+    ],
+    "meta": { "tags": ["human"], "confidence": 1.0 }
+  },
+  {
+    "id": "agent_02",
+    "name": "Automated Experimentation Pipeline",
+    "inheritanceLevel": 1,
+    "description": "Machine agent cycling hypothesis‑experiment‑update.",
+    "roles": ["agent"],
+    "specific": {
+      "agent_type": "machine",
+      "capabilities": ["inference", "learning", "intervention"],
+      "goal_structure": "fixed (optimization)",
+      "memory_model": "externalized (DB)",
+      "autonomy_level": "self_improving"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_agent", "meta": {} }
+    ],
+    "meta": { "tags": ["AI"], "confidence": 0.9 }
+  },
+  {
+    "id": "agent_03",
+    "name": "Research Institution",
+    "inheritanceLevel": 1,
+    "description": "Collective agent (humans + infrastructure) sustaining knowledge production.",
+    "roles": ["agent"],
+    "specific": {
+      "agent_type": "institution",
+      "capabilities": ["knowledge accumulation", "norm enforcement"],
+      "goal_structure": "multi-objective",
+      "memory_model": "distributed (publications)",
+      "autonomy_level": "deliberative"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_agent", "meta": {} }
+    ],
+    "meta": { "tags": ["institution"], "confidence": 0.95 }
+  },
+  {
+    "id": "process_01",
+    "name": "Scientific Method Cycle",
+    "inheritanceLevel": 1,
+    "description": "Hypothesize → design → collect → analyze → refine.",
+    "roles": ["process"],
+    "specific": {
+      "process_type": "scientific_method",
+      "step_structure": ["hypothesize", "experiment", "analyze"],
+      "control_flow": "iterative",
+      "termination_criteria": "corroboration/falsification",
+      "update_mechanism": "incremental",
+      "feedback_integration": "continuous"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_process", "meta": {} }
+    ],
+    "meta": { "tags": ["method"], "confidence": 1.0 }
+  },
+  {
+    "id": "process_02",
+    "name": "Bayesian Inference Loop",
+    "inheritanceLevel": 1,
+    "description": "Prior → observe → posterior → new prior.",
+    "roles": ["process"],
+    "specific": {
+      "process_type": "inference_cycle",
+      "step_structure": ["set prior", "observe", "update"],
+      "control_flow": "recursive",
+      "termination_criteria": "convergence",
+      "update_mechanism": "online",
+      "feedback_integration": "continuous"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_process", "meta": {} }
+    ],
+    "meta": { "tags": ["bayesian"], "confidence": 1.0 }
+  },
+  {
+    "id": "process_03",
+    "name": "Supervised Learning Training Pipeline",
+    "inheritanceLevel": 1,
+    "description": "Data → clean → split → fit → validate → deploy.",
+    "roles": ["process"],
+    "specific": {
+      "process_type": "training_pipeline",
+      "step_structure": ["ingest", "train", "validate"],
+      "control_flow": "iterative (epochs)",
+      "termination_criteria": "validation loss plateau",
+      "update_mechanism": "mini-batch",
+      "feedback_integration": "continuous"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_process", "meta": {} }
+    ],
+    "meta": { "tags": ["ML"], "confidence": 1.0 }
+  },
+  {
+    "id": "standard_01",
+    "name": "Statistical Significance (p < 0.05)",
+    "inheritanceLevel": 1,
+    "description": "Null hypothesis rejection threshold.",
+    "roles": ["norm"],
+    "specific": {
+      "evaluation_metrics": ["p-value"],
+      "thresholds": { "p": 0.05 },
+      "validation_method": "statistical",
+      "norm_type": "hard_constraint",
+      "reference_frame": "frequentist",
+      "failure_modes": ["p-hacking", "multiple comparisons"]
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_standard", "meta": {} }
+    ],
+    "meta": { "tags": ["significance"], "confidence": 1.0 }
+  },
+  {
+    "id": "standard_02",
+    "name": "Reproducibility Criterion",
+    "inheritanceLevel": 1,
+    "description": "Independent repetition yields consistent results.",
+    "roles": ["norm"],
+    "specific": {
+      "evaluation_metrics": ["reproduction success rate"],
+      "thresholds": { "success_rate": 0.9 },
+      "validation_method": "empirical",
+      "norm_type": "soft_constraint",
+      "failure_modes": ["unrecorded procedures", "drift"]
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_standard", "meta": {} }
+    ],
+    "meta": { "tags": ["reproducibility"], "confidence": 0.95 }
+  },
+  {
+    "id": "standard_03",
+    "name": "Falsifiability Requirement",
+    "inheritanceLevel": 0,
+    "description": "Hypothesis must be logically refutable.",
+    "roles": ["demarcation"],
+    "specific": {
+      "evaluation_metrics": ["logical possibility of refutation"],
+      "thresholds": { "possibility": "binary" },
+      "validation_method": "logical",
+      "norm_type": "hard_constraint",
+      "failure_modes": ["ad hoc modifications"]
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_standard", "meta": {} }
+    ],
+    "meta": { "tags": ["Popper"], "confidence": 0.9 }
+  },
+  {
+    "id": "substrate_01",
+    "name": "Digital JSON File",
+    "inheritanceLevel": 1,
+    "description": "Structured text serialization on non‑volatile memory.",
+    "roles": ["encoding"],
+    "specific": {
+      "substrate_type": "digital",
+      "material": "flash/disk",
+      "persistence": "non_volatile"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_substrate", "meta": {} }
+    ],
+    "meta": { "tags": ["digital"], "confidence": 1.0 }
+  },
+  {
+    "id": "substrate_02",
+    "name": "Printed Text on Paper",
+    "inheritanceLevel": 1,
+    "description": "Physical archival record.",
+    "roles": ["encoding"],
+    "specific": {
+      "substrate_type": "physical",
+      "material": "paper",
+      "persistence": "non_volatile"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_substrate", "meta": {} }
+    ],
+    "meta": { "tags": ["paper"], "confidence": 1.0 }
+  },
+  {
+    "id": "substrate_03",
+    "name": "Neural Firing Pattern (Working Memory)",
+    "inheritanceLevel": 1,
+    "description": "Ephemeral biological substrate.",
+    "roles": ["encoding"],
+    "specific": {
+      "substrate_type": "biological",
+      "material": "neural tissue",
+      "persistence": "ephemeral"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_substrate", "meta": {} }
+    ],
+    "meta": { "tags": ["neural"], "confidence": 0.85 }
+  },
+  {
+    "id": "domain_01",
+    "name": "Classical Mechanical System",
+    "inheritanceLevel": 1,
+    "description": "Macroscopic bodies, Newtonian dynamics.",
+    "roles": ["target"],
+    "specific": {
+      "domain_type": "physical_system",
+      "boundary_definition": "closed",
+      "scale": "macro",
+      "interaction_structure": "field + contact",
+      "dynamics": "deterministic nonlinear"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_domain", "meta": {} }
+    ],
+    "meta": { "tags": ["physics"], "confidence": 1.0 }
+  },
+  {
+    "id": "domain_02",
+    "name": "Biological Ecosystem",
+    "inheritanceLevel": 1,
+    "description": "Interacting populations, nutrient flows.",
+    "roles": ["target"],
+    "specific": {
+      "domain_type": "biological_system",
+      "boundary_definition": "open",
+      "scale": "meso",
+      "interaction_structure": "food web",
+      "dynamics": "stochastic non-stationary"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_domain", "meta": {} }
+    ],
+    "meta": { "tags": ["ecology"], "confidence": 0.98 }
+  },
+  {
+    "id": "domain_03",
+    "name": "Human Social Network",
+    "inheritanceLevel": 1,
+    "description": "Individuals, ties, influence.",
+    "roles": ["target"],
+    "specific": {
+      "domain_type": "social_system",
+      "boundary_definition": "fuzzy",
+      "scale": "macro",
+      "interaction_structure": "agent‑based network",
+      "dynamics": "non-stationary stochastic"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_domain", "meta": {} }
+    ],
+    "meta": { "tags": ["sociology"], "confidence": 0.9 }
+  },
+  {
+    "id": "constraint_01",
+    "name": "Measurement Noise",
+    "inheritanceLevel": 0,
+    "description": "Stochastic perturbation limiting precision.",
+    "roles": ["limitation"],
+    "specific": {
+      "constraint_type": "physical",
+      "source": "measurement",
+      "effect": "reduces_precision",
+      "scope": "local",
+      "severity": "medium"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_constraint", "meta": {} }
+    ],
+    "meta": { "tags": ["noise"], "confidence": 1.0 }
+  },
+  {
+    "id": "constraint_02",
+    "name": "Limited Sample Size",
+    "inheritanceLevel": 0,
+    "description": "Finite observations increase uncertainty.",
+    "roles": ["limitation"],
+    "specific": {
+      "constraint_type": "statistical",
+      "source": "resource_limit",
+      "effect": "increases_uncertainty",
+      "scope": "local",
+      "severity": "high"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_constraint", "meta": {} }
+    ],
+    "meta": { "tags": ["small n"], "confidence": 1.0 }
+  },
+  {
+    "id": "constraint_03",
+    "name": "Computational Intractability",
+    "inheritanceLevel": 0,
+    "description": "NP‑hardness forces approximations.",
+    "roles": ["limitation"],
+    "specific": {
+      "constraint_type": "computational",
+      "source": "resource_limit",
+      "effect": "limits_precision",
+      "scope": "global",
+      "severity": "fundamental"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_constraint", "meta": {} }
+    ],
+    "meta": { "tags": ["NP-hard"], "confidence": 1.0 }
+  },
+  {
+    "id": "infra_01",
+    "name": "General-Purpose Laboratory",
+    "inheritanceLevel": 1,
+    "description": "Physical facility with instruments and environmental controls.",
+    "roles": ["infrastructure"],
+    "specific": {
+      "elementType": ["sensors", "workstations"],
+      "latency": "variable",
+      "reliability": "high",
+      "scalability": "low",
+      "interoperability": "medium",
+      "maintenance_model": "manual"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_infra", "meta": {} }
+    ],
+    "meta": { "tags": ["lab"], "confidence": 1.0 }
+  },
+  {
+    "id": "infra_02",
+    "name": "Cloud Computing Platform",
+    "inheritanceLevel": 1,
+    "description": "Elastic virtualized compute and storage.",
+    "roles": ["infrastructure"],
+    "specific": {
+      "elementType": ["compute_units", "storage"],
+      "latency": "10‑500ms",
+      "reliability": "high (SLA)",
+      "scalability": "superlinear",
+      "interoperability": "high",
+      "maintenance_model": "automated"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_infra", "meta": {} }
+    ],
+    "meta": { "tags": ["cloud"], "confidence": 1.0 }
+  },
+  {
+    "id": "meta_01",
+    "name": "Funding Agency",
+    "inheritanceLevel": 1,
+    "description": "Provides financial resources, shapes research priorities.",
+    "roles": ["meta"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_meta", "meta": {} }
+    ],
+    "meta": { "tags": ["funding"], "confidence": 0.95 }
+  },
+  {
+    "id": "meta_02",
+    "name": "Scientific Journal",
+    "inheritanceLevel": 1,
+    "description": "Disseminates validated artifacts, permanent record.",
+    "roles": ["meta"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_meta", "meta": {} }
+    ],
+    "meta": { "tags": ["publishing"], "confidence": 1.0 }
+  },
+  {
+    "id": "feedback_01",
+    "name": "Prediction Error Signal",
+    "inheritanceLevel": 0,
+    "description": "Mismatch between predicted and observed, driving model update.",
+    "roles": ["feedback"],
+    "specific": {
+      "signal_type": "error",
+      "source": "environment",
+      "latency": "immediate",
+      "target": "model artifact",
+      "update_role": "corrective"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_feedback", "meta": {} }
+    ],
+    "meta": { "tags": ["error"], "confidence": 1.0 }
+  },
+  {
+    "id": "feedback_02",
+    "name": "Experimental Anomaly",
+    "inheritanceLevel": 0,
+    "description": "Observation contradicting theory, triggering revision.",
+    "roles": ["feedback"],
+    "specific": {
+      "signal_type": "anomaly",
+      "source": "environment",
+      "latency": "delayed",
+      "target": "hypothesis",
+      "update_role": "destabilizing"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_feedback", "meta": {} }
+    ],
+    "meta": { "tags": ["surprise"], "confidence": 0.9 }
+  },
+  {
+    "id": "act_01",
+    "name": "Observation Act",
+    "inheritanceLevel": 0,
+    "description": "Directing sensor to target, triggering transduction.",
+    "roles": ["act"],
+    "specific": {
+      "act_type": "observe",
+      "input_state": "environmental energy",
+      "output_state": "encoded artifact",
+      "atomicity": "atomic"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_act", "meta": {} }
+    ],
+    "meta": { "tags": ["observation"], "confidence": 1.0 }
+  },
+  {
+    "id": "act_02",
+    "name": "Comparison Act",
+    "inheritanceLevel": 0,
+    "description": "Detecting similarity/difference between two artifacts.",
+    "roles": ["act"],
+    "specific": {
+      "act_type": "compare",
+      "input_state": "two artifacts",
+      "output_state": "similarity judgment",
+      "atomicity": "semi_decomposable"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_act", "meta": {} }
+    ],
+    "meta": { "tags": ["discrimination"], "confidence": 0.9 }
+  },
+  {
+    "id": "act_03",
+    "name": "Prediction Act",
+    "inheritanceLevel": 0,
+    "description": "Generating expected artifact from a model.",
+    "roles": ["act"],
+    "specific": {
+      "act_type": "predict",
+      "input_state": "model + current state",
+      "output_state": "predicted artifact",
+      "atomicity": "atomic"
+    },
+    "edges": [
+      { "type": "subtype_of", "node": "cat_act", "meta": {} }
+    ],
+    "meta": { "tags": ["anticipation"], "confidence": 1.0 }
+  },
+  {
+    "id": "meta_03",
+    "name": "Philosophia Naturalis",
+    "inheritanceLevel": 1,
+    "description": "The integration of ontology and epistemology: a set of tools, strategies, and frameworks used to describe, model, and reason about reality.",
+    "roles": ["framework"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_meta", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["meta"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "artifact_08",
+    "name": "Ontic Map",
+    "inheritanceLevel": 1,
+    "description": "A collection of ontic maps of different domains of reality.",
+    "roles": ["artifact"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["class", "ontic"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "artifact_09",
+    "name": "Concept (Category)",
+    "inheritanceLevel": 1,
+    "description": "A structured, often implicit epistemic artifact that encodes criteria for recognition, classification, and inferential use of a class of entities or phenomena. It is not reducible to a linguistic definition but can be partially expressed through definitions, prototypes, or formal constraints.",
+    "roles": ["artifact"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["artifact", "#categorization"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_06",
+    "name": "Definition",
+    "inheritanceLevel": 1,
+    "description": "Explicit semantic specification",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["semantic-fixation", "definition", "glossary", "circularity", "ambiguity", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_07",
+    "name": "Abstraction Operator",
+    "inheritanceLevel": 1,
+    "description": "Removes detail while preserving structure",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["abstraction", "modeling", "generalization", "over-abstraction", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_08",
+    "name": "Idealization",
+    "inheritanceLevel": 1,
+    "description": "Controlled simplification of reality",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["simplification", "modeling", "idealized-model", "unrealistic-assumptions", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_09",
+    "name": "State Representation",
+    "inheritanceLevel": 1,
+    "description": "Encodes system configuration",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["representation", "state-space", "dynamics", "omitted-variables", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_10",
+    "name": "Variable",
+    "inheritanceLevel": 1,
+    "description": "Measurable system property",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["measurement", "variable-schema", "quantification", "proxy-mismatch", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_11",
+    "name": "Parameter",
+    "inheritanceLevel": 1,
+    "description": "Fixed model quantity",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["parameterization", "calibration", "identifiability", "non-identifiability", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_12",
+    "name": "Function",
+    "inheritanceLevel": 1,
+    "description": "Mapping between sets",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["functional-modeling", "mapping", "dependency", "misspecification", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_13",
+    "name": "Equation",
+    "inheritanceLevel": 1,
+    "description": "Equality constraint between expressions",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["problem-solving", "constraint", "system-solving", "ill-posed", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_14",
+    "name": "Matrix",
+    "inheritanceLevel": 1,
+    "description": "Representation of linear transformations",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["linear-algebra", "representation", "transformation", "ill-conditioning", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_15",
+    "name": "Derivative",
+    "inheritanceLevel": 1,
+    "description": "Rate of change",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["differentiation", "local-analysis", "change", "non-differentiable", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_16",
+    "name": "Integral",
+    "inheritanceLevel": 1,
+    "description": "Aggregation over a domain",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["integration", "aggregation", "accumulation", "divergence", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_17",
+    "name": "Differential Equation",
+    "inheritanceLevel": 1,
+    "description": "Dynamics defined via derivatives",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["dynamical-systems", "ode", "pde", "evolution", "instability", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_18",
+    "name": "Probability Distribution",
+    "inheritanceLevel": 1,
+    "description": "Model of uncertainty over outcomes",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["stochastic", "distribution", "modeling", "wrong-assumption", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_19",
+    "name": "Estimator",
+    "inheritanceLevel": 1,
+    "description": "Rule for inferring parameters",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["estimation", "inference", "approximation", "bias", "inconsistency", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_20",
+    "name": "Likelihood Function",
+    "inheritanceLevel": 1,
+    "description": "Measures data fit under parameters",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["inference", "stochastic", "model-fitting", "identifiability", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_21",
+    "name": "Algorithm",
+    "inheritanceLevel": 1,
+    "description": "Finite computational procedure",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["computation", "procedure", "automation", "opacity", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_22",
+    "name": "Data Structure",
+    "inheritanceLevel": 1,
+    "description": "Organized data representation",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["representation", "data-organization", "efficiency", "inefficiency", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_23",
+    "name": "Numerical Method",
+    "inheritanceLevel": 1,
+    "description": "Approximation techniques for computation",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["approximation", "numerical-solution", "computation", "error-propagation", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_24",
+    "name": "Optimization Problem",
+    "inheritanceLevel": 1,
+    "description": "Objective function with constraints",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["optimization", "objective", "constraints", "search", "local-minima", "tool"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "process_04",
+    "name": "Simulation",
+    "inheritanceLevel": 1,
+    "description": "Execution of a model to study behavior",
+    "roles": ["process"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_process", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["simulation", "experimentation", "model-execution", "gigo", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "artifact_10",
+    "name": "Model",
+    "inheritanceLevel": 1,
+    "description": "Abstract representation of a system",
+    "roles": ["artifact"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["modeling", "representation", "prediction", "overfitting", "underfitting", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_25",
+    "name": "Data Visualization",
+    "inheritanceLevel": 1,
+    "description": "Visual representation of data",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["visual", "representation", "exploration", "pattern-detection", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_26",
+    "name": "Standard Deviation",
+    "inheritanceLevel": 1,
+    "description": "Measure of dispersion",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["statistics", "dispersion", "variability", "distribution", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_27",
+    "name": "Dimensionality Reduction",
+    "inheritanceLevel": 1,
+    "description": "Extract latent structure",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["statistics", "dimensionality-reduction", "latent-structure", "pattern-detection", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_28",
+    "name": "Regression Analysis",
+    "inheritanceLevel": 1,
+    "description": "Model relationships between variables",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["statistics", "prediction", "causal-inference", "trend-analysis", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_29",
+    "name": "Clustering",
+    "inheritanceLevel": 1,
+    "description": "Group data by similarity",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["unsupervised", "pattern-detection", "classification", "structure", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_30",
+    "name": "Network Analysis",
+    "inheritanceLevel": 1,
+    "description": "Analyze relational structures",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["graph", "connectivity", "structure", "relations", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_31",
+    "name": "Bayesian Inference",
+    "inheritanceLevel": 1,
+    "description": "Probabilistic belief updating",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["stochastic", "belief-updating", "inference", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_32",
+    "name": "Time Series Analysis",
+    "inheritanceLevel": 1,
+    "description": "Analysis of temporal data",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["temporal", "dynamics", "trend", "anomaly-detection", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_33",
+    "name": "Monte Carlo Simulation",
+    "inheritanceLevel": 1,
+    "description": "Random sampling simulation",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["stochastic", "simulation", "risk-analysis", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "tool_34",
+    "name": "Hypothesis Testing",
+    "inheritanceLevel": 1,
+    "description": "Statistical decision procedure",
+    "roles": ["tool"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_tool", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["statistics", "testing", "significance", "inference", "class"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "standard_04",
+    "name": "Law of Large Numbers",
+    "inheritanceLevel": 1,
+    "description": "Convergence of averages",
+    "roles": ["norm"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_standard", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["stochastic", "convergence", "statistics", "theory"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  },
+  {
+    "id": "process_05",
+    "name": "Abduction",
+    "inheritanceLevel": 1,
+    "description": "Abduction is an epistemic process aimed at inferring and ranking candidate explanations for a given set of observations, based on how likely those observations would be under each hypothesis in a space of possible worlds.",
+    "roles": ["process"],
+    "specific": {},
+    "edges": [
+      { "type": "subtype_of", "node": "cat_process", "meta": {} }
+    ],
+    "meta": {
+      "tags": ["#activity"],
+      "confidence": 1.0,
+      "source": "curated"
+    }
+  }
+]
