@@ -1,15 +1,11 @@
-# Epistemic Toolbox
+# Modelling and Epistemic Operationalization
 
-> A representation set of epistemic tools, alongside an illustration of their uses.
-
-> An **epistemic tool** or element is any instrument, construct, or method used to represent aspects of reality and extract compressed descriptions at multiple levels. It enables the exploration of the space of possible affirmations about that reality.
+> A framework for rendering epistemic practice intelligible and systematically enhancing epistemic capacity.
 
 ## Working On
 
-- [ ] Number Relation
-- [ ] Rate of Change
-- [ ] Elasticity
-- [ ] Make the number of elements per page in the index - dynamic.
+- How to take 'Bremontix Ars' and extract - the concepts and add them to our dataset.
+- ...
 
 ## References
 

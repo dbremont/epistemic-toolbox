@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epistemic Graph - Force Directed Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-void: #050505; --bg-surface: #0F0F0F; --bg-card: #1A1A1A;
+            --text-primary: #E8E8E8; --text-secondary: #A0A0A0; --text-muted: #666666;
+            --accent-gold: #C4A35A; --accent-cyan: #5BF0E7;
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --font-display: 'Cormorant Garamond', serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-void); color: var(--text-primary);
+            font-family: var(--font-body); display: grid;
+            grid-template-columns: 320px 1fr; grid-template-rows: 1fr 40px;
+            height: 100vh; overflow: hidden;
+        }
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
+        .label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .value { font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent-cyan); }
+        .divider { border: 0; border-top: 1px solid var(--border-subtle); margin: 16px 0; }
+        
+        aside.toolbox {
+            grid-row: 1 / 3; background: var(--bg-surface);
+            border-right: 1px solid var(--border-subtle); padding: 24px;
+            overflow-y: auto; display: flex; flex-direction: column; gap: 16px; z-index: 10;
+        }
+        main.canvas-area { position: relative; background: var(--bg-void); overflow: hidden; }
+        canvas#hypergraph { width: 100%; height: 100%; cursor: grab; }
+        canvas#hypergraph:active { cursor: grabbing; }
+        
+        footer.system-bar {
+            grid-column: 2 / 3; background: var(--bg-surface);
+            border-top: 1px solid var(--border-subtle); display: flex;
+            align-items: center; justify-content: space-between; padding: 0 24px;
+            font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;
+        }
+
+        .section-title { font-family: var(--font-display); font-size: 1.5rem; font-style: italic; color: var(--text-primary); margin-bottom: 8px; }
+        .search-box {
+            width: 100%; background: var(--bg-void); border: 1px solid var(--border-subtle);
+            color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8rem;
+            padding: 8px 12px; outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(91, 240, 231, 0.05); }
+        .toggle-group { display: flex; flex-direction: column; gap: 6px; }
+        .toggle-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.8rem; color: var(--text-secondary); }
+        .toggle-item input[type="checkbox"] { display: none; }
+        .checkmark { width: 12px; height: 12px; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .toggle-item input:checked ~ .checkmark { border-color: var(--accent-cyan); background: rgba(91, 240, 231, 0.1); }
+        .toggle-item input:checked ~ .checkmark::after { content: '•'; color: var(--accent-cyan); font-size: 10px; }
+        .toggle-item:hover { color: var(--text-primary); }
+        .chip-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+        .chip { font-family: var(--font-mono); font-size: 0.6rem; padding: 3px 6px; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s; }
+        .chip:hover, .chip.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(91, 240, 231, 0.05); }
+        .btn-action { background: var(--bg-void); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; padding: 8px; cursor: pointer; transition: all 0.3s; width: 100%; text-align: center; }
+        .btn-action:hover { background: rgba(196, 163, 90, 0.1); }
+
+        #tooltip {
+            position: absolute; display: none; background: var(--bg-surface);
+            border: 1px solid var(--border-subtle); border-top: 2px solid var(--accent-cyan);
+            padding: 16px; width: 320px; pointer-events: none; z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .tt-header { margin-bottom: 12px; }
+        .tt-title { font-family: var(--font-display); font-size: 1.2rem; font-style: italic; }
+        .tt-cat { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.1em; }
+        .tt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .tt-section { margin-top: 8px; border-top: 1px solid var(--border-subtle); padding-top: 8px; }
+        .tt-edge-list { list-style: none; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); }
+        .tt-edge-list li { margin-bottom: 2px; }
+        .tt-edge-type { color: var(--accent-cyan); }
+
+        #stats-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--bg-surface); border: 1px solid var(--accent-gold);
+            padding: 32px; z-index: 150; display: none; min-width: 400px;
+        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .stat-item { border-left: 1px solid var(--border-subtle); padding-left: 12px; }
+    </style>
+</head>
+<body>
+
+    <aside class="toolbox">
+        <div>
+            <div class="label">Representation</div>
+            <h2 class="section-title">Graph View</h2>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
+                Native force-directed spatialization. Switch projections to morph the epistemic topology.
+            </p>
+        </div>
+        <hr class="divider">
+        <div>
+            <div class="label">Search Nodes</div>
+            <input type="text" class="search-box" id="search-input" placeholder="ID or Name...">
+        </div>
+        <div>
+            <div class="label">Category Toggles</div>
+            <div class="toggle-group" id="category-toggles"></div>
+        </div>
+        <div>
+            <div class="label">Edge Type Filters</div>
+            <div class="chip-grid" id="edge-chips"></div>
+        </div>
+        <hr class="divider">
+        <div>
+            <div class="label">Visual Lenses</div>
+            <div class="toggle-group">
+                <label class="toggle-item"><input type="checkbox" id="lens-community" checked><span class="checkmark"></span>Hyperedge Blobs</label>
+                <label class="toggle-item"><input type="checkbox" id="lens-heatmap"><span class="checkmark"></span>Constraint Heatmap</label>
+                <label class="toggle-item"><input type="checkbox" id="lens-centrality"><span class="checkmark"></span>Centrality Sizing</label>
+            </div>
+        </div>
+        <div>
+            <div class="label">Alternative Projections</div>
+            <div class="chip-grid" id="projection-chips">
+                <div class="chip active" data-proj="default">Default Topology</div>
+                <div class="chip" data-proj="category">Category Projection</div>
+                <div class="chip" data-proj="embedding">Embedding Space</div>
+            </div>
+        </div>
+        <div style="margin-top: auto;">
+            <button class="btn-action" onclick="toggleStats()">Compute Graph Statistics</button>
+        </div>
+    </aside>
+
+    <main class="canvas-area">
+        <canvas id="hypergraph"></canvas>
+        <div id="tooltip">
+            <div class="tt-header">
+                <div class="tt-cat" id="tt-cat"></div>
+                <div class="tt-title" id="tt-title"></div>
+            </div>
+            <div class="tt-grid">
+                <div><div class="label">Eigenvector Centrality</div><div class="value" id="tt-centrality">0.00</div></div>
+                <div><div class="label">Inheritance Level</div><div class="value" id="tt-inheritance">0</div></div>
+            </div>
+            <div class="tt-section">
+                <div class="label">Epistemic Role</div>
+                <div id="tt-roles" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;"></div>
+            </div>
+            <div class="tt-section">
+                <div class="label">Topology (Incident Edges)</div>
+                <ul class="tt-edge-list" id="tt-edges"></ul>
+            </div>
+        </div>
+
+        <div id="stats-modal">
+            <h3 style="font-family: var(--font-display); font-style: italic; font-size: 1.2rem;">Graph Shape Signature</h3>
+            <div class="stats-grid">
+                <div class="stat-item"><div class="label">Nodes |V|</div><div class="value" id="stat-v">0</div></div>
+                <div class="stat-item"><div class="label">Hyperedges |E|</div><div class="value" id="stat-e">0</div></div>
+                <div class="stat-item"><div class="label">Avg Cardinality</div><div class="value" id="stat-card">0</div></div>
+                <div class="stat-item"><div class="label">Alpha (Cooling)</div><div class="value" id="stat-alpha">1.0</div></div>
+            </div>
+            <button class="btn-action" style="margin-top: 24px;" onclick="toggleStats()">Close</button>
+        </div>
+    </main>
+
+    <footer class="system-bar">
+        <span>Schema: epistemic_v0.1 | Engine: Multi-Projection Force-Directed</span>
+        <span id="fps-counter">Initializing...</span>
+    </footer>
+
+<script>
+// --- 1. DATASET INGESTION ---
+const rawDataset = [
+  {"id":"cat_obs_iface","name":"Observation Interface","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_artifact","name":"Epistemic Artifact","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_interp","name":"Interpretation Layer","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_tool","name":"Epistemic Tool","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_agent","name":"Epistemic Agent","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_process","name":"Epistemic Process","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_standard","name":"Epistemic Standard","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_substrate","name":"Encoding Substrate","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_domain","name":"Epistemic Domain","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_constraint","name":"Epistemic Constraint","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_infra","name":"Epistemic Infrastructure","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_meta","name":"Meta‑Epistemic Layer","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_feedback","name":"Epistemic Feedback","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"cat_act","name":"Epistemic Act","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
+  {"id":"obs_iface_01","name":"CMOS Sensor Pipeline","inheritanceLevel":1,"roles":["sensor"],"edges":[{"type":"subtype_of","node":"cat_obs_iface"},{"type":"encodes","node":"artifact_01"}]},
+  {"id":"obs_iface_02","name":"Human Visual Observation","inheritanceLevel":1,"roles":["sensor"],"edges":[{"type":"subtype_of","node":"cat_obs_iface"},{"type":"encodes","node":"artifact_07"}]},
+  {"id":"artifact_01","name":"Digital Image","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"},{"type":"instantiates","node":"artifact_06"}]},
+  {"id":"artifact_02","name":"Numerical Measurement","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
+  {"id":"artifact_03","name":"Scientific Hypothesis","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
+  {"id":"artifact_04","name":"Bayesian Network Model","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
+  {"id":"artifact_05","name":"Time Series Dataset","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
+  {"id":"artifact_06","name":"Differential Equation Model","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
+  {"id":"artifact_07","name":"Visual Mental Image","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
+  {"id":"interp_01","name":"Semantic Interpretation Mapping","inheritanceLevel":1,"roles":["interpretation"],"edges":[{"type":"subtype_of","node":"cat_interp"}]},
+  {"id":"tool_01","name":"Linear Regression","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
+  {"id":"tool_02","name":"t-test","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
+  {"id":"tool_03","name":"Bayesian Updating Rule","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
+  {"id":"tool_04","name":"Measurement Calibration","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
+  {"id":"tool_05","name":"Runge‑Kutta ODE Solver","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
+  {"id":"agent_01","name":"Human Scientist","inheritanceLevel":1,"roles":["agent"],"edges":[{"type":"subtype_of","node":"cat_agent"}]},
+  {"id":"agent_02","name":"Automated Pipeline","inheritanceLevel":1,"roles":["agent"],"edges":[{"type":"subtype_of","node":"cat_agent"}]},
+  {"id":"agent_03","name":"Research Institution","inheritanceLevel":1,"roles":["agent"],"edges":[{"type":"subtype_of","node":"cat_agent"}]},
+  {"id":"process_01","name":"Scientific Method Cycle","inheritanceLevel":1,"roles":["process"],"edges":[{"type":"subtype_of","node":"cat_process"}]},
+  {"id":"process_02","name":"Bayesian Inference Loop","inheritanceLevel":1,"roles":["process"],"edges":[{"type":"subtype_of","node":"cat_process"}]},
+  {"id":"process_03","name":"ML Training Pipeline","inheritanceLevel":1,"roles":["process"],"edges":[{"type":"subtype_of","node":"cat_process"}]},
+  {"id":"standard_01","name":"Statistical Significance","inheritanceLevel":1,"roles":["standard"],"edges":[{"type":"subtype_of","node":"cat_standard"}]},
+  {"id":"standard_02","name":"Reproducibility Criterion","inheritanceLevel":1,"roles":["standard"],"edges":[{"type":"subtype_of","node":"cat_standard"}]},
+  {"id":"standard_03","name":"Falsifiability Requirement","inheritanceLevel":1,"roles":["standard"],"edges":[{"type":"subtype_of","node":"cat_standard"}]},
+  {"id":"substrate_01","name":"Digital JSON File","inheritanceLevel":1,"roles":["substrate"],"edges":[{"type":"subtype_of","node":"cat_substrate"}]},
+  {"id":"substrate_02","name":"Printed Text on Paper","inheritanceLevel":1,"roles":["substrate"],"edges":[{"type":"subtype_of","node":"cat_substrate"}]},
+  {"id":"domain_01","name":"Classical Mechanical System","inheritanceLevel":1,"roles":["domain"],"edges":[{"type":"subtype_of","node":"cat_domain"}]},
+  {"id":"domain_02","name":"Biological Ecosystem","inheritanceLevel":1,"roles":["domain"],"edges":[{"type":"subtype_of","node":"cat_domain"}]},
+  {"id":"constraint_01","name":"Measurement Noise","inheritanceLevel":1,"roles":["constraint"],"edges":[{"type":"subtype_of","node":"cat_constraint"}]},
+  {"id":"constraint_02","name":"Limited Sample Size","inheritanceLevel":1,"roles":["constraint"],"edges":[{"type":"subtype_of","node":"cat_constraint"}]},
+  {"id":"constraint_03","name":"Computational Intractability","inheritanceLevel":1,"roles":["constraint"],"edges":[{"type":"subtype_of","node":"cat_constraint"}]},
+  {"id":"infra_01","name":"General-Purpose Laboratory","inheritanceLevel":1,"roles":["infrastructure"],"edges":[{"type":"subtype_of","node":"cat_infra"}]},
+  {"id":"meta_01","name":"Funding Agency","inheritanceLevel":1,"roles":["meta"],"edges":[{"type":"subtype_of","node":"cat_meta"}]},
+  {"id":"feedback_01","name":"Prediction Error Signal","inheritanceLevel":1,"roles":["feedback"],"edges":[{"type":"subtype_of","node":"cat_feedback"}]},
+  {"id":"feedback_02","name":"Experimental Anomaly","inheritanceLevel":1,"roles":["feedback"],"edges":[{"type":"subtype_of","node":"cat_feedback"}]},
+  {"id":"act_01","name":"Observation Act","inheritanceLevel":1,"roles":["act"],"edges":[{"type":"subtype_of","node":"cat_act"}]},
+  {"id":"act_02","name":"Comparison Act","inheritanceLevel":1,"roles":["act"],"edges":[{"type":"subtype_of","node":"cat_act"}]},
+  {"id":"act_03","name":"Prediction Act","inheritanceLevel":1,"roles":["act"],"edges":[{"type":"subtype_of","node":"cat_act"}]}
+];
+
+// --- 2. GRAPH PROCESSING & FORCE ENGINE ---
+const nodes = [];
+const hyperedges = [];
+const categoryMap = {};
+const catKeys = []; // To calculate circular projection positions
+const edgeTypes = new Set();
+let activeEdgeTypes = new Set();
+let activeCategories = new Set();
+
+// Physics Constants
+const REPULSION = 4500;
+const HYPEREDGE_ATTRACTION = 0.04;
+const PROJECTION_ATTRACTION = 0.06;
+const CENTER_GRAVITY = 0.005;
+const DAMPING = 0.82;
+let alpha = 1.0; 
+let currentProjection = 'default'; // 'default', 'category', 'embedding'
+
+// Extract categories
+rawDataset.forEach(n => {
+    if (n.inheritanceLevel === 0 && n.roles.includes('abstract_category')) {
+        categoryMap[n.id] = { name: n.name.replace(/ \(.+\)/, ''), nodes: [] };
+        catKeys.push(n.id);
+        activeCategories.add(n.id);
+    }
+    n.edges.forEach(e => edgeTypes.add(e.type));
+});
+edgeTypes.forEach(et => activeEdgeTypes.add(et));
+
+// Initialize Nodes
+const canvas = document.getElementById('hypergraph');
+let width = canvas.parentElement.clientWidth;
+let height = canvas.parentElement.clientHeight;
+
+rawDataset.forEach((n, i) => {
+    if (n.inheritanceLevel === 0) return; 
+    const catId = n.edges.find(e => e.type === 'subtype_of')?.node || 'unknown';
+    
+    // Generate stable fake embedding coordinates (Simulated UMAP Spiral)
+    const t = i / rawDataset.length * 8 * Math.PI;
+    const r = t * 12;
+    const embX = width/2 + Math.cos(t) * r * (0.8 + Math.random()*0.4);
+    const embY = height/2 + Math.sin(t) * r * (0.8 + Math.random()*0.4);
+
+    const nodeObj = {
+        id: n.id, name: n.name, roles: n.roles, edges: n.edges, catId,
+        x: width/2 + (Math.random() - 0.5) * 50,
+        y: height/2 + (Math.random() - 0.5) * 50,
+        vx: 0, vy: 0, 
+        fx: 0, fy: 0, 
+        centrality: Math.random(),
+        baseSize: 6,
+        visible: true,
+        pinned: false,
+        // Targets for projections
+        embX: embX, embY: embY
+    };
+    nodes.push(nodeObj);
+    if (categoryMap[catId]) categoryMap[catId].nodes.push(nodeObj);
+});
+
+// Calculate Category Projection Centers (Circular Layout)
+const catCenters = {};
+catKeys.forEach((catId, i) => {
+    const angle = (i / catKeys.length) * 2 * Math.PI - Math.PI/2;
+    catCenters[catId] = {
+        x: width/2 + Math.cos(angle) * (Math.min(width, height) * 0.35),
+        y: height/2 + Math.sin(angle) * (Math.min(width, height) * 0.35)
+    };
+});
+
+// Construct Hyperedges
+let heId = 0;
+Object.keys(categoryMap).forEach(catId => {
+    const catNodes = categoryMap[catId].nodes;
+    if (catNodes.length === 0) return;
+    hyperedges.push({ id: `he_${heId++}`, nodes: [...catNodes], type: 'subtype_cluster', visible: true });
+});
+const crossLinks = [
+    ["obs_iface_01", "artifact_01", "tool_04", "process_01"], 
+    ["artifact_03", "tool_02", "standard_01", "feedback_02"], 
+    ["artifact_04", "tool_03", "process_02", "feedback_01"],  
+    ["artifact_06", "tool_05", "domain_01", "constraint_01"]  
+];
+crossLinks.forEach(link => {
+    const linkedNodes = link.map(id => nodes.find(n => n.id === id)).filter(Boolean);
+    if(linkedNodes.length > 1) hyperedges.push({ id: `he_${heId++}`, nodes: linkedNodes, type: 'cross_link', visible: true });
+});
+
+// --- 3. FORCE SIMULATION TICK ---
+function simulationTick() {
+    if (alpha < 0.001) return;
+
+    nodes.forEach(n => { n.fx = 0; n.fy = 0; });
+
+    // 1. Center Gravity (Reduced in projection modes to let local forces dominate)
+    const gravity = currentProjection === 'default' ? CENTER_GRAVITY : CENTER_GRAVITY * 0.2;
+    nodes.forEach(n => {
+        if(n.pinned || !n.visible) return;
+        n.fx += (width/2 - n.x) * gravity;
+        n.fy += (height/2 - n.y) * gravity;
+    });
+
+    // 2. Coulomb Repulsion
+    for (let i = 0; i < nodes.length; i++) {
+        if (!nodes[i].visible) continue;
+        for (let j = i + 1; j < nodes.length; j++) {
+            if (!nodes[j].visible) continue;
+            const n1 = nodes[i], n2 = nodes[j];
+            let dx = n2.x - n1.x;
+            let dy = n2.y - n1.y;
+            let distSq = dx * dx + dy * dy;
+            if (distSq < 1) distSq = 1;
+            const force = REPULSION / distSq;
+            const angle = Math.atan2(dy, dx);
+            const fx = Math.cos(angle) * force;
+            const fy = Math.sin(angle) * force;
+            if (!n1.pinned) { n1.fx -= fx; n1.fy -= fy; }
+            if (!n2.pinned) { n2.fx += fx; n2.fy += fy; }
+        }
+    }
+
+    // 3. Topology-Specific Attraction
+    if (currentProjection === 'default') {
+        // Hyperedge Centroid Attraction
+        hyperedges.forEach(he => {
+            if (!he.visible) return;
+            const visNodes = he.nodes.filter(n => n.visible);
+            if (visNodes.length === 0) return;
+            let cx = 0, cy = 0;
+            visNodes.forEach(n => { cx += n.x; cy += n.y; });
+            cx /= visNodes.length; cy /= visNodes.length;
+            visNodes.forEach(n => {
+                if(n.pinned) return;
+                n.fx += (cx - n.x) * HYPEREDGE_ATTRACTION;
+                n.fy += (cy - n.y) * HYPEREDGE_ATTRACTION;
+            });
+        });
+    } else if (currentProjection === 'category') {
+        // Category Center Attraction
+        nodes.forEach(n => {
+            if(n.pinned || !n.visible || !catCenters[n.catId]) return;
+            const target = catCenters[n.catId];
+            n.fx += (target.x - n.x) * PROJECTION_ATTRACTION;
+            n.fy += (target.y - n.y) * PROJECTION_ATTRACTION;
+        });
+    } else if (currentProjection === 'embedding') {
+        // Latent Geometric Point Attraction
+        nodes.forEach(n => {
+            if(n.pinned || !n.visible) return;
+            n.fx += (n.embX - n.x) * PROJECTION_ATTRACTION;
+            n.fy += (n.embY - n.y) * PROJECTION_ATTRACTION;
+        });
+    }
+
+    // Apply Forces
+    nodes.forEach(n => {
+        if (n.pinned || !n.visible) return;
+        n.vx = (n.vx + n.fx) * DAMPING;
+        n.vy = (n.vy + n.fy) * DAMPING;
+        n.x += n.vx * alpha;
+        n.y += n.vy * alpha;
+        n.x = Math.max(50, Math.min(width - 50, n.x));
+        n.y = Math.max(50, Math.min(height - 50, n.y));
+    });
+
+    alpha *= 0.995;
+}
+
+// --- 4. CANVAS SETUP & DRAWING ---
+const ctx = canvas.getContext('2d');
+let mouseX = -1000, mouseY = -1000;
+let hoveredNode = null;
+let dragNode = null;
+
+function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    width = rect.width; height = rect.height;
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    // Recalculate projection targets on resize
+    catKeys.forEach((catId, i) => {
+        const angle = (i / catKeys.length) * 2 * Math.PI - Math.PI/2;
+        catCenters[catId] = { x: width/2 + Math.cos(angle) * (Math.min(width, height) * 0.35), y: height/2 + Math.sin(angle) * (Math.min(width, height) * 0.35) };
+    });
+    alpha = 1.0;
+}
+window.addEventListener('resize', resize);
+resize();
+
+const catShapes = { 'cat_artifact': 'square', 'cat_agent': 'diamond', 'cat_tool': 'hexagon', 'cat_process': 'triangle', 'cat_constraint': 'circle', 'cat_obs_iface': 'triangle', 'cat_domain': 'circle', 'cat_standard': 'square', 'cat_feedback': 'triangle', 'cat_act': 'diamond', 'cat_substrate': 'square', 'cat_infra': 'hexagon', 'cat_meta': 'circle', 'cat_interp': 'square', 'unknown': 'circle' };
+const catColors = { 'cat_artifact': '#5BF0E7', 'cat_agent': '#C4A35A', 'cat_tool': '#FF6B6B', 'cat_process': '#98FB98', 'cat_constraint': '#FF00FF', 'cat_obs_iface': '#FFA500', 'cat_domain': '#00FFFF', 'cat_standard': '#FFFF00', 'cat_feedback': '#7B68EE', 'cat_act': '#FF69B4', 'cat_substrate': '#808080', 'cat_infra': '#A52A2A', 'cat_meta': '#ADD8E6', 'cat_interp': '#90EE90', 'unknown': '#FFFFFF' };
+
+function drawShape(x, y, size, shape) {
+    ctx.beginPath();
+    switch(shape) {
+        case 'square': ctx.rect(x-size/2, y-size/2, size, size); break;
+        case 'diamond': ctx.moveTo(x, y-size/2); ctx.lineTo(x+size/2, y); ctx.lineTo(x, y+size/2); ctx.lineTo(x-size/2, y); ctx.closePath(); break;
+        case 'hexagon': for(let i=0; i<6; i++) { const a = (Math.PI/3)*i - Math.PI/6; const px = x+size/2*Math.cos(a); const py = y+size/2*Math.sin(a); i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); } ctx.closePath(); break;
+        case 'triangle': ctx.moveTo(x, y-size/2); ctx.lineTo(x+size/2, y+size/2); ctx.lineTo(x-size/2, y+size/2); ctx.closePath(); break;
+        case 'circle': default: ctx.arc(x, y, size/2, 0, Math.PI*2); break;
+    }
+    ctx.fill();
+}
+
+let frameCount = 0; let lastTime = performance.now(); let fps = 0;
+
+function draw() {
+    simulationTick();
+    ctx.clearRect(0, 0, width, height);
+    
+    const showBlobs = document.getElementById('lens-community').checked;
+    const useCentralitySize = document.getElementById('lens-centrality').checked;
+    const useHeatmap = document.getElementById('lens-heatmap').checked;
+
+    // Draw Category Labels if in Category Projection
+    if (currentProjection === 'category') {
+        ctx.font = "12px 'JetBrains Mono'";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+        Object.keys(categoryMap).forEach(catId => {
+            if(!activeCategories.has(catId)) return;
+            const center = catCenters[catId];
+            ctx.fillText(categoryMap[catId].name.toUpperCase(), center.x, center.y - 30);
+        });
+    }
+
+    // Draw Hyperedge Zones
+    if (showBlobs) {
+        hyperedges.forEach(he => {
+            if (!he.visible) return;
+            const visNodes = he.nodes.filter(n => n.visible);
+            if (visNodes.length < 2) return;
+            let cx = 0, cy = 0;
+            visNodes.forEach(n => { cx += n.x; cy += n.y; });
+            cx /= visNodes.length; cy /= visNodes.length;
+            const sorted = [...visNodes].sort((a, b) => Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx));
+            ctx.beginPath();
+            ctx.moveTo((sorted[0].x + cx)/2, (sorted[0].y + cy)/2);
+            for (let i = 0; i < sorted.length; i++) {
+                const curr = sorted[i]; const next = sorted[(i + 1) % sorted.length];
+                const cpx = curr.x + (curr.x - cx)*0.1; const cpy = curr.y + (curr.y - cy)*0.1;
+                const midX = (curr.x + next.x)/2 + ((curr.x + next.x)/2 - cx)*0.1; const midY = (curr.y + next.y)/2 + ((curr.y + next.y)/2 - cy)*0.1;
+                ctx.quadraticCurveTo(cpx, cpy, midX, midY);
+            }
+            ctx.closePath();
+            const isHoveredHe = hoveredNode && he.nodes.includes(hoveredNode);
+            if (he.type === 'subtype_cluster') {
+                ctx.fillStyle = isHoveredHe ? 'rgba(91, 240, 231, 0.08)' : 'rgba(255, 255, 255, 0.02)';
+                ctx.strokeStyle = isHoveredHe ? 'rgba(91, 240, 231, 0.3)' : 'rgba(255, 255, 255, 0.05)';
+            } else {
+                ctx.fillStyle = isHoveredHe ? 'rgba(196, 163, 90, 0.08)' : 'rgba(196, 163, 90, 0.02)';
+                ctx.strokeStyle = isHoveredHe ? 'rgba(196, 163, 90, 0.3)' : 'rgba(196, 163, 90, 0.05)';
+            }
+            ctx.fill(); ctx.stroke();
+        });
+    }
+
+    // Draw Nodes
+    let drawnCount = 0;
+    nodes.forEach(n => {
+        if (!n.visible) return;
+        drawnCount++;
+        const dx = n.x - mouseX; const dy = n.y - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const isHovered = dist < 15;
+        if (isHovered) hoveredNode = n;
+        let size = n.baseSize;
+        if (useCentralitySize) size = 4 + (n.centrality * 14);
+        if (isHovered || n.pinned) size += 4;
+        ctx.fillStyle = catColors[n.catId] || '#FFF';
+        if (useHeatmap && n.catId === 'cat_constraint') ctx.fillStyle = `rgba(255, 0, 0, ${0.3 + n.centrality * 0.7})`;
+        if (isHovered || n.pinned) { ctx.shadowBlur = 15; ctx.shadowColor = catColors[n.catId] || '#FFF'; }
+        drawShape(n.x, n.y, size, catShapes[n.catId] || 'circle');
+        ctx.shadowBlur = 0;
+    });
+
+    frameCount++;
+    const now = performance.now();
+    if (now - lastTime > 500) {
+        fps = Math.round(1000 / ((now - lastTime) / frameCount));
+        frameCount = 0; lastTime = now;
+        document.getElementById('fps-counter').innerText = `${fps} FPS | α: ${alpha.toFixed(3)} | ${drawnCount} Nodes`;
+    }
+    updateTooltip();
+    requestAnimationFrame(draw);
+}
+
+// --- 5. INTERACTIVITY ---
+canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
+    if (dragNode) { dragNode.x = mouseX; dragNode.y = mouseY; dragNode.vx = 0; dragNode.vy = 0; }
+});
+canvas.addEventListener('mousedown', (e) => {
+    if (hoveredNode) { dragNode = hoveredNode; dragNode.pinned = true; alpha = Math.max(alpha, 0.5); canvas.style.cursor = 'grabbing'; }
+});
+window.addEventListener('mouseup', () => {
+    if (dragNode) { dragNode.pinned = false; dragNode = null; canvas.style.cursor = 'grab'; }
+});
+canvas.addEventListener('mouseleave', () => { mouseX = -1000; mouseY = -1000; hoveredNode = null; document.getElementById('tooltip').style.display = 'none'; });
+
+function updateTooltip() {
+    const tt = document.getElementById('tooltip');
+    if (!hoveredNode || dragNode) { tt.style.display = 'none'; return; }
+    tt.style.display = 'block';
+    let tx = mouseX + 20; let ty = mouseY - 20;
+    if (tx + 320 > width) tx = mouseX - 340; if (ty < 0) ty = 10;
+    tt.style.left = tx + 'px'; tt.style.top = ty + 'px';
+    const n = hoveredNode;
+    document.getElementById('tt-cat').innerText = categoryMap[n.catId]?.name || 'Unknown';
+    document.getElementById('tt-title').innerText = n.name;
+    document.getElementById('tt-centrality').innerText = n.centrality.toFixed(3);
+    document.getElementById('tt-inheritance').innerText = n.inheritanceLevel;
+    document.getElementById('tt-roles').innerText = n.roles.join(', ');
+    const edgesList = document.getElementById('tt-edges'); edgesList.innerHTML = '';
+    n.edges.forEach(e => { const li = document.createElement('li'); li.innerHTML = `<span class="tt-edge-type">${e.type}</span> → ${e.node}`; edgesList.appendChild(li); });
+}
+
+// Search
+document.getElementById('search-input').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    nodes.forEach(n => { if (q === '') { n.baseSize = 6; return; } const match = n.id.toLowerCase().includes(q) || n.name.toLowerCase().includes(q); n.baseSize = match ? 12 : 4; });
+    alpha = Math.max(alpha, 0.3); 
+});
+
+// Toggles & Filters Logic
+const catTogglesEl = document.getElementById('category-toggles');
+Object.keys(categoryMap).forEach(catId => {
+    const cat = categoryMap[catId];
+    const label = document.createElement('label'); label.className = 'toggle-item';
+    label.innerHTML = `<input type="checkbox" checked data-cat="${catId}"><span class="checkmark"></span>${cat.name}`;
+    label.querySelector('input').addEventListener('change', (e) => { if (e.target.checked) activeCategories.add(catId); else activeCategories.delete(catId); updateNodeVisibility(); });
+    catTogglesEl.appendChild(label);
+});
+
+const edgeChipsEl = document.getElementById('edge-chips');
+edgeTypes.forEach(et => {
+    const chip = document.createElement('div'); chip.className = 'chip active'; chip.innerText = et;
+    chip.addEventListener('click', () => { chip.classList.toggle('active'); if (activeEdgeTypes.has(et)) activeEdgeTypes.delete(et); else activeEdgeTypes.add(et); updateNodeVisibility(); });
+    edgeChipsEl.appendChild(chip);
+});
+
+function updateNodeVisibility() {
+    nodes.forEach(n => { const catMatch = activeCategories.has(n.catId); const edgeMatch = n.edges.some(e => activeEdgeTypes.has(e.type)); n.visible = catMatch && edgeMatch; });
+    hyperedges.forEach(he => { he.visible = he.nodes.some(n => n.visible); });
+    alpha = Math.max(alpha, 0.5);
+}
+
+// Alternative Projections Logic
+const projChips = document.querySelectorAll('#projection-chips .chip');
+projChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+        projChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentProjection = chip.getAttribute('data-proj');
+        alpha = 1.0; // Reheat simulation to execute morphing
+    });
+});
+
+// Stats
+function toggleStats() {
+    const modal = document.getElementById('stats-modal');
+    if (modal.style.display === 'block') { modal.style.display = 'none'; } 
+    else {
+        modal.style.display = 'block';
+        document.getElementById('stat-v').innerText = nodes.filter(n => n.visible).length;
+        document.getElementById('stat-e').innerText = hyperedges.filter(he => he.visible).length;
+        document.getElementById('stat-card').innerText = (nodes.length / hyperedges.length).toFixed(1);
+        document.getElementById('stat-alpha').innerText = alpha.toFixed(4);
+    }
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

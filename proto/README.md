@@ -6,6 +6,10 @@
 
 > I used to much LLM for the filling of the details - and they hve move the spct to much - confusing the abstract idea - with a type of computational align tools - which is not.
 
+Open questions:
+
+- How to reason about edges that connect the concepts the dataset?
+
 ## Formulation
 
 > Which are the sets of concept that characterize  epistemic practice? How to capture all of this concept in a database?
@@ -36,40 +40,43 @@
 {
   "id": "string",
   "name": "string",
-  "category": "string - to which major category does it belongs or it's subtype"
+  "category": "string - to which major category does it belongs or it's subtype",
   "inheritanceLevel": "number",
   "description": "string",
-  "roles": ["string"],
 
-  "history": {
-      "note": "history",
-      "timeline": [
+  "functionalRoles": ["string"],
+  "realityDomains": ["string"],
+
+  "historicalContext": {
+      "summary": "history",
+      "chronology": [
         {
           "year" :  "number",
           "event":  "textual description of the event",
-          "context": "people, etc"
+          "associatedContext": "people, etc"
         }
       ]
-   },
+  },
 
   "specific": {},
 
-  "edges": [
+  "relationships": [
     {
-      "type": "EDGE_TYPE",
-      "node": "node_id",
-      "meta": {}
+      "relationshipType": "RELATIONSHIP_FAMILTY",
+      "relationshipType": "RELATIONSHIP_TYPE",
+      "targetNodeId": "node_id",
+      "attributes": {}
     }
   ],
 
-  "meta": {
+  "metadata": {
     "tags": ["string"],
-    "confidence": "number",
-    "source": "string",
-    "registrationDate": "",
-    "reviewHistory": [{
-      "date": "date",
-      "review": "string"
+    "confidenceScore": "number",
+    "sourceReference": "string",
+    "createdAt": "",
+    "auditTrail": [{
+      "reviewDate": "date",
+      "reviewNote": "string"
     }]
   }
 }
@@ -81,18 +88,47 @@ inheritanceLevel:
 
 Which are the edged types?:
 
-- depends_on,
-- transforms,
-- validates,
-- instantiates,
-- constrains,
-- enables,
-- feeds_back_into,
-- encodes,
-- targets,
-- participates_in,
-- mediated_by,
-- subtype_of
+| **Relation Family** | **Relation Type** | **Description** | **Relation Signature** | **Use** |
+| --- | --- | --- | --- | --- |
+| Representational | observes | Captures or measures a domain snapshot through perception or instrumentation. | Observation Interface → Domain Snapshot | Empirical sensing, experiments, perception systems |
+| Representational | encodes | Transduces observations into persistent epistemic artifacts. | Observation Interface / Agent → Epistemic Artifact | Data acquisition, memory, recording |
+| Representational | expresses_in | Instantiates an artifact in a specific representational substrate or encoding format. | Epistemic Artifact → Encoding Format | Formal notation, code, schemas |
+| Representational | formalizes | Converts raw, implicit, or informal content into structured epistemic representation. | Tool / Agent → Epistemic Artifact | Ontologies, models, formal systems |
+| Representational | abstracts_from | Extracts generalized structures or principles from lower-level artifacts. | Artifact / Theory → Lower-Level Artifact | Theory building, pattern extraction |
+| Structural | composed_of | Defines constituent internal components, operations, or stages of an entity. | Tool / Process / Artifact → Subcomponent | Tool architecture, workflow decomposition |
+| Structural | has_parameter | Specifies formal adjustable variables or governing parameters. | Tool / Model → Parameter | Configuration, tuning, optimization |
+| Structural | has_input | Defines required epistemic inputs. | Tool / Process → Input Artifact | Pipeline specification |
+| Structural | has_output | Defines produced outputs. | Tool / Process → Output Artifact | Output specification |
+| Structural | implements_principle | Operationalizes an underlying formal or mathematical principle. | Tool → Principle | Fourier methods, Bayesian inference |
+| Operational | uses | Agent or higher-order system employs a tool. | Agent / Tool → Tool | Scientific inquiry, automation |
+| Operational | performs | Agent executes a process. | Agent → Process | Research, experimentation |
+| Operational | acts_on | Tool, act, or process manipulates an artifact or domain. | Tool / Process / Act → Artifact / Domain | Data processing, intervention |
+| Operational | produces | Generates a new artifact or epistemic output. | Agent / Tool / Process → Artifact | Model creation, inference products |
+| Operational | transforms | Converts one artifact into another epistemic state. | Tool / Process → Artifact | Signal processing, inference |
+| Operational | predicts | Produces projected future epistemic claims. | Model / Artifact → Future State | Forecasting, simulation |
+| Operational | decomposes | Breaks an artifact into constituent analyzable components. | Tool → Artifact Components | Fourier analysis, PCA |
+| Operational | integrates | Combines multiple epistemic sources into unified artifacts. | Tool / Process → Unified Artifact | Fusion, synthesis |
+| Operational | estimates | Infers latent states, parameters, or distributions. | Tool / Process → Estimated Artifact | Bayesian methods, econometrics |
+| Normative - Validation | conforms_to | Satisfies standards or evaluative criteria. | Artifact / Tool / Process → Standard | Scientific validity |
+| Normative - Validation | evaluated_by | Subject is assessed by evaluative mechanism. | Artifact / Process → Standard / Tool | Benchmarking, review |
+| Normative - Validation | validates | Confirms adequacy or correctness. | Process / Evidence → Artifact | Verification, replication |
+| Normative - Validation | refutes | Disconfirms or falsifies a claim. | Evidence / Feedback → Artifact | Falsification |
+| Normative - Validation | supports | Provides evidential reinforcement. | Evidence / Artifact → Artifact | Justification |
+| Constraint | is_bounded_by | Subject exists under limiting conditions. | Artifact / Tool / Process → Constraint | Complexity, uncertainty |
+| Constraint | constrains | Restricts epistemic operation, expressibility, or validity. | Constraint / Format → Subject | Formal, practical, methodological limitations |
+| Constraint | distorts | Introduces systematic deviation or corruption. | Constraint → Artifact / Observation | Bias, noise |
+| Constraint | depends_on | Requires enabling conditions. | Subject → Dependency | Infrastructure, quality prerequisites |
+| Dynamic - Feedback | triggers | Feedback initiates epistemic adaptation. | Feedback → Process / Artifact | Revision, anomaly correction |
+| Dynamic - Feedback | updates | Revises epistemic state based on new evidence. | Evidence / Feedback → Artifact / Process | Learning, Bayesian updating |
+| Dynamic - Feedback | feeds_back_to | Recursive return of output into prior stages. | Output → Prior Process | Adaptive loops |
+| Dynamic - Feedback | iterates_on | Repeatedly refines prior artifacts or processes. | Process → Prior Artifact / Process | Continuous improvement |
+| Dynamic - Feedback | evolves_into | Develops into more advanced epistemic form. | Artifact / Process → Advanced Artifact / Process | Theory maturation |
+| Infrastructure | provides | Supplies enabling material, computational, or sensory resources. | Infrastructure → Agent / Tool / Process | Labs, compute systems |
+| Infrastructure | hosts | Sustains persistent epistemic systems or agents. | Institution / Infrastructure → Agent / System | Universities, organizations |
+| Infrastructure | stores | Preserves epistemic artifacts over time. | Infrastructure → Artifact | Archives, repositories |
+| Infrastructure | communicates | Transmits artifacts across epistemic agents. | Infrastructure / Artifact → Agent / Community | Journals, APIs |
+| Infrastructure | standardizes | Establishes shared representational or methodological conventions. | Institution / Infrastructure → Standard / Format | Protocols, schemas |
+| Meta-Epistemic | monitors | Tracks epistemic system quality or performance. | Meta-System → E |  |
 
 > Note: The specific components will be formulated in the subsequent sections.
 
@@ -120,8 +156,6 @@ Which are the edged types?:
 
 ```json
 "specific": {
-  "inputs": ["ArtifactType"],
-  "embdedInArtifacts": ["ArtifactType"],
   "operation_class": "transform | infer | optimize | simulate | validate",
   "preconditions": ["assumptions", "data_requirements"],
   "guarantees": ["correctness_bound", "convergence", "consistency"],
@@ -527,7 +561,6 @@ Which are the edged types?:
     "specific": {
       "modality": "computational",
       "structure": "equations, ICs",
-      "noise_model": "process noise"
     },
     "edges": [
       { "type": "subtype_of", "node": "cat_artifact", "meta": {} }
@@ -1159,15 +1192,28 @@ Structure:
       - Hierarchical Depth Distribution
       - ...
 - **Representation**: How do we represent the data in a way that reveals the structure of epistemic practice? Which epistemic artifacts enable intelligible inference from the dataset?
-  - **Hypergraph View**: – A non‑binary relational map that exposes the multi‑entity nature of epistemic acts, where a single hyperedge can jointly connect an artifact, its tool, its agent, and its constraint, thereby recovering the polyadic structure of actual practice.
+  - **Graph View**: – A non‑binary relational map that exposes the multi‑entity nature of epistemic acts, where a single hyperedge can jointly connect an artifact, its tool, its agent, and its constraint, thereby recovering the polyadic structure of actual practice.
+    - Lenses
       - **Community Cluster Map**:  A macro‑scale topology that groups nodes by structural or functional affinity, making visible the emergent epistemic neighborhoods—such as “validation circuits” or “observation loops”—that would be invisible in a simple node‑link diagram.
-      - **Hypergraph Embedding**: A latent geometric projection that places every epistemic entity in a continuous space where proximity encodes structural similarity, enabling analogical reasoning, anomaly detection, and the discovery of functionally equivalent but non‑obvious elements.
-      - **Hypergraph Embedding*- – A latent geometric projection that places every epistemic entity in a continuous space where proximity encodes structural similarity, enabling analogical reasoning, anomaly detection, and the discovery of functionally equivalent but non‑obvious elements.
+      - Overlays
+      - Heatmaps
+      - Centrality
+      - ....
+    - Projections
+      - **Graph Embedding**: A latent geometric projection that places every epistemic entity in a continuous space where proximity encodes structural similarity, enabling analogical reasoning, anomaly detection, and the discovery of functionally equivalent but non‑obvious elements.
+      - ...
   - **Nodes Evolution Map**: ...
   - **Comparison Matrix View**: Contrast two or more instances of the same category (e.g., two different Epistemic Artifacts or two Tools).
   - **Query Interface**: – The analytic probe that allows the user to articulate graph‑pattern questions in terms of edge semantics, inheritance levels, and specific fields, converting the static knowledge graph into a reflectively searchable space of epistemic motifs.
   - **Specific Instance Level View**: A tool to help explore each node in the dataset.
-    - **Timeline View**:  – A historicizing lens that recovers the temporal dimension of justification, revealing how standards emerged, how artifacts were revised, and how the validity of a claim is always path‑dependent and situated in a genealogy of prior acts.
+  - **Timeline View**:  – A historicizing lens that recovers the temporal dimension of justification, revealing how standards emerged, how artifacts were revised, and how the validity of a claim is always path‑dependent and situated in a genealogy of prior acts.
+- **Meta Epistemic Artifact Set**: A set of epistemic artifact about **'Conceptual Structure Typing Epistemic Practice'**.
+  - Metric Set
+  - Hierarchical Depth Distribution
+  - Clustering Coefficient Distribution
+- Admin Toolbox
+  - Add new relationships between nodes.
+  - ...
 - **Documentation**: :  The reflexive layer that makes the representational choices themselves subject to epistemic scrutiny, explicating the edge‑type semantics, the inheritance hierarchy, the field definitions, and the data provenance so the map is never mistaken for the territory.
 - **About**:  – The final act of intellectual situating that positions the tool and its taxonomy inside a research program, acknowledging the contingent, historically located act of schema design without which the entire apparatus would remain a disembodied mirror of itself.
 
@@ -1293,7 +1339,7 @@ The Home Page is a high-level epistemic routing interface whose function is to:
 5. Primary Routing Layer
 
 - Analyze Structure → Overview (diagnostics, topology, system structure)
-- Explore Relations → Hypergraph / embedding / neighborhood exploration
+- Explore Relations → Graph / embedding / neighborhood exploration
 - Trace Knowledge Flow → Process / feedback / temporal dynamics
 - Inspect Entity → Node-level epistemic artifact inspection
 - Query System → Formal graph query interface
@@ -1331,7 +1377,7 @@ Constraint:
 8. Entry Guidance (Intent Disambiguation Layer)
 
 - “I want to understand how this system works” → Overview
-- “I want to see how things connect” → Hypergraph View
+- “I want to see how things connect” → Graph View
 - “I want to find why something fails” → Constraint Analysis
 - “I want to understand evolution over time” → Timeline View
 - “I want to inspect a node” → Node Explorer
@@ -1342,7 +1388,7 @@ Constraint:
 
 - ❌ Full graph visualizations (Representation layer responsibility)
 - ❌ Full statistical distributions (Overview responsibility)
-- ❌ Node tooltips or local neighborhoods (Hypergraph responsibility)
+- ❌ Node tooltips or local neighborhoods (Graph responsibility)
 - ❌ Full query language UI (Query module responsibility)
 - ❌ Temporal evolution charts (Timeline responsibility)
 - ❌ Deep semantic interpretation of nodes (Node Explorer responsibility)
@@ -1372,15 +1418,56 @@ Constraint:
 
 ### Representation Design Spec
 
-#### Hypergraph View Design Spec
+#### Graph View Design Spec
 
-> What should be the Hypergraph visualization goal? How this section should be evaluated?
+**Guiding questions:**
 
-- Limit visible Hypergraph size (e.g., 100 nodes max)
-- Hoover and greap sophisticated tooltip for the nodes.
-- ...
+- What should be the Graph visualization goal?
+- How this section should be evaluated? Which are the others visualization options or (toggles that the graph may be able to support?)
+- Whick kinds of visual lenses can be created from the dataset?
+  - Cluter
+  - Heatmaps
+  - Overlays
+  - Centrality
+  - ...
+- Which projections or alternatives views can be supported?
+  - Graph Embedding
+  - Category projection
+  - ...
+- Which statistics (graph) -> R should we also show to aid the understanding of the graph?
 
-Node Tooltip:
+**Functionalty Set:**
+
+- Support native graph visualization using a force-directed rendering engine as the primary spatialization system.
+- When hoover the nodes - show a sophisticated visualization.
+- Hovering a node highlights all hyperedges incident to it.
+- Visual Lenses (Interpretive Overlays)
+  - Community Cluster Map – Groups nodes by structural/functional affinity (e.g., “validation circuits”, “observation loops”).
+  - Domain Cluster Map -> ...
+  - Overlays – Semi‑transparent layers that add contextual information (e.g., constraint severity, feedback strength).
+  - Heatmaps – Color‑coded intensity maps over nodes/edges (e.g., eigenvector centrality, constraint density).
+  - Centrality visualization – Visual encoding of degree, betweenness, or eigenvector centrality (e.g., node sizing, border thickness).
+- Alterantives Views:
+  - Graph embedding – Latent geometric projection where proximity encodes structural similarity (supports analogical reasoning and anomaly detection).
+  - Category projection – Collapses hyperedges to show only nodes of a selected epistemic category (Artifact, Agent, Tool, etc.).
+- Embedding space browser – After computing a graph embedding, provide a 2D/3D scatter plot where Euclidean distance ≈ structural dissimilarity. Brushing selects nodes in the main view.
+-
+- Nodes drawn as colour‑coded category glyphs (Artifact = square, Agent = diamond, Tool = hexagon, etc.).
+- Support the search of nodes.
+- Statistics Modal:
+  - Graph Density
+  - Node Count |V|
+  - Fiedler Eigenvalue
+  - Hyperedge Count |E|
+  - Average Path Length
+  - Connected Components Count
+  - Average Hyperedge Cardinality
+- Category toggles – Show/hide entire epistemic classes (e.g., hide all Constraints to expose only Artifacts and Tools).
+- Edge‑type filtering – Display only edges of a selected type (depends_on, validates, encodes, etc.).
+- Inheritance level pruning – Collapse or expand nodes based on depth in the type hierarchy.
+- Epistemic role glossary – Hover over any edge type or category to see its formal definition (from your taxonomy).
+
+**Node Tooltip:**
 
 The tooltip is a local epistemic lens on a node:
 
@@ -1394,33 +1481,15 @@ So every tooltip must answer:
 - What does it depend on?
 - How is it evaluated?
 - What is its epistemic role?
-
-┌──────────────────────────────┐
-│ HEADER                        │
-│ Name + Type Badge            │
-├──────────────────────────────┤
-│ EPistemic Signature          │
-│ Role + Domain + Objective    │
-├──────────────────────────────┤
-│ DESCRIPTION (compressed)     │
-├──────────────────────────────┤
-│ RELATIONAL CORE              │
-│ Incoming / Outgoing edges    │
-├──────────────────────────────┤
-│ EPISTEMIC STATUS             │
-│ Standards + Constraints      │
-├──────────────────────────────┤
-│ LOCAL NEIGHBORHOOD           │
-│ k-hop summary                │
-├──────────────────────────────┤
-│ ACTIONS                      │
-│ expand / focus / trace       │
-└──────────────────────────────┘
+- What is it's centrality? (Eigenvector Centrality)
+- Revision tracking – Highlight nodes whose reviewHistory changed in a selected time window.
 
 ## References
 
+- https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 - https://www.decisiondeskhq.com/
 - https://projects.economist.com/us-2020-forecast/president
 - https://web.archive.org/web/20250305183642/
 - https://projects.fivethirtyeight.com/
 - https://cosmograph.app/
+- https://en.wikipedia.org/wiki/Eigenvector_centrality
