@@ -1,130 +1,194 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Epistemic Practice Conceptual Structure Node",
-  "description": "A single node in the taxonomy and instance graph of epistemic practice. Each node is an epistemic entity (category, artifact, tool, agent, process, standard, etc.) with its relational context.",
+  "$id": "https://example.org/conceptual-structure-node.schema.json",
+  "title": "Conceptual Structure Typing Node Schema",
+  "description": "Schema for representing epistemic, conceptual, or systemic structures as typed nodes within a conceptual hypergraph.",
   "type": "object",
-  "required": ["id", "name", "inheritanceLevel", "description", "roles", "specific", "edges", "meta"],
+  "required": [
+    "id",
+    "name",
+    "category",
+    "inheritanceLevel",
+    "description",
+    "functionalRoles",
+    "realityDomains",
+    "historicalContext",
+    "relationships",
+    "metadata"
+  ],
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique identifier for the node; used as target in edges."
+      "description": "Unique identifier for the node."
     },
     "name": {
       "type": "string",
-      "description": "Human-readable name of the epistemic entity."
+      "description": "Canonical name of the conceptual structure."
+    },
+    "category": {
+      "type": "string",
+      "description": "Major category, subtype, or ontological classification."
     },
     "inheritanceLevel": {
-      "type": "integer",
+      "type": "number",
       "minimum": 0,
-      "description": "Distance from the root category in the subtype hierarchy (0 = abstract top-level category)."
+      "description": "Depth within conceptual or taxonomic inheritance hierarchy."
     },
     "description": {
       "type": "string",
-      "description": "Textual definition or characterization of the node."
+      "description": "Formal description of the structure."
     },
-    "roles": {
+    "functionalRoles": {
       "type": "array",
-      "items": { "type": "string" },
-      "description": "Functional role(s) the node plays in the epistemic system (e.g., 'abstract_category', 'artifact', 'inference tool', 'norm', 'sensor')."
-    },
-    "history": {
-      "type": "object",
-      "description": "Optional genealogical record of the node's intellectual or institutional development.",
-      "properties": {
-        "note": { "type": "string" },
-        "timeline": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "year": { "type": "number" },
-              "event": { "type": "string" },
-              "context": { "type": "string" }
-            },
-            "required": ["year", "event"]
-          }
-        }
-      }
-    },
-    "specific": {
-      "type": "object",
-      "description": "Category-specific structured properties. The exact shape depends on the node's top-level category (determined by edges of type 'subtype_of'). Common shapes are documented in the system but not enforced by the base schema.",
-      "additionalProperties": true
-    },
-    "edges": {
-      "type": "array",
-      "description": "Directed, typed relations to other nodes in the graph.",
+      "description": "Primary functional roles served by this structure.",
       "items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "depends_on",
-              "transforms",
-              "validates",
-              "instantiates",
-              "constrains",
-              "enables",
-              "feeds_back_into",
-              "encodes",
-              "targets",
-              "participates_in",
-              "mediated_by",
-              "subtype_of"
-            ],
-            "description": "Semantic relation type."
-          },
-          "node": {
-            "type": "string",
-            "description": "ID of the target node."
-          },
-          "meta": {
-            "type": "object",
-            "description": "Optional edge-level metadata.",
-            "additionalProperties": true
-          }
-        },
-        "required": ["type", "node"]
+        "type": "string"
       }
     },
-    "meta": {
+    "realityDomains": {
+      "type": "array",
+      "description": "Domains of reality, knowledge, or systems in which this structure operates.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "historicalContext": {
       "type": "object",
-      "description": "Provenance and quality metadata about the node's record itself.",
+      "required": [
+        "summary",
+        "chronology"
+      ],
       "properties": {
-        "tags": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Free-text labels for filtering and grouping."
-        },
-        "confidence": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Curator's confidence in the correctness/adequacy of this node's representation."
-        },
-        "source": {
+        "summary": {
           "type": "string",
-          "description": "Origin of the node data (e.g., 'taxonomy', 'curated', 'cogsci', 'literature')."
+          "description": "Historical summary of the conceptual structure."
         },
-        "registrationDate": {
-          "type": "string",
-          "format": "date-time",
-          "description": "ISO timestamp of first registration."
-        },
-        "reviewHistory": {
+        "chronology": {
           "type": "array",
+          "description": "Chronological development timeline.",
           "items": {
             "type": "object",
+            "required": [
+              "year",
+              "event",
+              "associatedContext"
+            ],
             "properties": {
-              "date": { "type": "string", "format": "date" },
-              "review": { "type": "string" }
+              "year": {
+                "type": "number",
+                "description": "Year of the event."
+              },
+              "event": {
+                "type": "string",
+                "description": "Description of the historical event."
+              },
+              "associatedContext": {
+                "type": "string",
+                "description": "Relevant actors, institutions, or contextual factors."
+              }
             },
-            "required": ["date", "review"]
+            "additionalProperties": false
           }
         }
       },
-      "required": ["tags", "confidence", "source"]
+      "additionalProperties": false
+    },
+    "specific": {
+      "type": "object",
+      "description": "Domain-specific extension fields for specialized conceptual structures.",
+      "additionalProperties": true
+    },
+    "relationships": {
+      "type": "array",
+      "description": "Connections to other conceptual nodes.",
+      "items": {
+        "type": "object",
+        "required": [
+          "relationshipFamily",
+          "relationshipType",
+          "targetNodeId",
+          "attributes"
+        ],
+        "properties": {
+          "relationshipFamily": {
+            "type": "string",
+            "description": "High-level relation family classification."
+          },
+          "relationshipType": {
+            "type": "string",
+            "description": "Specific relationship type."
+          },
+          "targetNodeId": {
+            "type": "string",
+            "description": "Identifier of the target node."
+          },
+          "attributes": {
+            "type": "object",
+            "description": "Additional relation-specific metadata.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "tags",
+        "confidenceScore",
+        "sourceReference",
+        "createdAt",
+        "auditTrail"
+      ],
+      "properties": {
+        "tags": {
+          "type": "array",
+          "description": "Semantic or retrieval tags.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidenceScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence score representing epistemic reliability."
+        },
+        "sourceReference": {
+          "type": "string",
+          "description": "Reference to source material or provenance."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp."
+        },
+        "auditTrail": {
+          "type": "array",
+          "description": "Review and revision history.",
+          "items": {
+            "type": "object",
+            "required": [
+              "reviewDate",
+              "reviewNote"
+            ],
+            "properties": {
+              "reviewDate": {
+                "type": "string",
+                "format": "date",
+                "description": "Date of review."
+              },
+              "reviewNote": {
+                "type": "string",
+                "description": "Review notes or modifications."
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     }
-  }
+  },
+  "additionalProperties": false
 }
