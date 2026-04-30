@@ -1,15 +1,5 @@
-- (Ontic Map Economy) - How to think about surplus? How to think deeply about money? 'Money = a generalized claim on current and future surplus'. Nominal systems (money) cannot stably exceed the carrying capacity of the real system (production). Surplus grounds value; money only represents it. Money is not wealth. It is a system of claims on wealth. Money cannot exceed production… yet credit creates money beyond current production.
+TODO
 
-- A dynamically evolving, trust-backed, state-supported system of symbolic claims on a bounded, physically constrained production process, coordinated through time via credit networks.
-
-
-Money is:
-
-- a symbolic layer (representation)
-- a constraint system (budget constraints)
-- a temporal bridge (intertemporal claims)
-- a network structure (balance sheets)
-- a control signal (prices guiding allocation)
-
-- [Scoring Rule](https://en.wikipedia.org/wiki/Scoring_rule)
-- 
+- [ ] In the admin/parse spec to extrac the epistemic concept that drives (are involved) practice - we we need to specify the family better because the llm are making a lot of misclassification mistakes (taking theoretical concstruct) for artifacts.
+- [ ] [Scoring Rule](https://en.wikipedia.org/wiki/Scoring_rule)
+- [ ] ...

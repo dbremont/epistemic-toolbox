@@ -17,6 +17,7 @@
 - To identify and formalize best practices for observation, inference, validation, and knowledge correction across disciplines.
 - To study epistemic tools, reasoning mechanisms, methodological frameworks, and cognitive strategies in order to improve epistemic performance.
 - To master core epistemic tool set domains including mathematics, logic, statistics, computation, scientific methodology, systems theory, modeling, simulation, measurement science, and domain-specific analytical frameworks in order to maximize epistemic capability.
+- Note: That epistemic artifact (are description of the world) - they are not parametrized description - but descriptions - that can be valiaded - not a theoretical tool Structural Causal Model (SCM) is a artifact but Structural Caussaling Modelling is the tool toolset.
 
 ## Formulation
 
@@ -516,10 +517,7 @@ Diviate this into two steps:
 - One planning step - by which you are going to produce a table of the elemnts to be extract to be confirm by the syer
 - The other once the confirmation have been recieved is to proceed
 
-
 =====
-
-{{append here of the file}}
 
 # Causality
 

@@ -1,14 +1,12 @@
 # Conceptual Structure Typing Epistemic Practice
 
+> aka: Cognitive Cartography, Noetic Topography, Cognitectura, Epistetura.
+
 > A taxonomy (conceptual structure) that renders the epistemic practice of epistemic agents intelligible.
 
 > Epistemic practice can be characterized as the structured process by which an observer acquires, encodes, transforms, validates, and applies epistemic artifacts about a target domain.
 
 > I used to much LLM for the filling of the details - and they hve move the spct to much - confusing the abstract idea - with a type of computational align tools - which is not.
-
-Open questions:
-
-- How to reason about edges that connect the concepts the dataset?
 
 ## Formulation
 
