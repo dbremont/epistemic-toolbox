@@ -6,8 +6,6 @@
 
 > Epistemic practice can be characterized as the structured process by which an observer acquires, encodes, transforms, validates, and applies epistemic artifacts about a target domain.
 
-> I used to much LLM for the filling of the details - and they hve move the spct to much - confusing the abstract idea - with a type of computational align tools - which is not.
-
 ## Formulation
 
 > Which are the sets of concept that characterize  epistemic practice? How to capture all of this concept in a database?
