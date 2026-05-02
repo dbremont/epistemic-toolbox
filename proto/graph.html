@@ -38,7 +38,7 @@
         .search-box{width:100%;background:var(--bg-void);border:1px solid var(--border-subtle);color:var(--text-primary);font-family:var(--font-mono);font-size:.75rem;padding:7px 10px;outline:0;transition:border-color .3s,box-shadow .3s}
         .search-box:focus{border-color:var(--accent-cyan);box-shadow:0 0 15px rgba(91,240,231,.05)}
         .toggle-group{display:flex;flex-direction:column;gap:4px}
-        .toggle-item{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.75rem;color:var(--text-secondary);transition:color .2s}
+        .toggle-item{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.72rem;color:var(--text-secondary);transition:color .2s}
         .toggle-item input[type="checkbox"]{display:none}
         .checkmark{width:10px;height:10px;border:1px solid var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
         .toggle-item input:checked~.checkmark{border-color:var(--accent-cyan);background:rgba(91,240,231,.1)}
@@ -89,8 +89,8 @@
     <div>
         <div class="label">Representation</div>
         <h2 class="section-title">Graph View</h2>
-        <p style="font-size:.75rem;color:var(--text-secondary);line-height:1.4">
-            Force-directed spatialization of the epistemic topology. Direct edges encode typed relationships between conceptual nodes.
+        <p style="font-size:.72rem;color:var(--text-secondary);line-height:1.4">
+            Multi-projection force-directed engine. Switch spatializations to reveal hidden epistemic topologies.
         </p>
     </div>
     <hr class="divider">
@@ -113,6 +113,9 @@
             <label class="toggle-item"><input type="checkbox" id="lens-hulls" checked><span class="checkmark"></span>Category Hulls</label>
             <label class="toggle-item"><input type="checkbox" id="lens-heatmap"><span class="checkmark"></span>Constraint Heatmap</label>
             <label class="toggle-item"><input type="checkbox" id="lens-centrality"><span class="checkmark"></span>Centrality Sizing</label>
+            <label class="toggle-item"><input type="checkbox" id="lens-confidence-color"><span class="checkmark"></span>Confidence Gradient</label>
+            <label class="toggle-item"><input type="checkbox" id="lens-flow" checked><span class="checkmark"></span>Edge Flow Animation</label>
+            <label class="toggle-item"><input type="checkbox" id="lens-observability"><span class="checkmark"></span>Observability Ghosting</label>
         </div>
     </div>
     <div>
@@ -121,6 +124,10 @@
             <div class="chip active" data-proj="default">Force Layout</div>
             <div class="chip" data-proj="category">Category Clusters</div>
             <div class="chip" data-proj="inheritance">Inheritance Layers</div>
+            <div class="chip" data-proj="timeline">Historical Timeline</div>
+            <div class="chip" data-proj="confidence">Confidence Landscape</div>
+            <div class="chip" data-proj="radial">Radial Inheritance</div>
+            <div class="chip" data-proj="chord">Chord Adjacency</div>
         </div>
     </div>
     <div style="margin-top:auto">
@@ -176,7 +183,7 @@
 </main>
 
 <footer class="system-bar">
-    <span>Schema: conceptual-structure-node v0.1 | Engine: Force-Directed Graph</span>
+    <span>Schema: conceptual-structure-node v0.1 | Engine: Multi-Projection Force-Directed</span>
     <span id="fps-counter">Initializing...</span>
 </footer>
 
@@ -271,6 +278,10 @@ let mouseScreen = { x: -9999, y: -9999 };
 let catCenters = {};
 let frameCount = 0, lastTime = performance.now(), fps = 0;
 
+// Projection Data
+let minYear = Infinity, maxYear = -Infinity;
+let maxInheritLvl = 1;
+
 const canvas = document.getElementById('graph-canvas');
 const ctx = canvas.getContext('2d');
 let W = 0, H = 0;
@@ -305,15 +316,28 @@ function processGraph(data) {
     nodes = [];
     graphEdges = [];
 
+    // Extract Time Bounds
+    data.forEach(raw => {
+        const chron = raw.historicalContext?.chronology || [];
+        chron.forEach(c => {
+            if(c.year < minYear) minYear = c.year;
+            if(c.year > maxYear) maxYear = c.year;
+        });
+        if (raw.inheritanceLevel > maxInheritLvl) maxInheritLvl = raw.inheritanceLevel;
+    });
+    if (minYear === Infinity) { minYear = 1900; maxYear = 2024; }
+
     // Create node objects
     data.forEach((raw, i) => {
         const cat = raw.category || 'reality';
         const catIndex = CATEGORY_LIST.indexOf(cat);
-        // Initial position: spread near category center with randomness
         const angle = (catIndex / CATEGORY_LIST.length) * 2 * Math.PI - Math.PI / 2;
         const catR = Math.min(W, H) * 0.3;
         const cx = W / 2 + Math.cos(angle) * catR;
         const cy = H / 2 + Math.sin(angle) * catR;
+
+        const chron = raw.historicalContext?.chronography || raw.historicalContext?.chronology || [];
+        const earliestYear = chron.length > 0 ? chron.reduce((min, c) => c.year < min ? c.year : min, chron[0].year) : (minYear + maxYear) / 2;
 
         const node = {
             id: raw.id,
@@ -327,6 +351,10 @@ function processGraph(data) {
             specific: raw.specific || {},
             rawRelationships: raw.relationships || [],
             metadata: raw.metadata || {},
+            // Projection Targets
+            earliestYear: earliestYear,
+            confidence: raw.metadata?.confidenceScore ?? 0.5,
+            observability: raw.specific?.observability || 'observable',
             // Physics
             x: cx + (Math.random() - 0.5) * 120,
             y: cy + (Math.random() - 0.5) * 120,
@@ -342,35 +370,30 @@ function processGraph(data) {
         nodeMap[node.id] = node;
     });
 
-    // Create edge objects from relationships
-    const edgeSet = new Set(); // avoid duplicates
+    // Create edges
+    const edgeSet = new Set();
     data.forEach(raw => {
         const sourceId = raw.id;
         (raw.relationships || []).forEach(rel => {
             const targetId = rel.targetNodeId;
-            if (!nodeMap[targetId]) return; // skip dangling references
+            if (!nodeMap[targetId]) return;
             const edgeKey = `${sourceId}|${rel.relationshipType}|${targetId}`;
             if (edgeSet.has(edgeKey)) return;
             edgeSet.add(edgeKey);
             const family = rel.relationshipFamily || inferFamily(rel.relationshipType);
             graphEdges.push({
-                source: sourceId,
-                target: targetId,
-                type: rel.relationshipType,
-                family: family,
-                description: rel.description || '',
-                visible: true
+                source: sourceId, target: targetId,
+                type: rel.relationshipType, family: family,
+                description: rel.description || '', visible: true
             });
             nodeMap[sourceId].degree++;
             nodeMap[targetId].degree++;
         });
     });
 
-    // Compute centrality (degree-based normalized)
     const maxDegree = Math.max(1, ...nodes.map(n => n.degree));
     nodes.forEach(n => { n.centrality = n.degree / maxDegree; });
 
-    // Compute category centers for projections
     recalcCatCenters();
 }
 
@@ -406,12 +429,12 @@ function recalcCatCenters() {
 //  FORCE SIMULATION
 // ============================================================
 function simulationTick() {
-    if (alpha < 0.001) return;
+    if (alpha < 0.001 || currentProjection === 'chord') return;
 
     nodes.forEach(n => { n.fx = 0; n.fy = 0; });
 
     // Center gravity
-    const gravity = currentProjection === 'default' ? CENTER_GRAVITY : CENTER_GRAVITY * 0.15;
+    const gravity = currentProjection === 'default' ? CENTER_GRAVITY : CENTER_GRAVITY * 0.1;
     nodes.forEach(n => {
         if (n.pinned || !n.visible) return;
         n.fx += (W / 2 - n.x) * gravity;
@@ -450,41 +473,51 @@ function simulationTick() {
         if (!t.pinned) { t.fx -= fx; t.fy -= fy; }
     });
 
-    // Category cohesion (mild pull toward same-category centroid)
+    // Projection-specific forces
     if (currentProjection === 'default') {
         const catGroups = {};
-        nodes.forEach(n => {
-            if (!n.visible) return;
-            if (!catGroups[n.category]) catGroups[n.category] = [];
-            catGroups[n.category].push(n);
-        });
+        nodes.forEach(n => { if (!n.visible) return; if (!catGroups[n.category]) catGroups[n.category] = []; catGroups[n.category].push(n); });
         Object.values(catGroups).forEach(group => {
             if (group.length < 2) return;
-            let cx = 0, cy = 0;
-            group.forEach(n => { cx += n.x; cy += n.y; });
-            cx /= group.length; cy /= group.length;
-            group.forEach(n => {
-                if (n.pinned) return;
-                n.fx += (cx - n.x) * CATEGORY_COHESION;
-                n.fy += (cy - n.y) * CATEGORY_COHESION;
-            });
+            let cx = 0, cy = 0; group.forEach(n => { cx += n.x; cy += n.y; }); cx /= group.length; cy /= group.length;
+            group.forEach(n => { if (n.pinned) return; n.fx += (cx - n.x) * CATEGORY_COHESION; n.fy += (cy - n.y) * CATEGORY_COHESION; });
         });
-    }
-
-    // Projection-specific forces
-    if (currentProjection === 'category') {
-        nodes.forEach(n => {
-            if (n.pinned || !n.visible || !catCenters[n.category]) return;
-            const tgt = catCenters[n.category];
-            n.fx += (tgt.x - n.x) * 0.06;
-            n.fy += (tgt.y - n.y) * 0.06;
-        });
+    } else if (currentProjection === 'category') {
+        nodes.forEach(n => { if (n.pinned || !n.visible || !catCenters[n.category]) return; const tgt = catCenters[n.category]; n.fx += (tgt.x - n.x) * 0.06; n.fy += (tgt.y - n.y) * 0.06; });
     } else if (currentProjection === 'inheritance') {
+        nodes.forEach(n => { if (n.pinned || !n.visible) return; const targetY = 80 + n.inheritanceLevel * (H - 160) / Math.max(1, maxInheritLvl); n.fx += (W / 2 - n.x) * 0.01; n.fy += (targetY - n.y) * 0.06; });
+    } else if (currentProjection === 'timeline') {
+        const range = Math.max(1, maxYear - minYear);
         nodes.forEach(n => {
             if (n.pinned || !n.visible) return;
-            const targetY = 80 + n.inheritanceLevel * (H - 160) / Math.max(1, maxInheritanceLevel());
-            n.fx += (W / 2 - n.x) * 0.01;
-            n.fy += (targetY - n.y) * 0.06;
+            const targetX = 100 + ((n.earliestYear - minYear) / range) * (W - 200);
+            n.fx += (targetX - n.x) * 0.1; // Strong X lock
+            n.fy += (H / 2 - n.y) * 0.005; // Mild Y centering
+        });
+    } else if (currentProjection === 'confidence') {
+        nodes.forEach(n => {
+            if (n.pinned || !n.visible) return;
+            const maxR = Math.min(W, H) * 0.42;
+            const targetR = (1 - n.confidence) * maxR;
+            const angle = (Math.atan2(n.y - H/2, n.x - W/2) + Math.PI * 2) % (Math.PI * 2); // current angle
+            const tx = W/2 + Math.cos(angle) * targetR;
+            const ty = H/2 + Math.sin(angle) * targetR;
+            n.fx += (tx - n.x) * 0.04;
+            n.fy += (ty - n.y) * 0.04;
+            n.fx += (W/2 - n.x) * 0.001; // center nudge
+            n.fy += (H/2 - n.y) * 0.001;
+        });
+    } else if (currentProjection === 'radial') {
+        nodes.forEach(n => {
+            if (n.pinned || !n.visible) return;
+            const maxR = Math.min(W, H) * 0.4;
+            const targetR = Math.max(40, (n.inheritanceLevel / Math.max(1, maxInheritLvl)) * maxR);
+            const catIdx = CATEGORY_LIST.indexOf(n.category);
+            const targetAngle = (catIdx / CATEGORY_LIST.length) * 2 * Math.PI - Math.PI / 2;
+            const tx = W/2 + Math.cos(targetAngle) * targetR;
+            const ty = H/2 + Math.sin(targetAngle) * targetR;
+            n.fx += (tx - n.x) * 0.06;
+            n.fy += (ty - n.y) * 0.06;
         });
     }
 
@@ -502,18 +535,10 @@ function simulationTick() {
     alpha *= 0.996;
 }
 
-function maxInheritanceLevel() {
-    let m = 0;
-    nodes.forEach(n => { if (n.inheritanceLevel > m) m = n.inheritanceLevel; });
-    return m || 1;
-}
-
 // ============================================================
 //  COORDINATE TRANSFORMS
 // ============================================================
-function screenToWorld(sx, sy) {
-    return { x: (sx - camera.x) / camera.zoom, y: (sy - camera.y) / camera.zoom };
-}
+function screenToWorld(sx, sy) { return { x: (sx - camera.x) / camera.zoom, y: (sy - camera.y) / camera.zoom }; }
 
 // ============================================================
 //  RENDERING
@@ -525,18 +550,13 @@ function resize() {
     canvas.height = H * devicePixelRatio;
     ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
     recalcCatCenters();
-    if (nodes.length > 0) fitCamera();
+    if (nodes.length > 0 && currentProjection !== 'chord') fitCamera();
 }
 
 function fitCamera() {
     if (nodes.length === 0) return;
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    nodes.forEach(n => {
-        if (n.x < minX) minX = n.x;
-        if (n.x > maxX) maxX = n.x;
-        if (n.y < minY) minY = n.y;
-        if (n.y > maxY) maxY = n.y;
-    });
+    nodes.forEach(n => { if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x; if (n.y < minY) minY = n.y; if (n.y > maxY) maxY = n.y; });
     const pad = 80;
     const gw = maxX - minX + pad * 2;
     const gh = maxY - minY + pad * 2;
@@ -552,40 +572,130 @@ function drawShape(x, y, size, shape) {
     const s = Math.max(2, size);
     ctx.beginPath();
     switch (shape) {
-        case 'square':
-            ctx.rect(x - s / 2, y - s / 2, s, s); break;
-        case 'diamond':
-            ctx.moveTo(x, y - s / 2); ctx.lineTo(x + s / 2, y);
-            ctx.lineTo(x, y + s / 2); ctx.lineTo(x - s / 2, y); ctx.closePath(); break;
-        case 'hexagon':
-            for (let i = 0; i < 6; i++) {
-                const a = (Math.PI / 3) * i - Math.PI / 6;
-                const px = x + (s / 2) * Math.cos(a), py = y + (s / 2) * Math.sin(a);
-                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-            }
-            ctx.closePath(); break;
-        case 'triangle':
-            ctx.moveTo(x, y - s / 2); ctx.lineTo(x + s / 2, y + s / 2);
-            ctx.lineTo(x - s / 2, y + s / 2); ctx.closePath(); break;
-        default: // circle
-            ctx.arc(x, y, Math.max(1, s / 2), 0, Math.PI * 2); break;
+        case 'square': ctx.rect(x - s / 2, y - s / 2, s, s); break;
+        case 'diamond': ctx.moveTo(x, y - s / 2); ctx.lineTo(x + s / 2, y); ctx.lineTo(x, y + s / 2); ctx.lineTo(x - s / 2, y); ctx.closePath(); break;
+        case 'hexagon': for (let i = 0; i < 6; i++) { const a = (Math.PI / 3) * i - Math.PI / 6; const px = x + (s / 2) * Math.cos(a), py = y + (s / 2) * Math.sin(a); i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); } ctx.closePath(); break;
+        case 'triangle': ctx.moveTo(x, y - s / 2); ctx.lineTo(x + s / 2, y + s / 2); ctx.lineTo(x - s / 2, y + s / 2); ctx.closePath(); break;
+        default: ctx.arc(x, y, Math.max(1, s / 2), 0, Math.PI * 2); break;
     }
     ctx.fill();
+}
+
+function confidenceColor(score) {
+    // 0 -> Red (#FF6B6B), 0.5 -> Yellow (#FFE66D), 1.0 -> Cyan (#5BF0E7)
+    let r, g, b;
+    if (score <= 0.5) {
+        const t = score / 0.5;
+        r = Math.round(255 + (255 - 255) * t);
+        g = Math.round(107 + (230 - 107) * t);
+        b = Math.round(107 + (109 - 107) * t);
+    } else {
+        const t = (score - 0.5) / 0.5;
+        r = Math.round(255 + (91 - 255) * t);
+        g = Math.round(230 + (240 - 230) * t);
+        b = Math.round(109 + (231 - 109) * t);
+    }
+    return `rgb(${r},${g},${b})`;
+}
+
+function drawChordView() {
+    const cx = W / 2, cy = H / 2;
+    const radius = Math.min(W, H) * 0.38;
+    
+    const visibleCats = CATEGORY_LIST.filter(c => activeCategories.has(c));
+    const catIndex = {};
+    visibleCats.forEach((c, i) => catIndex[c] = i);
+    
+    // Calculate matrix
+    const matrix = Array(visibleCats.length).fill(0).map(() => Array(visibleCats.length).fill(0));
+    graphEdges.forEach(e => {
+        const s = nodeMap[e.source], t = nodeMap[e.target];
+        if (!s || !t || !s.visible || !t.visible || !activeFamilies.has(e.family)) return;
+        const sIdx = catIndex[s.category], tIdx = catIndex[t.category];
+        if (sIdx !== undefined && tIdx !== undefined) matrix[sIdx][tIdx]++;
+    });
+
+    const maxFlow = Math.max(1, ...matrix.flat());
+
+    // Draw arcs
+    visibleCats.forEach((cat, i) => {
+        const angle = (i / visibleCats.length) * 2 * Math.PI - Math.PI / 2;
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
+        
+        // Node dot
+        ctx.fillStyle = CAT_COLORS[cat];
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Label
+        ctx.font = "11px 'JetBrains Mono'";
+        ctx.textAlign = 'center';
+        ctx.fillStyle = CAT_COLORS[cat];
+        const lx = cx + Math.cos(angle) * (radius + 25);
+        const ly = cy + Math.sin(angle) * (radius + 25);
+        ctx.fillText((CATEGORY_LABELS[cat] || cat).toUpperCase(), lx, ly);
+
+        // Chords
+        for (let j = i + 1; j < visibleCats.length; j++) {
+            const flow = matrix[i][j] + matrix[j][i];
+            if (flow === 0) continue;
+            
+            const angle2 = (j / visibleCats.length) * 2 * Math.PI - Math.PI / 2;
+            const x2 = cx + Math.cos(angle2) * radius;
+            const y2 = cy + Math.sin(angle2) * radius;
+            
+            const thickness = 1 + (flow / maxFlow) * 15;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.quadraticCurveTo(cx, cy, x2, y2);
+            ctx.strokeStyle = hexToRGBA(CAT_COLORS[cat], 0.3 + (flow / maxFlow) * 0.5);
+            ctx.lineWidth = thickness;
+            ctx.stroke();
+            
+            // Flow count label
+            if (flow / maxFlow > 0.2) {
+                const midT = 0.5;
+                const mx = (1-midT)*(1-midT)*x + 2*(1-midT)*midT*cx + midT*midT*x2;
+                const my = (1-midT)*(1-midT)*y + 2*(1-midT)*midT*cy + midT*midT*y2;
+                ctx.font = "bold 10px 'JetBrains Mono'";
+                ctx.fillStyle = '#FFF';
+                ctx.fillText(flow, mx, my);
+            }
+        }
+    });
 }
 
 function draw() {
     simulationTick();
     ctx.clearRect(0, 0, W, H);
 
+    // Special mode: Chord
+    if (currentProjection === 'chord') {
+        drawChordView();
+        frameCount++;
+        const t = performance.now();
+        if (t - lastTime > 500) {
+            fps = Math.round(1000 / ((t - lastTime) / frameCount));
+            frameCount = 0; lastTime = t;
+            document.getElementById('fps-counter').innerText = `${fps} FPS | Chord Mode`;
+        }
+        requestAnimationFrame(draw);
+        return;
+    }
+
     const showHulls = document.getElementById('lens-hulls').checked;
     const useCentralitySize = document.getElementById('lens-centrality').checked;
     const useHeatmap = document.getElementById('lens-heatmap').checked;
+    const useConfColor = document.getElementById('lens-confidence-color').checked;
+    const useFlow = document.getElementById('lens-flow').checked;
+    const useObserv = document.getElementById('lens-observability').checked;
 
-    // Determine hover context
     const worldMouse = screenToWorld(mouseScreen.x, mouseScreen.y);
     hoveredNode = null;
-    const hitRadius = 12;
-    let closestDist = hitRadius;
+    let closestDist = 14;
     nodes.forEach(n => {
         if (!n.visible) return;
         const dx = n.x - worldMouse.x, dy = n.y - worldMouse.y;
@@ -593,16 +703,13 @@ function draw() {
         if (d < closestDist) { closestDist = d; hoveredNode = n; }
     });
 
-    // Connected set for hover highlighting
     const connectedIds = new Set();
     const connectedEdges = new Set();
     if (hoveredNode) {
         connectedIds.add(hoveredNode.id);
         graphEdges.forEach((e, idx) => {
             if (e.source === hoveredNode.id || e.target === hoveredNode.id) {
-                connectedIds.add(e.source);
-                connectedIds.add(e.target);
-                connectedEdges.add(idx);
+                connectedIds.add(e.source); connectedIds.add(e.target); connectedEdges.add(idx);
             }
         });
     }
@@ -611,60 +718,81 @@ function draw() {
     ctx.translate(camera.x, camera.y);
     ctx.scale(camera.zoom, camera.zoom);
 
+    // Timeline Axis
+    if (currentProjection === 'timeline') {
+        const range = Math.max(1, maxYear - minYear);
+        ctx.font = "10px 'JetBrains Mono'";
+        ctx.textAlign = 'center';
+        for (let yr = Math.ceil(minYear / 10) * 10; yr <= maxYear; yr += 10) {
+            const tx = 100 + ((yr - minYear) / range) * (W - 200);
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.fillText(yr, tx, H - 40);
+            ctx.beginPath(); ctx.moveTo(tx, 40); ctx.lineTo(tx, H - 50);
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1; ctx.stroke();
+        }
+    }
+
+    // Confidence Rings
+    if (currentProjection === 'confidence') {
+        const maxR = Math.min(W, H) * 0.42;
+        [0.0, 0.25, 0.5, 0.75, 1.0].forEach(c => {
+            const r = (1 - c) * maxR;
+            ctx.beginPath(); ctx.arc(W/2, H/2, r, 0, Math.PI*2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.font = "9px 'JetBrains Mono'"; ctx.textAlign = 'left';
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.fillText(`conf: ${c.toFixed(2)}`, W/2 + r + 5, H/2);
+        });
+    }
+
+    // Radial Guides
+    if (currentProjection === 'radial') {
+        const maxR = Math.min(W, H) * 0.4;
+        for(let l=0; l<=maxInheritLvl; l++) {
+            const r = Math.max(40, (l / Math.max(1, maxInheritLvl)) * maxR);
+            ctx.beginPath(); ctx.arc(W/2, H/2, r, 0, Math.PI*2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.font = "9px 'JetBrains Mono'"; ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.fillText(`Level ${l}`, W/2, H/2 - r - 5);
+        }
+    }
+
     // Category projection labels
     if (currentProjection === 'category') {
-        ctx.font = "11px 'JetBrains Mono'";
-        ctx.textAlign = 'center';
+        ctx.font = "11px 'JetBrains Mono'"; ctx.textAlign = 'center';
         Object.keys(catCenters).forEach(cat => {
             if (!activeCategories.has(cat)) return;
             const c = catCenters[cat];
-            ctx.fillStyle = CAT_COLORS[cat] || '#444';
-            ctx.globalAlpha = 0.35;
+            ctx.fillStyle = hexToRGBA(CAT_COLORS[cat], 0.4);
             ctx.fillText((CATEGORY_LABELS[cat] || cat).toUpperCase(), c.x, c.y - 40);
-            ctx.globalAlpha = 1;
         });
     }
 
     // Inheritance projection labels
     if (currentProjection === 'inheritance') {
-        ctx.font = "10px 'JetBrains Mono'";
-        ctx.textAlign = 'right';
-        const ml = maxInheritanceLevel();
-        for (let lv = 0; lv <= ml; lv++) {
-            const yy = 80 + lv * (H - 160) / Math.max(1, ml);
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.fillText(`L${lv}`, 40, yy + 3);
-            ctx.beginPath();
-            ctx.moveTo(50, yy); ctx.lineTo(W - 50, yy);
-            ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
+        ctx.font = "10px 'JetBrains Mono'"; ctx.textAlign = 'right';
+        for (let lv = 0; lv <= maxInheritLvl; lv++) {
+            const yy = 80 + lv * (H - 160) / Math.max(1, maxInheritLvl);
+            ctx.fillStyle = 'rgba(255,255,255,0.15)'; ctx.fillText(`L${lv}`, 40, yy + 3);
+            ctx.beginPath(); ctx.moveTo(50, yy); ctx.lineTo(W - 50, yy);
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1; ctx.stroke();
         }
     }
 
     // Category hulls
-    if (showHulls) {
+    if (showHulls && currentProjection !== 'timeline') {
         const catGroups = {};
-        nodes.forEach(n => {
-            if (!n.visible) return;
-            if (!catGroups[n.category]) catGroups[n.category] = [];
-            catGroups[n.category].push(n);
-        });
+        nodes.forEach(n => { if (!n.visible) return; if (!catGroups[n.category]) catGroups[n.category] = []; catGroups[n.category].push(n); });
         Object.entries(catGroups).forEach(([cat, group]) => {
             if (group.length < 3) return;
-            let cx = 0, cy = 0;
-            group.forEach(n => { cx += n.x; cy += n.y; });
-            cx /= group.length; cy /= group.length;
-            const sorted = [...group].sort((a, b) =>
-                Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx)
-            );
+            let cx = 0, cy = 0; group.forEach(n => { cx += n.x; cy += n.y; }); cx /= group.length; cy /= group.length;
+            const sorted = [...group].sort((a, b) => Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx));
             ctx.beginPath();
-            const first = sorted[0];
-            ctx.moveTo((first.x + cx) / 2, (first.y + cy) / 2);
+            const first = sorted[0]; ctx.moveTo((first.x + cx) / 2, (first.y + cy) / 2);
             for (let i = 0; i < sorted.length; i++) {
                 const curr = sorted[i], next = sorted[(i + 1) % sorted.length];
-                const cpx = curr.x + (curr.x - cx) * 0.08;
-                const cpy = curr.y + (curr.y - cy) * 0.08;
+                const cpx = curr.x + (curr.x - cx) * 0.08, cpy = curr.y + (curr.y - cy) * 0.08;
                 const midX = (curr.x + next.x) / 2 + ((curr.x + next.x) / 2 - cx) * 0.08;
                 const midY = (curr.y + next.y) / 2 + ((curr.y + next.y) / 2 - cy) * 0.08;
                 ctx.quadraticCurveTo(cpx, cpy, midX, midY);
@@ -674,9 +802,7 @@ function draw() {
             const col = CAT_COLORS[cat] || '#FFF';
             ctx.fillStyle = hexToRGBA(col, isHoveredCat ? 0.07 : 0.02);
             ctx.strokeStyle = hexToRGBA(col, isHoveredCat ? 0.25 : 0.05);
-            ctx.lineWidth = 1;
-            ctx.fill();
-            ctx.stroke();
+            ctx.lineWidth = 1; ctx.fill(); ctx.stroke();
         });
     }
 
@@ -690,14 +816,12 @@ function draw() {
         const isHighlighted = hoveredNode && connectedEdges.has(idx);
         const isDimmed = hoveredNode && !connectedEdges.has(idx);
         const col = FAMILY_COLORS[e.family] || '#555';
-        const a = isDimmed ? 0.03 : (isHighlighted ? 0.7 : 0.15);
+        const a = isDimmed ? 0.02 : (isHighlighted ? 0.8 : 0.12);
 
-        // Slight curve for visual clarity
         const dx = t.x - s.x, dy = t.y - s.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 1) return;
 
-        // Perpendicular offset for curvature
         const nx = -dy / dist, ny = dx / dist;
         const curveMag = dist * 0.08;
         const cmx = (s.x + t.x) / 2 + nx * curveMag;
@@ -707,13 +831,15 @@ function draw() {
         ctx.moveTo(s.x, s.y);
         ctx.quadraticCurveTo(cmx, cmy, t.x, t.y);
         ctx.strokeStyle = hexToRGBA(col, a);
-        ctx.lineWidth = isHighlighted ? 2 : 0.8;
-        if (isHighlighted) {
-            ctx.setLineDash([5, 5]);
+        ctx.lineWidth = isHighlighted ? 2 : 0.7;
+        
+        if (useFlow) {
+            ctx.setLineDash([4, 6]);
             ctx.lineDashOffset = -now / 40;
         } else {
             ctx.setLineDash([]);
         }
+        
         ctx.stroke();
         ctx.setLineDash([]);
 
@@ -735,13 +861,11 @@ function draw() {
             ctx.fill();
         }
 
-        // Edge type label on highlighted edges
         if (isHighlighted) {
             const labelT = 0.45;
             const lx = (1 - labelT) * (1 - labelT) * s.x + 2 * (1 - labelT) * labelT * cmx + labelT * labelT * t.x;
             const ly = (1 - labelT) * (1 - labelT) * s.y + 2 * (1 - labelT) * labelT * cmy + labelT * labelT * t.y;
-            ctx.font = "9px 'JetBrains Mono'";
-            ctx.textAlign = 'center';
+            ctx.font = "9px 'JetBrains Mono'"; ctx.textAlign = 'center';
             ctx.fillStyle = hexToRGBA(col, 0.9);
             ctx.fillText(e.type, lx, ly - 6);
         }
@@ -760,49 +884,48 @@ function draw() {
         if (useCentralitySize) size = 5 + n.centrality * 16;
         if (isHovered) size += 5;
 
-        const col = CAT_COLORS[n.category] || '#FFF';
-        let fillColor = col;
+        // Determine Color
+        let fillColor = CAT_COLORS[n.category] || '#FFF';
+        if (useConfColor) fillColor = confidenceColor(n.confidence);
         if (useHeatmap && n.category === 'epistemicConstraint') {
             fillColor = `rgba(255,${Math.round(60 - n.centrality * 60)},${Math.round(60 - n.centrality * 60)},${0.4 + n.centrality * 0.6})`;
         }
 
-        ctx.globalAlpha = isDimmed ? 0.12 : 1;
+        // Determine Opacity
+        let nodeAlpha = 1.0;
+        if (isDimmed) nodeAlpha = 0.1;
+        if (useObserv && n.category === 'reality') {
+            if (n.observability === 'latent') nodeAlpha = isDimmed ? 0.02 : 0.15;
+            else if (n.observability === 'partiallyObservable') nodeAlpha = isDimmed ? 0.05 : 0.5;
+        }
+
+        ctx.globalAlpha = nodeAlpha;
         ctx.fillStyle = fillColor;
 
-        if (isHovered) {
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = col;
-        }
+        if (isHovered) { ctx.shadowBlur = 20; ctx.shadowColor = fillColor; }
 
         drawShape(n.x, n.y, size, CAT_SHAPES[n.category] || 'circle');
         ctx.shadowBlur = 0;
 
-        // Pulsing ring on hover
         if (isHovered) {
             const pulse = Math.sin(now / 250) * 0.3 + 0.6;
-            ctx.strokeStyle = col;
-            ctx.lineWidth = 1.5;
-            ctx.globalAlpha = pulse;
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, size / 2 + 8, 0, Math.PI * 2);
-            ctx.stroke();
+            ctx.strokeStyle = fillColor; ctx.lineWidth = 1.5; ctx.globalAlpha = pulse;
+            ctx.beginPath(); ctx.arc(n.x, n.y, size / 2 + 8, 0, Math.PI * 2); ctx.stroke();
         }
 
-        // Node label for hovered or high-centrality nodes
-        if ((isHovered || (isConnected && !isDimmed) || n.centrality > 0.7) && !isDimmed) {
+        // Labels
+        if ((isHovered || isConnected || n.centrality > 0.7) && !isDimmed) {
             ctx.font = isHovered ? "bold 11px 'Inter'" : "9px 'Inter'";
             ctx.textAlign = 'center';
             ctx.fillStyle = isHovered ? '#FFF' : 'rgba(255,255,255,0.6)';
             ctx.globalAlpha = isDimmed ? 0 : 1;
             ctx.fillText(n.name, n.x, n.y - size / 2 - 6);
         }
-
         ctx.globalAlpha = 1;
     });
 
     ctx.restore();
 
-    // FPS counter
     frameCount++;
     const t = performance.now();
     if (t - lastTime > 500) {
@@ -817,13 +940,10 @@ function draw() {
 }
 
 // ============================================================
-//  COLOR UTILITY
+//  UTILITY
 // ============================================================
 function hexToRGBA(hex, a) {
-    if (hex.startsWith('rgba') || hex.startsWith('rgb')) {
-        // Already in rgb form, just adjust alpha
-        return hex.replace(/[\d.]+\)$/g, `${a})`);
-    }
+    if (!hex || hex.startsWith('rgb')) return hex;
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
@@ -835,15 +955,14 @@ function hexToRGBA(hex, a) {
 // ============================================================
 function updateTooltip() {
     const tt = document.getElementById('tooltip');
-    if (!hoveredNode || dragNode) { tt.style.display = 'none'; return; }
+    if (!hoveredNode || dragNode || currentProjection === 'chord') { tt.style.display = 'none'; return; }
 
     tt.style.display = 'block';
     let tx = mouseScreen.x + 20, ty = mouseScreen.y - 20;
     if (tx + 350 > W) tx = mouseScreen.x - 370;
     if (ty < 0) ty = 10;
     if (ty + 420 > H) ty = H - 430;
-    tt.style.left = tx + 'px';
-    tt.style.top = ty + 'px';
+    tt.style.left = tx + 'px'; tt.style.top = ty + 'px';
 
     const n = hoveredNode;
     document.getElementById('tt-cat').innerText = CATEGORY_LABELS[n.category] || n.category;
@@ -851,32 +970,18 @@ function updateTooltip() {
     document.getElementById('tt-title').innerText = n.name;
     document.getElementById('tt-desc').innerText = n.description;
     document.getElementById('tt-inheritance').innerText = n.inheritanceLevel;
-    const conf = n.metadata?.confidenceScore;
-    document.getElementById('tt-confidence').innerText = conf !== undefined ? conf.toFixed(2) : '—';
+    document.getElementById('tt-confidence').innerText = n.confidence.toFixed(2);
 
-    // Functional roles
-    const rolesEl = document.getElementById('tt-roles');
-    rolesEl.innerHTML = '';
-    (n.functionalRoles || []).forEach(r => {
-        const span = document.createElement('span');
-        span.className = 'tt-tag'; span.innerText = r; rolesEl.appendChild(span);
-    });
+    const rolesEl = document.getElementById('tt-roles'); rolesEl.innerHTML = '';
+    (n.functionalRoles || []).forEach(r => { const span = document.createElement('span'); span.className = 'tt-tag'; span.innerText = r; rolesEl.appendChild(span); });
 
-    // Reality domains
-    const domainsEl = document.getElementById('tt-domains');
-    domainsEl.innerHTML = '';
-    (n.realityDomains || []).forEach(d => {
-        const span = document.createElement('span');
-        span.className = 'tt-tag'; span.innerText = d; domainsEl.appendChild(span);
-    });
+    const domainsEl = document.getElementById('tt-domains'); domainsEl.innerHTML = '';
+    (n.realityDomains || []).forEach(d => { const span = document.createElement('span'); span.className = 'tt-tag'; span.innerText = d; domainsEl.appendChild(span); });
 
-    // Specific properties
-    const specEl = document.getElementById('tt-specific');
-    specEl.innerHTML = '';
+    const specEl = document.getElementById('tt-specific'); specEl.innerHTML = '';
     if (n.specific && typeof n.specific === 'object') {
         Object.entries(n.specific).forEach(([key, val]) => {
-            const div = document.createElement('div');
-            div.className = 'spec-item';
+            const div = document.createElement('div'); div.className = 'spec-item';
             const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
             const display = Array.isArray(val) ? val.join(', ') : String(val);
             div.innerHTML = `<span class="spec-label">${label}</span> ${display}`;
@@ -884,14 +989,11 @@ function updateTooltip() {
         });
     }
 
-    // Relationships
-    const edgesEl = document.getElementById('tt-edges');
-    edgesEl.innerHTML = '';
+    const edgesEl = document.getElementById('tt-edges'); edgesEl.innerHTML = '';
     (n.rawRelationships || []).forEach(rel => {
         const li = document.createElement('li');
         const targetName = nodeMap[rel.targetNodeId]?.name || rel.targetNodeId;
-        li.innerHTML = `<span class="tt-edge-type">${rel.relationshipType}</span> ` +
-            `<span class="tt-edge-target">${targetName}</span>` +
+        li.innerHTML = `<span class="tt-edge-type">${rel.relationshipType}</span> <span class="tt-edge-target">${targetName}</span>` +
             (rel.description ? ` <span class="tt-edge-desc">— ${rel.description}</span>` : '');
         edgesEl.appendChild(li);
     });
@@ -902,121 +1004,79 @@ function updateTooltip() {
 // ============================================================
 canvas.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect();
-    mouseScreen.x = e.clientX - rect.left;
-    mouseScreen.y = e.clientY - rect.top;
-
+    mouseScreen.x = e.clientX - rect.left; mouseScreen.y = e.clientY - rect.top;
     if (dragNode) {
         const w = screenToWorld(mouseScreen.x, mouseScreen.y);
-        dragNode.x = w.x; dragNode.y = w.y;
-        dragNode.vx = 0; dragNode.vy = 0;
+        dragNode.x = w.x; dragNode.y = w.y; dragNode.vx = 0; dragNode.vy = 0;
     } else if (isPanning) {
-        camera.x = e.clientX - panStart.x;
-        camera.y = e.clientY - panStart.y;
+        camera.x = e.clientX - panStart.x; camera.y = e.clientY - panStart.y;
     }
 });
 
 canvas.addEventListener('mousedown', e => {
+    if (currentProjection === 'chord') return;
     if (hoveredNode) {
-        dragNode = hoveredNode;
-        dragNode.pinned = true;
-        alpha = Math.max(alpha, 0.4);
-        canvas.style.cursor = 'grabbing';
+        dragNode = hoveredNode; dragNode.pinned = true; alpha = Math.max(alpha, 0.4); canvas.style.cursor = 'grabbing';
     } else {
-        isPanning = true;
-        panStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
-        canvas.style.cursor = 'grabbing';
+        isPanning = true; panStart = { x: e.clientX - camera.x, y: e.clientY - camera.y }; canvas.style.cursor = 'grabbing';
     }
 });
 
-window.addEventListener('mouseup', () => {
-    if (dragNode) { dragNode.pinned = false; dragNode = null; }
-    isPanning = false;
-    canvas.style.cursor = 'grab';
-});
+window.addEventListener('mouseup', () => { if (dragNode) { dragNode.pinned = false; dragNode = null; } isPanning = false; canvas.style.cursor = 'grab'; });
 
 canvas.addEventListener('wheel', e => {
+    if (currentProjection === 'chord') return;
     e.preventDefault();
     const factor = e.deltaY > 0 ? 0.92 : 1.08;
     const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    camera.x = mx - (mx - camera.x) * factor;
-    camera.y = my - (my - camera.y) * factor;
-    camera.zoom *= factor;
-    camera.zoom = Math.max(0.1, Math.min(5, camera.zoom));
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    camera.x = mx - (mx - camera.x) * factor; camera.y = my - (my - camera.y) * factor;
+    camera.zoom = Math.max(0.1, Math.min(5, camera.zoom * factor));
 }, { passive: false });
 
-canvas.addEventListener('mouseleave', () => {
-    mouseScreen.x = -9999; mouseScreen.y = -9999;
-    hoveredNode = null;
-    document.getElementById('tooltip').style.display = 'none';
-});
+canvas.addEventListener('mouseleave', () => { mouseScreen.x = -9999; mouseScreen.y = -9999; hoveredNode = null; document.getElementById('tooltip').style.display = 'none'; });
 
 // ============================================================
 //  UI CONTROLS
 // ============================================================
 function setupUI() {
-    // Category toggles
     const catTogglesEl = document.getElementById('category-toggles');
     CATEGORY_LIST.forEach(cat => {
-        const label = document.createElement('label');
-        label.className = 'toggle-item';
+        const label = document.createElement('label'); label.className = 'toggle-item';
         const dot = `<span class="cat-dot" style="background:${CAT_COLORS[cat] || '#888'}"></span>`;
         label.innerHTML = `<input type="checkbox" checked data-cat="${cat}"><span class="checkmark"></span>${dot}${CATEGORY_LABELS[cat] || cat}`;
-        label.querySelector('input').addEventListener('change', e => {
-            if (e.target.checked) activeCategories.add(cat); else activeCategories.delete(cat);
-            updateVisibility();
-        });
+        label.querySelector('input').addEventListener('change', e => { if (e.target.checked) activeCategories.add(cat); else activeCategories.delete(cat); updateVisibility(); });
         catTogglesEl.appendChild(label);
     });
 
-    // Relationship family chips
     const famChipsEl = document.getElementById('family-chips');
     Object.keys(FAMILY_COLORS).forEach(fam => {
-        const chip = document.createElement('div');
-        chip.className = 'chip active';
-        chip.style.borderColor = FAMILY_COLORS[fam];
-        chip.innerText = FAMILY_LABELS[fam] || fam;
-        chip.addEventListener('click', () => {
-            chip.classList.toggle('active');
-            if (activeFamilies.has(fam)) activeFamilies.delete(fam); else activeFamilies.add(fam);
-            updateVisibility();
-        });
+        const chip = document.createElement('div'); chip.className = 'chip active';
+        chip.style.borderColor = FAMILY_COLORS[fam]; chip.innerText = FAMILY_LABELS[fam] || fam;
+        chip.addEventListener('click', () => { chip.classList.toggle('active'); if (activeFamilies.has(fam)) activeFamilies.delete(fam); else activeFamilies.add(fam); updateVisibility(); });
         famChipsEl.appendChild(chip);
     });
 
-    // Search
     document.getElementById('search-input').addEventListener('input', e => {
         const q = e.target.value.toLowerCase();
-        nodes.forEach(n => {
-            if (q === '') { n.baseSize = 7; return; }
-            const match = n.id.toLowerCase().includes(q) ||
-                          n.name.toLowerCase().includes(q) ||
-                          n.description.toLowerCase().includes(q);
-            n.baseSize = match ? 14 : 4;
-        });
+        nodes.forEach(n => { if (q === '') { n.baseSize = 7; return; } const match = n.id.toLowerCase().includes(q) || n.name.toLowerCase().includes(q) || n.description.toLowerCase().includes(q); n.baseSize = match ? 14 : 4; });
         alpha = Math.max(alpha, 0.3);
     });
 
-    // Projection chips
     document.querySelectorAll('#projection-chips .chip').forEach(chip => {
         chip.addEventListener('click', () => {
             document.querySelectorAll('#projection-chips .chip').forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
             currentProjection = chip.getAttribute('data-proj');
             alpha = 1.0;
+            if (currentProjection !== 'chord') fitCamera();
         });
     });
 }
 
 function updateVisibility() {
-    nodes.forEach(n => {
-        n.visible = activeCategories.has(n.category);
-    });
-    graphEdges.forEach(e => {
-        const s = nodeMap[e.source], t = nodeMap[e.target];
-        e.visible = s && t && s.visible && t.visible && activeFamilies.has(e.family);
-    });
+    nodes.forEach(n => { n.visible = activeCategories.has(n.category); });
+    graphEdges.forEach(e => { const s = nodeMap[e.source], t = nodeMap[e.target]; e.visible = s && t && s.visible && t.visible && activeFamilies.has(e.family); });
     alpha = Math.max(alpha, 0.5);
 }
 
@@ -1028,13 +1088,11 @@ function toggleStats() {
     const en = graphEdges.filter(e => e.visible).length;
     const cats = new Set(nodes.filter(n => n.visible).map(n => n.category)).size;
     const maxEdges = vn * (vn - 1);
-    const density = maxEdges > 0 ? (en / maxEdges).toFixed(4) : '0';
-    const avgDeg = vn > 0 ? ((2 * en) / vn).toFixed(2) : '0';
     document.getElementById('stat-v').innerText = vn;
     document.getElementById('stat-e').innerText = en;
     document.getElementById('stat-cats').innerText = cats;
-    document.getElementById('stat-density').innerText = density;
-    document.getElementById('stat-degree').innerText = avgDeg;
+    document.getElementById('stat-density').innerText = maxEdges > 0 ? (en / maxEdges).toFixed(4) : '0';
+    document.getElementById('stat-degree').innerText = vn > 0 ? ((2 * en) / vn).toFixed(2) : '0';
     document.getElementById('stat-alpha').innerText = alpha.toFixed(4);
 }
 
