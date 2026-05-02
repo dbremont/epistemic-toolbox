@@ -3,608 +3,1047 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epistemic Graph - Force Directed Engine</title>
+    <title>Epistemic Graph Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --bg-void: #050505; --bg-surface: #0F0F0F; --bg-card: #1A1A1A;
             --text-primary: #E8E8E8; --text-secondary: #A0A0A0; --text-muted: #666666;
             --accent-gold: #C4A35A; --accent-cyan: #5BF0E7;
-            --border-subtle: rgba(255, 255, 255, 0.1);
+            --border-subtle: rgba(255,255,255,0.1);
             --font-display: 'Cormorant Garamond', serif;
             --font-body: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: var(--bg-void); color: var(--text-primary);
-            font-family: var(--font-body); display: grid;
-            grid-template-columns: 320px 1fr; grid-template-rows: 1fr 40px;
-            height: 100vh; overflow: hidden;
-        }
-        h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
-        .label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-        .value { font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent-cyan); }
-        .divider { border: 0; border-top: 1px solid var(--border-subtle); margin: 16px 0; }
-        
-        aside.toolbox {
-            grid-row: 1 / 3; background: var(--bg-surface);
-            border-right: 1px solid var(--border-subtle); padding: 24px;
-            overflow-y: auto; display: flex; flex-direction: column; gap: 16px; z-index: 10;
-        }
-        main.canvas-area { position: relative; background: var(--bg-void); overflow: hidden; }
-        canvas#hypergraph { width: 100%; height: 100%; cursor: grab; }
-        canvas#hypergraph:active { cursor: grabbing; }
-        
-        footer.system-bar {
-            grid-column: 2 / 3; background: var(--bg-surface);
-            border-top: 1px solid var(--border-subtle); display: flex;
-            align-items: center; justify-content: space-between; padding: 0 24px;
-            font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;
-        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:var(--bg-void);color:var(--text-primary);font-family:var(--font-body);display:grid;grid-template-columns:320px 1fr;grid-template-rows:1fr 36px;height:100vh;overflow:hidden}
+        h1,h2,h3{font-family:var(--font-display);font-weight:400}
+        .label{font-family:var(--font-mono);font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+        .value{font-family:var(--font-mono);font-size:1rem;color:var(--accent-cyan)}
+        .divider{border:0;border-top:1px solid var(--border-subtle);margin:14px 0}
 
-        .section-title { font-family: var(--font-display); font-size: 1.5rem; font-style: italic; color: var(--text-primary); margin-bottom: 8px; }
-        .search-box {
-            width: 100%; background: var(--bg-void); border: 1px solid var(--border-subtle);
-            color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8rem;
-            padding: 8px 12px; outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .search-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(91, 240, 231, 0.05); }
-        .toggle-group { display: flex; flex-direction: column; gap: 6px; }
-        .toggle-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.8rem; color: var(--text-secondary); }
-        .toggle-item input[type="checkbox"] { display: none; }
-        .checkmark { width: 12px; height: 12px; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .toggle-item input:checked ~ .checkmark { border-color: var(--accent-cyan); background: rgba(91, 240, 231, 0.1); }
-        .toggle-item input:checked ~ .checkmark::after { content: '•'; color: var(--accent-cyan); font-size: 10px; }
-        .toggle-item:hover { color: var(--text-primary); }
-        .chip-grid { display: flex; flex-wrap: wrap; gap: 4px; }
-        .chip { font-family: var(--font-mono); font-size: 0.6rem; padding: 3px 6px; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s; }
-        .chip:hover, .chip.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(91, 240, 231, 0.05); }
-        .btn-action { background: var(--bg-void); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; padding: 8px; cursor: pointer; transition: all 0.3s; width: 100%; text-align: center; }
-        .btn-action:hover { background: rgba(196, 163, 90, 0.1); }
+        aside.toolbox{grid-row:1/3;background:var(--bg-surface);border-right:1px solid var(--border-subtle);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;z-index:10}
+        aside.toolbox::-webkit-scrollbar{width:4px}
+        aside.toolbox::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
 
-        #tooltip {
-            position: absolute; display: none; background: var(--bg-surface);
-            border: 1px solid var(--border-subtle); border-top: 2px solid var(--accent-cyan);
-            padding: 16px; width: 320px; pointer-events: none; z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .tt-header { margin-bottom: 12px; }
-        .tt-title { font-family: var(--font-display); font-size: 1.2rem; font-style: italic; }
-        .tt-cat { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.1em; }
-        .tt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .tt-section { margin-top: 8px; border-top: 1px solid var(--border-subtle); padding-top: 8px; }
-        .tt-edge-list { list-style: none; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); }
-        .tt-edge-list li { margin-bottom: 2px; }
-        .tt-edge-type { color: var(--accent-cyan); }
+        main.canvas-area{position:relative;background:var(--bg-void);overflow:hidden}
+        canvas#graph-canvas{width:100%;height:100%;cursor:grab}
+        canvas#graph-canvas:active{cursor:grabbing}
 
-        #stats-modal {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--bg-surface); border: 1px solid var(--accent-gold);
-            padding: 32px; z-index: 150; display: none; min-width: 400px;
-        }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .stat-item { border-left: 1px solid var(--border-subtle); padding-left: 12px; }
+        footer.system-bar{grid-column:2/3;background:var(--bg-surface);border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-family:var(--font-mono);font-size:.6rem;color:var(--text-muted);text-transform:uppercase}
+
+        .section-title{font-family:var(--font-display);font-size:1.4rem;font-style:italic;color:var(--text-primary);margin-bottom:6px}
+        .search-box{width:100%;background:var(--bg-void);border:1px solid var(--border-subtle);color:var(--text-primary);font-family:var(--font-mono);font-size:.75rem;padding:7px 10px;outline:0;transition:border-color .3s,box-shadow .3s}
+        .search-box:focus{border-color:var(--accent-cyan);box-shadow:0 0 15px rgba(91,240,231,.05)}
+        .toggle-group{display:flex;flex-direction:column;gap:4px}
+        .toggle-item{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.75rem;color:var(--text-secondary);transition:color .2s}
+        .toggle-item input[type="checkbox"]{display:none}
+        .checkmark{width:10px;height:10px;border:1px solid var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+        .toggle-item input:checked~.checkmark{border-color:var(--accent-cyan);background:rgba(91,240,231,.1)}
+        .toggle-item input:checked~.checkmark::after{content:'•';color:var(--accent-cyan);font-size:8px}
+        .toggle-item:hover{color:var(--text-primary)}
+        .chip-grid{display:flex;flex-wrap:wrap;gap:4px}
+        .chip{font-family:var(--font-mono);font-size:.55rem;padding:2px 6px;background:var(--bg-card);border:1px solid var(--border-subtle);cursor:pointer;transition:all .2s;color:var(--text-secondary)}
+        .chip:hover,.chip.active{border-color:var(--accent-cyan);color:var(--accent-cyan);background:rgba(91,240,231,.05)}
+        .btn-action{background:var(--bg-void);border:1px solid var(--accent-gold);color:var(--accent-gold);font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;padding:7px;cursor:pointer;transition:all .3s;width:100%;text-align:center}
+        .btn-action:hover{background:rgba(196,163,90,.1)}
+
+        #tooltip{position:absolute;display:none;background:var(--bg-surface);border:1px solid var(--border-subtle);border-top:2px solid var(--accent-cyan);padding:14px;width:340px;max-height:420px;overflow-y:auto;pointer-events:none;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+        #tooltip::-webkit-scrollbar{width:3px}
+        #tooltip::-webkit-scrollbar-thumb{background:var(--border-subtle)}
+        .tt-header{margin-bottom:10px}
+        .tt-title{font-family:var(--font-display);font-size:1.15rem;font-style:italic}
+        .tt-cat{font-family:var(--font-mono);font-size:.6rem;color:var(--accent-gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+        .tt-desc{font-size:.72rem;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+        .tt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+        .tt-section{margin-top:6px;border-top:1px solid var(--border-subtle);padding-top:6px}
+        .tt-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+        .tt-tag{font-family:var(--font-mono);font-size:.55rem;padding:1px 5px;background:var(--bg-card);border:1px solid var(--border-subtle);color:var(--text-secondary)}
+        .tt-edge-list{list-style:none;font-family:var(--font-mono);font-size:.65rem;color:var(--text-secondary);margin-top:3px}
+        .tt-edge-list li{margin-bottom:2px;display:flex;gap:4px;align-items:baseline}
+        .tt-edge-type{color:var(--accent-cyan);flex-shrink:0}
+        .tt-edge-target{color:var(--text-primary)}
+        .tt-edge-desc{color:var(--text-muted);font-size:.55rem}
+        .spec-item{font-family:var(--font-mono);font-size:.65rem;margin-bottom:2px;color:var(--text-secondary)}
+        .spec-label{color:var(--accent-gold);font-size:.55rem;text-transform:uppercase}
+
+        #stats-modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-surface);border:1px solid var(--accent-gold);padding:28px;z-index:150;display:none;min-width:380px}
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+        .stat-item{border-left:1px solid var(--border-subtle);padding-left:10px}
+
+        #loading-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-void);z-index:200;transition:opacity .6s}
+        #loading-overlay.hidden{opacity:0;pointer-events:none}
+        .loader-ring{width:40px;height:40px;border:2px solid var(--border-subtle);border-top-color:var(--accent-cyan);border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loader-text{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:16px;text-transform:uppercase;letter-spacing:.1em}
+        .loader-error{color:#FF6B6B;max-width:300px;text-align:center;line-height:1.5}
+
+        .cat-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
     </style>
 </head>
 <body>
 
-    <aside class="toolbox">
-        <div>
-            <div class="label">Representation</div>
-            <h2 class="section-title">Graph View</h2>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
-                Native force-directed spatialization. Switch projections to morph the epistemic topology.
-            </p>
+<aside class="toolbox">
+    <div>
+        <div class="label">Representation</div>
+        <h2 class="section-title">Graph View</h2>
+        <p style="font-size:.75rem;color:var(--text-secondary);line-height:1.4">
+            Force-directed spatialization of the epistemic topology. Direct edges encode typed relationships between conceptual nodes.
+        </p>
+    </div>
+    <hr class="divider">
+    <div>
+        <div class="label">Search Nodes</div>
+        <input type="text" class="search-box" id="search-input" placeholder="ID, Name, or Description...">
+    </div>
+    <div>
+        <div class="label">Category Toggles</div>
+        <div class="toggle-group" id="category-toggles"></div>
+    </div>
+    <div>
+        <div class="label">Relationship Family Filters</div>
+        <div class="chip-grid" id="family-chips"></div>
+    </div>
+    <hr class="divider">
+    <div>
+        <div class="label">Visual Lenses</div>
+        <div class="toggle-group">
+            <label class="toggle-item"><input type="checkbox" id="lens-hulls" checked><span class="checkmark"></span>Category Hulls</label>
+            <label class="toggle-item"><input type="checkbox" id="lens-heatmap"><span class="checkmark"></span>Constraint Heatmap</label>
+            <label class="toggle-item"><input type="checkbox" id="lens-centrality"><span class="checkmark"></span>Centrality Sizing</label>
         </div>
-        <hr class="divider">
-        <div>
-            <div class="label">Search Nodes</div>
-            <input type="text" class="search-box" id="search-input" placeholder="ID or Name...">
+    </div>
+    <div>
+        <div class="label">Projections</div>
+        <div class="chip-grid" id="projection-chips">
+            <div class="chip active" data-proj="default">Force Layout</div>
+            <div class="chip" data-proj="category">Category Clusters</div>
+            <div class="chip" data-proj="inheritance">Inheritance Layers</div>
         </div>
-        <div>
-            <div class="label">Category Toggles</div>
-            <div class="toggle-group" id="category-toggles"></div>
-        </div>
-        <div>
-            <div class="label">Edge Type Filters</div>
-            <div class="chip-grid" id="edge-chips"></div>
-        </div>
-        <hr class="divider">
-        <div>
-            <div class="label">Visual Lenses</div>
-            <div class="toggle-group">
-                <label class="toggle-item"><input type="checkbox" id="lens-community" checked><span class="checkmark"></span>Hyperedge Blobs</label>
-                <label class="toggle-item"><input type="checkbox" id="lens-heatmap"><span class="checkmark"></span>Constraint Heatmap</label>
-                <label class="toggle-item"><input type="checkbox" id="lens-centrality"><span class="checkmark"></span>Centrality Sizing</label>
-            </div>
-        </div>
-        <div>
-            <div class="label">Alternative Projections</div>
-            <div class="chip-grid" id="projection-chips">
-                <div class="chip active" data-proj="default">Default Topology</div>
-                <div class="chip" data-proj="category">Category Projection</div>
-                <div class="chip" data-proj="embedding">Embedding Space</div>
-            </div>
-        </div>
-        <div style="margin-top: auto;">
-            <button class="btn-action" onclick="toggleStats()">Compute Graph Statistics</button>
-        </div>
-    </aside>
+    </div>
+    <div style="margin-top:auto">
+        <button class="btn-action" onclick="toggleStats()">Compute Graph Statistics</button>
+    </div>
+</aside>
 
-    <main class="canvas-area">
-        <canvas id="hypergraph"></canvas>
-        <div id="tooltip">
-            <div class="tt-header">
-                <div class="tt-cat" id="tt-cat"></div>
-                <div class="tt-title" id="tt-title"></div>
-            </div>
-            <div class="tt-grid">
-                <div><div class="label">Eigenvector Centrality</div><div class="value" id="tt-centrality">0.00</div></div>
-                <div><div class="label">Inheritance Level</div><div class="value" id="tt-inheritance">0</div></div>
-            </div>
-            <div class="tt-section">
-                <div class="label">Epistemic Role</div>
-                <div id="tt-roles" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;"></div>
-            </div>
-            <div class="tt-section">
-                <div class="label">Topology (Incident Edges)</div>
-                <ul class="tt-edge-list" id="tt-edges"></ul>
-            </div>
+<main class="canvas-area">
+    <canvas id="graph-canvas"></canvas>
+    <div id="tooltip">
+        <div class="tt-header">
+            <div class="tt-cat" id="tt-cat"></div>
+            <div class="tt-title" id="tt-title"></div>
         </div>
-
-        <div id="stats-modal">
-            <h3 style="font-family: var(--font-display); font-style: italic; font-size: 1.2rem;">Graph Shape Signature</h3>
-            <div class="stats-grid">
-                <div class="stat-item"><div class="label">Nodes |V|</div><div class="value" id="stat-v">0</div></div>
-                <div class="stat-item"><div class="label">Hyperedges |E|</div><div class="value" id="stat-e">0</div></div>
-                <div class="stat-item"><div class="label">Avg Cardinality</div><div class="value" id="stat-card">0</div></div>
-                <div class="stat-item"><div class="label">Alpha (Cooling)</div><div class="value" id="stat-alpha">1.0</div></div>
-            </div>
-            <button class="btn-action" style="margin-top: 24px;" onclick="toggleStats()">Close</button>
+        <div class="tt-desc" id="tt-desc"></div>
+        <div class="tt-grid">
+            <div><div class="label">Inheritance Level</div><div class="value" id="tt-inheritance">0</div></div>
+            <div><div class="label">Confidence</div><div class="value" id="tt-confidence">0.00</div></div>
         </div>
-    </main>
+        <div class="tt-section">
+            <div class="label">Functional Roles</div>
+            <div class="tt-tags" id="tt-roles"></div>
+        </div>
+        <div class="tt-section">
+            <div class="label">Reality Domains</div>
+            <div class="tt-tags" id="tt-domains"></div>
+        </div>
+        <div class="tt-section">
+            <div class="label">Category Properties</div>
+            <div id="tt-specific"></div>
+        </div>
+        <div class="tt-section">
+            <div class="label">Relationships</div>
+            <ul class="tt-edge-list" id="tt-edges"></ul>
+        </div>
+    </div>
+    <div id="stats-modal">
+        <h3 style="font-family:var(--font-display);font-style:italic;font-size:1.1rem">Graph Shape Signature</h3>
+        <div class="stats-grid">
+            <div class="stat-item"><div class="label">Nodes |V|</div><div class="value" id="stat-v">0</div></div>
+            <div class="stat-item"><div class="label">Edges |E|</div><div class="value" id="stat-e">0</div></div>
+            <div class="stat-item"><div class="label">Categories</div><div class="value" id="stat-cats">0</div></div>
+            <div class="stat-item"><div class="label">Density</div><div class="value" id="stat-density">0</div></div>
+            <div class="stat-item"><div class="label">Avg Degree</div><div class="value" id="stat-degree">0</div></div>
+            <div class="stat-item"><div class="label">Alpha</div><div class="value" id="stat-alpha">1.0</div></div>
+        </div>
+        <button class="btn-action" style="margin-top:20px" onclick="toggleStats()">Close</button>
+    </div>
+    <div id="loading-overlay">
+        <div class="loader-ring"></div>
+        <div class="loader-text" id="loader-msg">Loading graph data</div>
+    </div>
+</main>
 
-    <footer class="system-bar">
-        <span>Schema: epistemic_v0.1 | Engine: Multi-Projection Force-Directed</span>
-        <span id="fps-counter">Initializing...</span>
-    </footer>
+<footer class="system-bar">
+    <span>Schema: conceptual-structure-node v0.1 | Engine: Force-Directed Graph</span>
+    <span id="fps-counter">Initializing...</span>
+</footer>
 
 <script>
-// --- 1. DATASET INGESTION ---
-const rawDataset = [
-  {"id":"cat_obs_iface","name":"Observation Interface","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_artifact","name":"Epistemic Artifact","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_interp","name":"Interpretation Layer","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_tool","name":"Epistemic Tool","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_agent","name":"Epistemic Agent","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_process","name":"Epistemic Process","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_standard","name":"Epistemic Standard","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_substrate","name":"Encoding Substrate","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_domain","name":"Epistemic Domain","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_constraint","name":"Epistemic Constraint","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_infra","name":"Epistemic Infrastructure","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_meta","name":"Meta‑Epistemic Layer","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_feedback","name":"Epistemic Feedback","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"cat_act","name":"Epistemic Act","inheritanceLevel":0,"roles":["abstract_category"],"edges":[]},
-  {"id":"obs_iface_01","name":"CMOS Sensor Pipeline","inheritanceLevel":1,"roles":["sensor"],"edges":[{"type":"subtype_of","node":"cat_obs_iface"},{"type":"encodes","node":"artifact_01"}]},
-  {"id":"obs_iface_02","name":"Human Visual Observation","inheritanceLevel":1,"roles":["sensor"],"edges":[{"type":"subtype_of","node":"cat_obs_iface"},{"type":"encodes","node":"artifact_07"}]},
-  {"id":"artifact_01","name":"Digital Image","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"},{"type":"instantiates","node":"artifact_06"}]},
-  {"id":"artifact_02","name":"Numerical Measurement","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
-  {"id":"artifact_03","name":"Scientific Hypothesis","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
-  {"id":"artifact_04","name":"Bayesian Network Model","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
-  {"id":"artifact_05","name":"Time Series Dataset","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
-  {"id":"artifact_06","name":"Differential Equation Model","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
-  {"id":"artifact_07","name":"Visual Mental Image","inheritanceLevel":1,"roles":["artifact"],"edges":[{"type":"subtype_of","node":"cat_artifact"}]},
-  {"id":"interp_01","name":"Semantic Interpretation Mapping","inheritanceLevel":1,"roles":["interpretation"],"edges":[{"type":"subtype_of","node":"cat_interp"}]},
-  {"id":"tool_01","name":"Linear Regression","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
-  {"id":"tool_02","name":"t-test","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
-  {"id":"tool_03","name":"Bayesian Updating Rule","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
-  {"id":"tool_04","name":"Measurement Calibration","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
-  {"id":"tool_05","name":"Runge‑Kutta ODE Solver","inheritanceLevel":1,"roles":["tool"],"edges":[{"type":"subtype_of","node":"cat_tool"}]},
-  {"id":"agent_01","name":"Human Scientist","inheritanceLevel":1,"roles":["agent"],"edges":[{"type":"subtype_of","node":"cat_agent"}]},
-  {"id":"agent_02","name":"Automated Pipeline","inheritanceLevel":1,"roles":["agent"],"edges":[{"type":"subtype_of","node":"cat_agent"}]},
-  {"id":"agent_03","name":"Research Institution","inheritanceLevel":1,"roles":["agent"],"edges":[{"type":"subtype_of","node":"cat_agent"}]},
-  {"id":"process_01","name":"Scientific Method Cycle","inheritanceLevel":1,"roles":["process"],"edges":[{"type":"subtype_of","node":"cat_process"}]},
-  {"id":"process_02","name":"Bayesian Inference Loop","inheritanceLevel":1,"roles":["process"],"edges":[{"type":"subtype_of","node":"cat_process"}]},
-  {"id":"process_03","name":"ML Training Pipeline","inheritanceLevel":1,"roles":["process"],"edges":[{"type":"subtype_of","node":"cat_process"}]},
-  {"id":"standard_01","name":"Statistical Significance","inheritanceLevel":1,"roles":["standard"],"edges":[{"type":"subtype_of","node":"cat_standard"}]},
-  {"id":"standard_02","name":"Reproducibility Criterion","inheritanceLevel":1,"roles":["standard"],"edges":[{"type":"subtype_of","node":"cat_standard"}]},
-  {"id":"standard_03","name":"Falsifiability Requirement","inheritanceLevel":1,"roles":["standard"],"edges":[{"type":"subtype_of","node":"cat_standard"}]},
-  {"id":"substrate_01","name":"Digital JSON File","inheritanceLevel":1,"roles":["substrate"],"edges":[{"type":"subtype_of","node":"cat_substrate"}]},
-  {"id":"substrate_02","name":"Printed Text on Paper","inheritanceLevel":1,"roles":["substrate"],"edges":[{"type":"subtype_of","node":"cat_substrate"}]},
-  {"id":"domain_01","name":"Classical Mechanical System","inheritanceLevel":1,"roles":["domain"],"edges":[{"type":"subtype_of","node":"cat_domain"}]},
-  {"id":"domain_02","name":"Biological Ecosystem","inheritanceLevel":1,"roles":["domain"],"edges":[{"type":"subtype_of","node":"cat_domain"}]},
-  {"id":"constraint_01","name":"Measurement Noise","inheritanceLevel":1,"roles":["constraint"],"edges":[{"type":"subtype_of","node":"cat_constraint"}]},
-  {"id":"constraint_02","name":"Limited Sample Size","inheritanceLevel":1,"roles":["constraint"],"edges":[{"type":"subtype_of","node":"cat_constraint"}]},
-  {"id":"constraint_03","name":"Computational Intractability","inheritanceLevel":1,"roles":["constraint"],"edges":[{"type":"subtype_of","node":"cat_constraint"}]},
-  {"id":"infra_01","name":"General-Purpose Laboratory","inheritanceLevel":1,"roles":["infrastructure"],"edges":[{"type":"subtype_of","node":"cat_infra"}]},
-  {"id":"meta_01","name":"Funding Agency","inheritanceLevel":1,"roles":["meta"],"edges":[{"type":"subtype_of","node":"cat_meta"}]},
-  {"id":"feedback_01","name":"Prediction Error Signal","inheritanceLevel":1,"roles":["feedback"],"edges":[{"type":"subtype_of","node":"cat_feedback"}]},
-  {"id":"feedback_02","name":"Experimental Anomaly","inheritanceLevel":1,"roles":["feedback"],"edges":[{"type":"subtype_of","node":"cat_feedback"}]},
-  {"id":"act_01","name":"Observation Act","inheritanceLevel":1,"roles":["act"],"edges":[{"type":"subtype_of","node":"cat_act"}]},
-  {"id":"act_02","name":"Comparison Act","inheritanceLevel":1,"roles":["act"],"edges":[{"type":"subtype_of","node":"cat_act"}]},
-  {"id":"act_03","name":"Prediction Act","inheritanceLevel":1,"roles":["act"],"edges":[{"type":"subtype_of","node":"cat_act"}]}
-];
-
-// --- 2. GRAPH PROCESSING & FORCE ENGINE ---
-const nodes = [];
-const hyperedges = [];
-const categoryMap = {};
-const catKeys = []; // To calculate circular projection positions
-const edgeTypes = new Set();
-let activeEdgeTypes = new Set();
-let activeCategories = new Set();
-
-// Physics Constants
-const REPULSION = 4500;
-const HYPEREDGE_ATTRACTION = 0.04;
-const PROJECTION_ATTRACTION = 0.06;
-const CENTER_GRAVITY = 0.005;
+// ============================================================
+//  CONFIGURATION
+// ============================================================
+const REPULSION = 4200;
+const SPRING_LENGTH = 130;
+const SPRING_STRENGTH = 0.008;
+const CATEGORY_COHESION = 0.003;
+const CENTER_GRAVITY = 0.004;
 const DAMPING = 0.82;
-let alpha = 1.0; 
-let currentProjection = 'default'; // 'default', 'category', 'embedding'
+const FAMILY_FALLBACK = 'structural';
 
-// Extract categories
-rawDataset.forEach(n => {
-    if (n.inheritanceLevel === 0 && n.roles.includes('abstract_category')) {
-        categoryMap[n.id] = { name: n.name.replace(/ \(.+\)/, ''), nodes: [] };
-        catKeys.push(n.id);
-        activeCategories.add(n.id);
-    }
-    n.edges.forEach(e => edgeTypes.add(e.type));
-});
-edgeTypes.forEach(et => activeEdgeTypes.add(et));
-
-// Initialize Nodes
-const canvas = document.getElementById('hypergraph');
-let width = canvas.parentElement.clientWidth;
-let height = canvas.parentElement.clientHeight;
-
-rawDataset.forEach((n, i) => {
-    if (n.inheritanceLevel === 0) return; 
-    const catId = n.edges.find(e => e.type === 'subtype_of')?.node || 'unknown';
-    
-    // Generate stable fake embedding coordinates (Simulated UMAP Spiral)
-    const t = i / rawDataset.length * 8 * Math.PI;
-    const r = t * 12;
-    const embX = width/2 + Math.cos(t) * r * (0.8 + Math.random()*0.4);
-    const embY = height/2 + Math.sin(t) * r * (0.8 + Math.random()*0.4);
-
-    const nodeObj = {
-        id: n.id, name: n.name, roles: n.roles, edges: n.edges, catId,
-        x: width/2 + (Math.random() - 0.5) * 50,
-        y: height/2 + (Math.random() - 0.5) * 50,
-        vx: 0, vy: 0, 
-        fx: 0, fy: 0, 
-        centrality: Math.random(),
-        baseSize: 6,
-        visible: true,
-        pinned: false,
-        // Targets for projections
-        embX: embX, embY: embY
-    };
-    nodes.push(nodeObj);
-    if (categoryMap[catId]) categoryMap[catId].nodes.push(nodeObj);
-});
-
-// Calculate Category Projection Centers (Circular Layout)
-const catCenters = {};
-catKeys.forEach((catId, i) => {
-    const angle = (i / catKeys.length) * 2 * Math.PI - Math.PI/2;
-    catCenters[catId] = {
-        x: width/2 + Math.cos(angle) * (Math.min(width, height) * 0.35),
-        y: height/2 + Math.sin(angle) * (Math.min(width, height) * 0.35)
-    };
-});
-
-// Construct Hyperedges
-let heId = 0;
-Object.keys(categoryMap).forEach(catId => {
-    const catNodes = categoryMap[catId].nodes;
-    if (catNodes.length === 0) return;
-    hyperedges.push({ id: `he_${heId++}`, nodes: [...catNodes], type: 'subtype_cluster', visible: true });
-});
-const crossLinks = [
-    ["obs_iface_01", "artifact_01", "tool_04", "process_01"], 
-    ["artifact_03", "tool_02", "standard_01", "feedback_02"], 
-    ["artifact_04", "tool_03", "process_02", "feedback_01"],  
-    ["artifact_06", "tool_05", "domain_01", "constraint_01"]  
+const CATEGORY_LIST = [
+    'reality','observationInterface','concreteEpistemicArtifact','epistemicBlueprint',
+    'epistemicAgent','epistemicProcess','epistemicStandard','epistemicDomain',
+    'epistemicConstraint','epistemicInfrastructure','epistemicFeedback','epistemicAct',
+    'epistemicPrinciple','epistemicStrategy','epistemicFramework','epistemicOperator',
+    'metaEpistemicLayer'
 ];
-crossLinks.forEach(link => {
-    const linkedNodes = link.map(id => nodes.find(n => n.id === id)).filter(Boolean);
-    if(linkedNodes.length > 1) hyperedges.push({ id: `he_${heId++}`, nodes: linkedNodes, type: 'cross_link', visible: true });
-});
 
-// --- 3. FORCE SIMULATION TICK ---
+const CATEGORY_LABELS = {
+    reality:'Reality', observationInterface:'Observation Interface',
+    concreteEpistemicArtifact:'Concrete Artifact', epistemicBlueprint:'Epistemic Blueprint',
+    epistemicAgent:'Epistemic Agent', epistemicProcess:'Epistemic Process',
+    epistemicStandard:'Epistemic Standard', epistemicDomain:'Epistemic Domain',
+    epistemicConstraint:'Epistemic Constraint', epistemicInfrastructure:'Epistemic Infrastructure',
+    epistemicFeedback:'Epistemic Feedback', epistemicAct:'Epistemic Act',
+    epistemicPrinciple:'Epistemic Principle', epistemicStrategy:'Epistemic Strategy',
+    epistemicFramework:'Epistemic Framework', epistemicOperator:'Epistemic Operator',
+    metaEpistemicLayer:'Meta-Epistemic Layer'
+};
+
+const CAT_COLORS = {
+    reality:'#E8E8E8', observationInterface:'#FF9F43',
+    concreteEpistemicArtifact:'#5BF0E7', epistemicBlueprint:'#4ECDC4',
+    epistemicAgent:'#C4A35A', epistemicProcess:'#98FB98',
+    epistemicStandard:'#FFE66D', epistemicDomain:'#45B7D1',
+    epistemicConstraint:'#FF6B6B', epistemicInfrastructure:'#C0785A',
+    epistemicFeedback:'#7B68EE', epistemicAct:'#FF69B4',
+    epistemicPrinciple:'#D4A574', epistemicStrategy:'#A8E6CF',
+    epistemicFramework:'#DDA0DD', epistemicOperator:'#87CEEB',
+    metaEpistemicLayer:'#B8B8FF'
+};
+
+const CAT_SHAPES = {
+    reality:'circle', observationInterface:'triangle',
+    concreteEpistemicArtifact:'square', epistemicBlueprint:'square',
+    epistemicAgent:'diamond', epistemicProcess:'triangle',
+    epistemicStandard:'hexagon', epistemicDomain:'circle',
+    epistemicConstraint:'square', epistemicInfrastructure:'hexagon',
+    epistemicFeedback:'triangle', epistemicAct:'diamond',
+    epistemicPrinciple:'hexagon', epistemicStrategy:'hexagon',
+    epistemicFramework:'hexagon', epistemicOperator:'diamond',
+    metaEpistemicLayer:'circle'
+};
+
+const FAMILY_COLORS = {
+    representational:'#5BF0E7', structural:'#C4A35A',
+    operational:'#98FB98', normativeValidation:'#FFE66D',
+    constraint:'#FF6B6B', dynamicFeedback:'#7B68EE',
+    infrastructure:'#C0785A', metaEpistemic:'#B8B8FF'
+};
+const FAMILY_LABELS = {
+    representational:'Representational', structural:'Structural',
+    operational:'Operational', normativeValidation:'Normative',
+    constraint:'Constraint', dynamicFeedback:'Feedback',
+    infrastructure:'Infrastructure', metaEpistemic:'Meta-Epistemic'
+};
+
+// ============================================================
+//  STATE
+// ============================================================
+let nodes = [];
+let graphEdges = [];
+let nodeMap = {};
+let alpha = 1.0;
+let currentProjection = 'default';
+
+let activeCategories = new Set(CATEGORY_LIST);
+let activeFamilies = new Set(Object.keys(FAMILY_COLORS));
+
+let camera = { x: 0, y: 0, zoom: 1 };
+let hoveredNode = null;
+let dragNode = null;
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+let mouseScreen = { x: -9999, y: -9999 };
+
+let catCenters = {};
+let frameCount = 0, lastTime = performance.now(), fps = 0;
+
+const canvas = document.getElementById('graph-canvas');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0;
+
+// ============================================================
+//  DATA LOADING
+// ============================================================
+async function loadData() {
+    const overlay = document.getElementById('loading-overlay');
+    const msg = document.getElementById('loader-msg');
+    try {
+        const resp = await fetch('data/dataset.json');
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!Array.isArray(data)) throw new Error('Expected JSON array');
+        processGraph(data);
+        setupUI();
+        fitCamera();
+        overlay.classList.add('hidden');
+        requestAnimationFrame(draw);
+    } catch (err) {
+        msg.innerHTML = `<span class="loader-error">Failed to load data/dataset.json<br><br>${err.message}<br><br>Ensure a local server is running and the file exists.</span>`;
+        document.querySelector('.loader-ring').style.display = 'none';
+    }
+}
+
+// ============================================================
+//  GRAPH PROCESSING
+// ============================================================
+function processGraph(data) {
+    nodeMap = {};
+    nodes = [];
+    graphEdges = [];
+
+    // Create node objects
+    data.forEach((raw, i) => {
+        const cat = raw.category || 'reality';
+        const catIndex = CATEGORY_LIST.indexOf(cat);
+        // Initial position: spread near category center with randomness
+        const angle = (catIndex / CATEGORY_LIST.length) * 2 * Math.PI - Math.PI / 2;
+        const catR = Math.min(W, H) * 0.3;
+        const cx = W / 2 + Math.cos(angle) * catR;
+        const cy = H / 2 + Math.sin(angle) * catR;
+
+        const node = {
+            id: raw.id,
+            name: raw.name || raw.id,
+            category: cat,
+            inheritanceLevel: raw.inheritanceLevel || 0,
+            description: raw.description || '',
+            functionalRoles: raw.functionalRoles || [],
+            realityDomains: raw.realityDomains || [],
+            historicalContext: raw.historicalContext || null,
+            specific: raw.specific || {},
+            rawRelationships: raw.relationships || [],
+            metadata: raw.metadata || {},
+            // Physics
+            x: cx + (Math.random() - 0.5) * 120,
+            y: cy + (Math.random() - 0.5) * 120,
+            vx: 0, vy: 0, fx: 0, fy: 0,
+            // Rendering
+            degree: 0,
+            centrality: 0,
+            baseSize: 7,
+            visible: true,
+            pinned: false
+        };
+        nodes.push(node);
+        nodeMap[node.id] = node;
+    });
+
+    // Create edge objects from relationships
+    const edgeSet = new Set(); // avoid duplicates
+    data.forEach(raw => {
+        const sourceId = raw.id;
+        (raw.relationships || []).forEach(rel => {
+            const targetId = rel.targetNodeId;
+            if (!nodeMap[targetId]) return; // skip dangling references
+            const edgeKey = `${sourceId}|${rel.relationshipType}|${targetId}`;
+            if (edgeSet.has(edgeKey)) return;
+            edgeSet.add(edgeKey);
+            const family = rel.relationshipFamily || inferFamily(rel.relationshipType);
+            graphEdges.push({
+                source: sourceId,
+                target: targetId,
+                type: rel.relationshipType,
+                family: family,
+                description: rel.description || '',
+                visible: true
+            });
+            nodeMap[sourceId].degree++;
+            nodeMap[targetId].degree++;
+        });
+    });
+
+    // Compute centrality (degree-based normalized)
+    const maxDegree = Math.max(1, ...nodes.map(n => n.degree));
+    nodes.forEach(n => { n.centrality = n.degree / maxDegree; });
+
+    // Compute category centers for projections
+    recalcCatCenters();
+}
+
+function inferFamily(type) {
+    const map = {
+        observes:'representational', encodes:'representational', expresses_in:'representational',
+        formalizes:'representational', abstracts_from:'representational',
+        composed_of:'structural', has_parameter:'structural', has_input:'structural', has_output:'structural',
+        implements_principle:'operational', uses:'operational', performs:'operational',
+        acts_on:'operational', produces:'operational', transforms:'operational',
+        predicts:'operational', decomposes:'operational', integrates:'operational', estimates:'operational',
+        conforms_to:'normativeValidation', evaluated_by:'normativeValidation',
+        validates:'normativeValidation', refutes:'normativeValidation', supports:'normativeValidation',
+        is_bounded_by:'constraint', constrains:'constraint', distorts:'constraint', depends_on:'constraint',
+        triggers:'dynamicFeedback', updates:'dynamicFeedback', feeds_back_to:'dynamicFeedback',
+        iterates_on:'dynamicFeedback', evolves_into:'dynamicFeedback',
+        provides:'infrastructure', hosts:'infrastructure', stores:'infrastructure', communicates:'infrastructure',
+        standardizes:'infrastructure', monitors:'infrastructure', governs:'infrastructure',
+        audits:'metaEpistemic', optimizes:'metaEpistemic'
+    };
+    return map[type] || FAMILY_FALLBACK;
+}
+
+function recalcCatCenters() {
+    CATEGORY_LIST.forEach((cat, i) => {
+        const angle = (i / CATEGORY_LIST.length) * 2 * Math.PI - Math.PI / 2;
+        const r = Math.min(W, H) * 0.32;
+        catCenters[cat] = { x: W / 2 + Math.cos(angle) * r, y: H / 2 + Math.sin(angle) * r };
+    });
+}
+
+// ============================================================
+//  FORCE SIMULATION
+// ============================================================
 function simulationTick() {
     if (alpha < 0.001) return;
 
     nodes.forEach(n => { n.fx = 0; n.fy = 0; });
 
-    // 1. Center Gravity (Reduced in projection modes to let local forces dominate)
-    const gravity = currentProjection === 'default' ? CENTER_GRAVITY : CENTER_GRAVITY * 0.2;
+    // Center gravity
+    const gravity = currentProjection === 'default' ? CENTER_GRAVITY : CENTER_GRAVITY * 0.15;
     nodes.forEach(n => {
-        if(n.pinned || !n.visible) return;
-        n.fx += (width/2 - n.x) * gravity;
-        n.fy += (height/2 - n.y) * gravity;
+        if (n.pinned || !n.visible) return;
+        n.fx += (W / 2 - n.x) * gravity;
+        n.fy += (H / 2 - n.y) * gravity;
     });
 
-    // 2. Coulomb Repulsion
+    // Coulomb repulsion
     for (let i = 0; i < nodes.length; i++) {
         if (!nodes[i].visible) continue;
         for (let j = i + 1; j < nodes.length; j++) {
             if (!nodes[j].visible) continue;
-            const n1 = nodes[i], n2 = nodes[j];
-            let dx = n2.x - n1.x;
-            let dy = n2.y - n1.y;
+            const a = nodes[i], b = nodes[j];
+            let dx = b.x - a.x, dy = b.y - a.y;
             let distSq = dx * dx + dy * dy;
             if (distSq < 1) distSq = 1;
             const force = REPULSION / distSq;
-            const angle = Math.atan2(dy, dx);
-            const fx = Math.cos(angle) * force;
-            const fy = Math.sin(angle) * force;
-            if (!n1.pinned) { n1.fx -= fx; n1.fy -= fy; }
-            if (!n2.pinned) { n2.fx += fx; n2.fy += fy; }
+            const ang = Math.atan2(dy, dx);
+            const fx = Math.cos(ang) * force, fy = Math.sin(ang) * force;
+            if (!a.pinned) { a.fx -= fx; a.fy -= fy; }
+            if (!b.pinned) { b.fx += fx; b.fy += fy; }
         }
     }
 
-    // 3. Topology-Specific Attraction
+    // Edge spring attraction
+    graphEdges.forEach(e => {
+        if (!e.visible) return;
+        const s = nodeMap[e.source], t = nodeMap[e.target];
+        if (!s || !t || !s.visible || !t.visible) return;
+        let dx = t.x - s.x, dy = t.y - s.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 1) dist = 1;
+        const displacement = dist - SPRING_LENGTH;
+        const force = SPRING_STRENGTH * displacement;
+        const fx = (dx / dist) * force, fy = (dy / dist) * force;
+        if (!s.pinned) { s.fx += fx; s.fy += fy; }
+        if (!t.pinned) { t.fx -= fx; t.fy -= fy; }
+    });
+
+    // Category cohesion (mild pull toward same-category centroid)
     if (currentProjection === 'default') {
-        // Hyperedge Centroid Attraction
-        hyperedges.forEach(he => {
-            if (!he.visible) return;
-            const visNodes = he.nodes.filter(n => n.visible);
-            if (visNodes.length === 0) return;
+        const catGroups = {};
+        nodes.forEach(n => {
+            if (!n.visible) return;
+            if (!catGroups[n.category]) catGroups[n.category] = [];
+            catGroups[n.category].push(n);
+        });
+        Object.values(catGroups).forEach(group => {
+            if (group.length < 2) return;
             let cx = 0, cy = 0;
-            visNodes.forEach(n => { cx += n.x; cy += n.y; });
-            cx /= visNodes.length; cy /= visNodes.length;
-            visNodes.forEach(n => {
-                if(n.pinned) return;
-                n.fx += (cx - n.x) * HYPEREDGE_ATTRACTION;
-                n.fy += (cy - n.y) * HYPEREDGE_ATTRACTION;
+            group.forEach(n => { cx += n.x; cy += n.y; });
+            cx /= group.length; cy /= group.length;
+            group.forEach(n => {
+                if (n.pinned) return;
+                n.fx += (cx - n.x) * CATEGORY_COHESION;
+                n.fy += (cy - n.y) * CATEGORY_COHESION;
             });
-        });
-    } else if (currentProjection === 'category') {
-        // Category Center Attraction
-        nodes.forEach(n => {
-            if(n.pinned || !n.visible || !catCenters[n.catId]) return;
-            const target = catCenters[n.catId];
-            n.fx += (target.x - n.x) * PROJECTION_ATTRACTION;
-            n.fy += (target.y - n.y) * PROJECTION_ATTRACTION;
-        });
-    } else if (currentProjection === 'embedding') {
-        // Latent Geometric Point Attraction
-        nodes.forEach(n => {
-            if(n.pinned || !n.visible) return;
-            n.fx += (n.embX - n.x) * PROJECTION_ATTRACTION;
-            n.fy += (n.embY - n.y) * PROJECTION_ATTRACTION;
         });
     }
 
-    // Apply Forces
+    // Projection-specific forces
+    if (currentProjection === 'category') {
+        nodes.forEach(n => {
+            if (n.pinned || !n.visible || !catCenters[n.category]) return;
+            const tgt = catCenters[n.category];
+            n.fx += (tgt.x - n.x) * 0.06;
+            n.fy += (tgt.y - n.y) * 0.06;
+        });
+    } else if (currentProjection === 'inheritance') {
+        nodes.forEach(n => {
+            if (n.pinned || !n.visible) return;
+            const targetY = 80 + n.inheritanceLevel * (H - 160) / Math.max(1, maxInheritanceLevel());
+            n.fx += (W / 2 - n.x) * 0.01;
+            n.fy += (targetY - n.y) * 0.06;
+        });
+    }
+
+    // Integrate
     nodes.forEach(n => {
         if (n.pinned || !n.visible) return;
         n.vx = (n.vx + n.fx) * DAMPING;
         n.vy = (n.vy + n.fy) * DAMPING;
         n.x += n.vx * alpha;
         n.y += n.vy * alpha;
-        n.x = Math.max(50, Math.min(width - 50, n.x));
-        n.y = Math.max(50, Math.min(height - 50, n.y));
+        n.x = Math.max(30, Math.min(W - 30, n.x));
+        n.y = Math.max(30, Math.min(H - 30, n.y));
     });
 
-    alpha *= 0.995;
+    alpha *= 0.996;
 }
 
-// --- 4. CANVAS SETUP & DRAWING ---
-const ctx = canvas.getContext('2d');
-let mouseX = -1000, mouseY = -1000;
-let hoveredNode = null;
-let dragNode = null;
+function maxInheritanceLevel() {
+    let m = 0;
+    nodes.forEach(n => { if (n.inheritanceLevel > m) m = n.inheritanceLevel; });
+    return m || 1;
+}
 
+// ============================================================
+//  COORDINATE TRANSFORMS
+// ============================================================
+function screenToWorld(sx, sy) {
+    return { x: (sx - camera.x) / camera.zoom, y: (sy - camera.y) / camera.zoom };
+}
+
+// ============================================================
+//  RENDERING
+// ============================================================
 function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
-    width = rect.width; height = rect.height;
-    canvas.width = width * devicePixelRatio;
-    canvas.height = height * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-    // Recalculate projection targets on resize
-    catKeys.forEach((catId, i) => {
-        const angle = (i / catKeys.length) * 2 * Math.PI - Math.PI/2;
-        catCenters[catId] = { x: width/2 + Math.cos(angle) * (Math.min(width, height) * 0.35), y: height/2 + Math.sin(angle) * (Math.min(width, height) * 0.35) };
-    });
-    alpha = 1.0;
+    W = rect.width; H = rect.height;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    recalcCatCenters();
+    if (nodes.length > 0) fitCamera();
 }
-window.addEventListener('resize', resize);
-resize();
 
-const catShapes = { 'cat_artifact': 'square', 'cat_agent': 'diamond', 'cat_tool': 'hexagon', 'cat_process': 'triangle', 'cat_constraint': 'circle', 'cat_obs_iface': 'triangle', 'cat_domain': 'circle', 'cat_standard': 'square', 'cat_feedback': 'triangle', 'cat_act': 'diamond', 'cat_substrate': 'square', 'cat_infra': 'hexagon', 'cat_meta': 'circle', 'cat_interp': 'square', 'unknown': 'circle' };
-const catColors = { 'cat_artifact': '#5BF0E7', 'cat_agent': '#C4A35A', 'cat_tool': '#FF6B6B', 'cat_process': '#98FB98', 'cat_constraint': '#FF00FF', 'cat_obs_iface': '#FFA500', 'cat_domain': '#00FFFF', 'cat_standard': '#FFFF00', 'cat_feedback': '#7B68EE', 'cat_act': '#FF69B4', 'cat_substrate': '#808080', 'cat_infra': '#A52A2A', 'cat_meta': '#ADD8E6', 'cat_interp': '#90EE90', 'unknown': '#FFFFFF' };
+function fitCamera() {
+    if (nodes.length === 0) return;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    nodes.forEach(n => {
+        if (n.x < minX) minX = n.x;
+        if (n.x > maxX) maxX = n.x;
+        if (n.y < minY) minY = n.y;
+        if (n.y > maxY) maxY = n.y;
+    });
+    const pad = 80;
+    const gw = maxX - minX + pad * 2;
+    const gh = maxY - minY + pad * 2;
+    const zoom = Math.min(W / gw, H / gh, 2);
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    camera.zoom = zoom;
+    camera.x = W / 2 - cx * zoom;
+    camera.y = H / 2 - cy * zoom;
+}
 
 function drawShape(x, y, size, shape) {
+    const s = Math.max(2, size);
     ctx.beginPath();
-    switch(shape) {
-        case 'square': ctx.rect(x-size/2, y-size/2, size, size); break;
-        case 'diamond': ctx.moveTo(x, y-size/2); ctx.lineTo(x+size/2, y); ctx.lineTo(x, y+size/2); ctx.lineTo(x-size/2, y); ctx.closePath(); break;
-        case 'hexagon': for(let i=0; i<6; i++) { const a = (Math.PI/3)*i - Math.PI/6; const px = x+size/2*Math.cos(a); const py = y+size/2*Math.sin(a); i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); } ctx.closePath(); break;
-        case 'triangle': ctx.moveTo(x, y-size/2); ctx.lineTo(x+size/2, y+size/2); ctx.lineTo(x-size/2, y+size/2); ctx.closePath(); break;
-        case 'circle': default: ctx.arc(x, y, size/2, 0, Math.PI*2); break;
+    switch (shape) {
+        case 'square':
+            ctx.rect(x - s / 2, y - s / 2, s, s); break;
+        case 'diamond':
+            ctx.moveTo(x, y - s / 2); ctx.lineTo(x + s / 2, y);
+            ctx.lineTo(x, y + s / 2); ctx.lineTo(x - s / 2, y); ctx.closePath(); break;
+        case 'hexagon':
+            for (let i = 0; i < 6; i++) {
+                const a = (Math.PI / 3) * i - Math.PI / 6;
+                const px = x + (s / 2) * Math.cos(a), py = y + (s / 2) * Math.sin(a);
+                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+            }
+            ctx.closePath(); break;
+        case 'triangle':
+            ctx.moveTo(x, y - s / 2); ctx.lineTo(x + s / 2, y + s / 2);
+            ctx.lineTo(x - s / 2, y + s / 2); ctx.closePath(); break;
+        default: // circle
+            ctx.arc(x, y, Math.max(1, s / 2), 0, Math.PI * 2); break;
     }
     ctx.fill();
 }
 
-let frameCount = 0; let lastTime = performance.now(); let fps = 0;
-
 function draw() {
     simulationTick();
-    ctx.clearRect(0, 0, width, height);
-    
-    const showBlobs = document.getElementById('lens-community').checked;
+    ctx.clearRect(0, 0, W, H);
+
+    const showHulls = document.getElementById('lens-hulls').checked;
     const useCentralitySize = document.getElementById('lens-centrality').checked;
     const useHeatmap = document.getElementById('lens-heatmap').checked;
 
-    // Draw Category Labels if in Category Projection
-    if (currentProjection === 'category') {
-        ctx.font = "12px 'JetBrains Mono'";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-        Object.keys(categoryMap).forEach(catId => {
-            if(!activeCategories.has(catId)) return;
-            const center = catCenters[catId];
-            ctx.fillText(categoryMap[catId].name.toUpperCase(), center.x, center.y - 30);
+    // Determine hover context
+    const worldMouse = screenToWorld(mouseScreen.x, mouseScreen.y);
+    hoveredNode = null;
+    const hitRadius = 12;
+    let closestDist = hitRadius;
+    nodes.forEach(n => {
+        if (!n.visible) return;
+        const dx = n.x - worldMouse.x, dy = n.y - worldMouse.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < closestDist) { closestDist = d; hoveredNode = n; }
+    });
+
+    // Connected set for hover highlighting
+    const connectedIds = new Set();
+    const connectedEdges = new Set();
+    if (hoveredNode) {
+        connectedIds.add(hoveredNode.id);
+        graphEdges.forEach((e, idx) => {
+            if (e.source === hoveredNode.id || e.target === hoveredNode.id) {
+                connectedIds.add(e.source);
+                connectedIds.add(e.target);
+                connectedEdges.add(idx);
+            }
         });
     }
 
-    // Draw Hyperedge Zones
-    if (showBlobs) {
-        hyperedges.forEach(he => {
-            if (!he.visible) return;
-            const visNodes = he.nodes.filter(n => n.visible);
-            if (visNodes.length < 2) return;
-            let cx = 0, cy = 0;
-            visNodes.forEach(n => { cx += n.x; cy += n.y; });
-            cx /= visNodes.length; cy /= visNodes.length;
-            const sorted = [...visNodes].sort((a, b) => Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx));
+    ctx.save();
+    ctx.translate(camera.x, camera.y);
+    ctx.scale(camera.zoom, camera.zoom);
+
+    // Category projection labels
+    if (currentProjection === 'category') {
+        ctx.font = "11px 'JetBrains Mono'";
+        ctx.textAlign = 'center';
+        Object.keys(catCenters).forEach(cat => {
+            if (!activeCategories.has(cat)) return;
+            const c = catCenters[cat];
+            ctx.fillStyle = CAT_COLORS[cat] || '#444';
+            ctx.globalAlpha = 0.35;
+            ctx.fillText((CATEGORY_LABELS[cat] || cat).toUpperCase(), c.x, c.y - 40);
+            ctx.globalAlpha = 1;
+        });
+    }
+
+    // Inheritance projection labels
+    if (currentProjection === 'inheritance') {
+        ctx.font = "10px 'JetBrains Mono'";
+        ctx.textAlign = 'right';
+        const ml = maxInheritanceLevel();
+        for (let lv = 0; lv <= ml; lv++) {
+            const yy = 80 + lv * (H - 160) / Math.max(1, ml);
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.fillText(`L${lv}`, 40, yy + 3);
             ctx.beginPath();
-            ctx.moveTo((sorted[0].x + cx)/2, (sorted[0].y + cy)/2);
+            ctx.moveTo(50, yy); ctx.lineTo(W - 50, yy);
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+    }
+
+    // Category hulls
+    if (showHulls) {
+        const catGroups = {};
+        nodes.forEach(n => {
+            if (!n.visible) return;
+            if (!catGroups[n.category]) catGroups[n.category] = [];
+            catGroups[n.category].push(n);
+        });
+        Object.entries(catGroups).forEach(([cat, group]) => {
+            if (group.length < 3) return;
+            let cx = 0, cy = 0;
+            group.forEach(n => { cx += n.x; cy += n.y; });
+            cx /= group.length; cy /= group.length;
+            const sorted = [...group].sort((a, b) =>
+                Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx)
+            );
+            ctx.beginPath();
+            const first = sorted[0];
+            ctx.moveTo((first.x + cx) / 2, (first.y + cy) / 2);
             for (let i = 0; i < sorted.length; i++) {
-                const curr = sorted[i]; const next = sorted[(i + 1) % sorted.length];
-                const cpx = curr.x + (curr.x - cx)*0.1; const cpy = curr.y + (curr.y - cy)*0.1;
-                const midX = (curr.x + next.x)/2 + ((curr.x + next.x)/2 - cx)*0.1; const midY = (curr.y + next.y)/2 + ((curr.y + next.y)/2 - cy)*0.1;
+                const curr = sorted[i], next = sorted[(i + 1) % sorted.length];
+                const cpx = curr.x + (curr.x - cx) * 0.08;
+                const cpy = curr.y + (curr.y - cy) * 0.08;
+                const midX = (curr.x + next.x) / 2 + ((curr.x + next.x) / 2 - cx) * 0.08;
+                const midY = (curr.y + next.y) / 2 + ((curr.y + next.y) / 2 - cy) * 0.08;
                 ctx.quadraticCurveTo(cpx, cpy, midX, midY);
             }
             ctx.closePath();
-            const isHoveredHe = hoveredNode && he.nodes.includes(hoveredNode);
-            if (he.type === 'subtype_cluster') {
-                ctx.fillStyle = isHoveredHe ? 'rgba(91, 240, 231, 0.08)' : 'rgba(255, 255, 255, 0.02)';
-                ctx.strokeStyle = isHoveredHe ? 'rgba(91, 240, 231, 0.3)' : 'rgba(255, 255, 255, 0.05)';
-            } else {
-                ctx.fillStyle = isHoveredHe ? 'rgba(196, 163, 90, 0.08)' : 'rgba(196, 163, 90, 0.02)';
-                ctx.strokeStyle = isHoveredHe ? 'rgba(196, 163, 90, 0.3)' : 'rgba(196, 163, 90, 0.05)';
-            }
-            ctx.fill(); ctx.stroke();
+            const isHoveredCat = hoveredNode && hoveredNode.category === cat;
+            const col = CAT_COLORS[cat] || '#FFF';
+            ctx.fillStyle = hexToRGBA(col, isHoveredCat ? 0.07 : 0.02);
+            ctx.strokeStyle = hexToRGBA(col, isHoveredCat ? 0.25 : 0.05);
+            ctx.lineWidth = 1;
+            ctx.fill();
+            ctx.stroke();
         });
     }
 
-    // Draw Nodes
+    // Draw edges
+    const now = performance.now();
+    graphEdges.forEach((e, idx) => {
+        if (!e.visible) return;
+        const s = nodeMap[e.source], t = nodeMap[e.target];
+        if (!s || !t || !s.visible || !t.visible) return;
+
+        const isHighlighted = hoveredNode && connectedEdges.has(idx);
+        const isDimmed = hoveredNode && !connectedEdges.has(idx);
+        const col = FAMILY_COLORS[e.family] || '#555';
+        const a = isDimmed ? 0.03 : (isHighlighted ? 0.7 : 0.15);
+
+        // Slight curve for visual clarity
+        const dx = t.x - s.x, dy = t.y - s.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 1) return;
+
+        // Perpendicular offset for curvature
+        const nx = -dy / dist, ny = dx / dist;
+        const curveMag = dist * 0.08;
+        const cmx = (s.x + t.x) / 2 + nx * curveMag;
+        const cmy = (s.y + t.y) / 2 + ny * curveMag;
+
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.quadraticCurveTo(cmx, cmy, t.x, t.y);
+        ctx.strokeStyle = hexToRGBA(col, a);
+        ctx.lineWidth = isHighlighted ? 2 : 0.8;
+        if (isHighlighted) {
+            ctx.setLineDash([5, 5]);
+            ctx.lineDashOffset = -now / 40;
+        } else {
+            ctx.setLineDash([]);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Arrowhead
+        if (!isDimmed) {
+            const arrowT = 0.82;
+            const ax = (1 - arrowT) * (1 - arrowT) * s.x + 2 * (1 - arrowT) * arrowT * cmx + arrowT * arrowT * t.x;
+            const ay = (1 - arrowT) * (1 - arrowT) * s.y + 2 * (1 - arrowT) * arrowT * cmy + arrowT * arrowT * t.y;
+            const tdx = 2 * (1 - arrowT) * (cmx - s.x) + 2 * arrowT * (t.x - cmx);
+            const tdy = 2 * (1 - arrowT) * (cmy - s.y) + 2 * arrowT * (t.y - cmy);
+            const tAngle = Math.atan2(tdy, tdx);
+            const arrowSize = isHighlighted ? 7 : 4;
+            ctx.beginPath();
+            ctx.moveTo(ax + Math.cos(tAngle) * arrowSize, ay + Math.sin(tAngle) * arrowSize);
+            ctx.lineTo(ax + Math.cos(tAngle + 2.6) * arrowSize, ay + Math.sin(tAngle + 2.6) * arrowSize);
+            ctx.lineTo(ax + Math.cos(tAngle - 2.6) * arrowSize, ay + Math.sin(tAngle - 2.6) * arrowSize);
+            ctx.closePath();
+            ctx.fillStyle = hexToRGBA(col, a);
+            ctx.fill();
+        }
+
+        // Edge type label on highlighted edges
+        if (isHighlighted) {
+            const labelT = 0.45;
+            const lx = (1 - labelT) * (1 - labelT) * s.x + 2 * (1 - labelT) * labelT * cmx + labelT * labelT * t.x;
+            const ly = (1 - labelT) * (1 - labelT) * s.y + 2 * (1 - labelT) * labelT * cmy + labelT * labelT * t.y;
+            ctx.font = "9px 'JetBrains Mono'";
+            ctx.textAlign = 'center';
+            ctx.fillStyle = hexToRGBA(col, 0.9);
+            ctx.fillText(e.type, lx, ly - 6);
+        }
+    });
+
+    // Draw nodes
     let drawnCount = 0;
     nodes.forEach(n => {
         if (!n.visible) return;
         drawnCount++;
-        const dx = n.x - mouseX; const dy = n.y - mouseY;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const isHovered = dist < 15;
-        if (isHovered) hoveredNode = n;
+        const isHovered = hoveredNode && hoveredNode.id === n.id;
+        const isConnected = hoveredNode && connectedIds.has(n.id);
+        const isDimmed = hoveredNode && !connectedIds.has(n.id);
+
         let size = n.baseSize;
-        if (useCentralitySize) size = 4 + (n.centrality * 14);
-        if (isHovered || n.pinned) size += 4;
-        ctx.fillStyle = catColors[n.catId] || '#FFF';
-        if (useHeatmap && n.catId === 'cat_constraint') ctx.fillStyle = `rgba(255, 0, 0, ${0.3 + n.centrality * 0.7})`;
-        if (isHovered || n.pinned) { ctx.shadowBlur = 15; ctx.shadowColor = catColors[n.catId] || '#FFF'; }
-        drawShape(n.x, n.y, size, catShapes[n.catId] || 'circle');
+        if (useCentralitySize) size = 5 + n.centrality * 16;
+        if (isHovered) size += 5;
+
+        const col = CAT_COLORS[n.category] || '#FFF';
+        let fillColor = col;
+        if (useHeatmap && n.category === 'epistemicConstraint') {
+            fillColor = `rgba(255,${Math.round(60 - n.centrality * 60)},${Math.round(60 - n.centrality * 60)},${0.4 + n.centrality * 0.6})`;
+        }
+
+        ctx.globalAlpha = isDimmed ? 0.12 : 1;
+        ctx.fillStyle = fillColor;
+
+        if (isHovered) {
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = col;
+        }
+
+        drawShape(n.x, n.y, size, CAT_SHAPES[n.category] || 'circle');
         ctx.shadowBlur = 0;
+
+        // Pulsing ring on hover
+        if (isHovered) {
+            const pulse = Math.sin(now / 250) * 0.3 + 0.6;
+            ctx.strokeStyle = col;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = pulse;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, size / 2 + 8, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Node label for hovered or high-centrality nodes
+        if ((isHovered || (isConnected && !isDimmed) || n.centrality > 0.7) && !isDimmed) {
+            ctx.font = isHovered ? "bold 11px 'Inter'" : "9px 'Inter'";
+            ctx.textAlign = 'center';
+            ctx.fillStyle = isHovered ? '#FFF' : 'rgba(255,255,255,0.6)';
+            ctx.globalAlpha = isDimmed ? 0 : 1;
+            ctx.fillText(n.name, n.x, n.y - size / 2 - 6);
+        }
+
+        ctx.globalAlpha = 1;
     });
 
+    ctx.restore();
+
+    // FPS counter
     frameCount++;
-    const now = performance.now();
-    if (now - lastTime > 500) {
-        fps = Math.round(1000 / ((now - lastTime) / frameCount));
-        frameCount = 0; lastTime = now;
-        document.getElementById('fps-counter').innerText = `${fps} FPS | α: ${alpha.toFixed(3)} | ${drawnCount} Nodes`;
+    const t = performance.now();
+    if (t - lastTime > 500) {
+        fps = Math.round(1000 / ((t - lastTime) / frameCount));
+        frameCount = 0; lastTime = t;
+        document.getElementById('fps-counter').innerText =
+            `${fps} FPS | α ${alpha.toFixed(3)} | ${drawnCount} nodes | zoom ${camera.zoom.toFixed(2)}`;
     }
+
     updateTooltip();
     requestAnimationFrame(draw);
 }
 
-// --- 5. INTERACTIVITY ---
-canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
-    if (dragNode) { dragNode.x = mouseX; dragNode.y = mouseY; dragNode.vx = 0; dragNode.vy = 0; }
-});
-canvas.addEventListener('mousedown', (e) => {
-    if (hoveredNode) { dragNode = hoveredNode; dragNode.pinned = true; alpha = Math.max(alpha, 0.5); canvas.style.cursor = 'grabbing'; }
-});
-window.addEventListener('mouseup', () => {
-    if (dragNode) { dragNode.pinned = false; dragNode = null; canvas.style.cursor = 'grab'; }
-});
-canvas.addEventListener('mouseleave', () => { mouseX = -1000; mouseY = -1000; hoveredNode = null; document.getElementById('tooltip').style.display = 'none'; });
+// ============================================================
+//  COLOR UTILITY
+// ============================================================
+function hexToRGBA(hex, a) {
+    if (hex.startsWith('rgba') || hex.startsWith('rgb')) {
+        // Already in rgb form, just adjust alpha
+        return hex.replace(/[\d.]+\)$/g, `${a})`);
+    }
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r},${g},${b},${a})`;
+}
 
+// ============================================================
+//  TOOLTIP
+// ============================================================
 function updateTooltip() {
     const tt = document.getElementById('tooltip');
     if (!hoveredNode || dragNode) { tt.style.display = 'none'; return; }
+
     tt.style.display = 'block';
-    let tx = mouseX + 20; let ty = mouseY - 20;
-    if (tx + 320 > width) tx = mouseX - 340; if (ty < 0) ty = 10;
-    tt.style.left = tx + 'px'; tt.style.top = ty + 'px';
+    let tx = mouseScreen.x + 20, ty = mouseScreen.y - 20;
+    if (tx + 350 > W) tx = mouseScreen.x - 370;
+    if (ty < 0) ty = 10;
+    if (ty + 420 > H) ty = H - 430;
+    tt.style.left = tx + 'px';
+    tt.style.top = ty + 'px';
+
     const n = hoveredNode;
-    document.getElementById('tt-cat').innerText = categoryMap[n.catId]?.name || 'Unknown';
+    document.getElementById('tt-cat').innerText = CATEGORY_LABELS[n.category] || n.category;
+    document.getElementById('tt-cat').style.color = CAT_COLORS[n.category] || '#C4A35A';
     document.getElementById('tt-title').innerText = n.name;
-    document.getElementById('tt-centrality').innerText = n.centrality.toFixed(3);
+    document.getElementById('tt-desc').innerText = n.description;
     document.getElementById('tt-inheritance').innerText = n.inheritanceLevel;
-    document.getElementById('tt-roles').innerText = n.roles.join(', ');
-    const edgesList = document.getElementById('tt-edges'); edgesList.innerHTML = '';
-    n.edges.forEach(e => { const li = document.createElement('li'); li.innerHTML = `<span class="tt-edge-type">${e.type}</span> → ${e.node}`; edgesList.appendChild(li); });
+    const conf = n.metadata?.confidenceScore;
+    document.getElementById('tt-confidence').innerText = conf !== undefined ? conf.toFixed(2) : '—';
+
+    // Functional roles
+    const rolesEl = document.getElementById('tt-roles');
+    rolesEl.innerHTML = '';
+    (n.functionalRoles || []).forEach(r => {
+        const span = document.createElement('span');
+        span.className = 'tt-tag'; span.innerText = r; rolesEl.appendChild(span);
+    });
+
+    // Reality domains
+    const domainsEl = document.getElementById('tt-domains');
+    domainsEl.innerHTML = '';
+    (n.realityDomains || []).forEach(d => {
+        const span = document.createElement('span');
+        span.className = 'tt-tag'; span.innerText = d; domainsEl.appendChild(span);
+    });
+
+    // Specific properties
+    const specEl = document.getElementById('tt-specific');
+    specEl.innerHTML = '';
+    if (n.specific && typeof n.specific === 'object') {
+        Object.entries(n.specific).forEach(([key, val]) => {
+            const div = document.createElement('div');
+            div.className = 'spec-item';
+            const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+            const display = Array.isArray(val) ? val.join(', ') : String(val);
+            div.innerHTML = `<span class="spec-label">${label}</span> ${display}`;
+            specEl.appendChild(div);
+        });
+    }
+
+    // Relationships
+    const edgesEl = document.getElementById('tt-edges');
+    edgesEl.innerHTML = '';
+    (n.rawRelationships || []).forEach(rel => {
+        const li = document.createElement('li');
+        const targetName = nodeMap[rel.targetNodeId]?.name || rel.targetNodeId;
+        li.innerHTML = `<span class="tt-edge-type">${rel.relationshipType}</span> ` +
+            `<span class="tt-edge-target">${targetName}</span>` +
+            (rel.description ? ` <span class="tt-edge-desc">— ${rel.description}</span>` : '');
+        edgesEl.appendChild(li);
+    });
 }
 
-// Search
-document.getElementById('search-input').addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-    nodes.forEach(n => { if (q === '') { n.baseSize = 6; return; } const match = n.id.toLowerCase().includes(q) || n.name.toLowerCase().includes(q); n.baseSize = match ? 12 : 4; });
-    alpha = Math.max(alpha, 0.3); 
+// ============================================================
+//  INTERACTIVITY
+// ============================================================
+canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouseScreen.x = e.clientX - rect.left;
+    mouseScreen.y = e.clientY - rect.top;
+
+    if (dragNode) {
+        const w = screenToWorld(mouseScreen.x, mouseScreen.y);
+        dragNode.x = w.x; dragNode.y = w.y;
+        dragNode.vx = 0; dragNode.vy = 0;
+    } else if (isPanning) {
+        camera.x = e.clientX - panStart.x;
+        camera.y = e.clientY - panStart.y;
+    }
 });
 
-// Toggles & Filters Logic
-const catTogglesEl = document.getElementById('category-toggles');
-Object.keys(categoryMap).forEach(catId => {
-    const cat = categoryMap[catId];
-    const label = document.createElement('label'); label.className = 'toggle-item';
-    label.innerHTML = `<input type="checkbox" checked data-cat="${catId}"><span class="checkmark"></span>${cat.name}`;
-    label.querySelector('input').addEventListener('change', (e) => { if (e.target.checked) activeCategories.add(catId); else activeCategories.delete(catId); updateNodeVisibility(); });
-    catTogglesEl.appendChild(label);
+canvas.addEventListener('mousedown', e => {
+    if (hoveredNode) {
+        dragNode = hoveredNode;
+        dragNode.pinned = true;
+        alpha = Math.max(alpha, 0.4);
+        canvas.style.cursor = 'grabbing';
+    } else {
+        isPanning = true;
+        panStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
+        canvas.style.cursor = 'grabbing';
+    }
 });
 
-const edgeChipsEl = document.getElementById('edge-chips');
-edgeTypes.forEach(et => {
-    const chip = document.createElement('div'); chip.className = 'chip active'; chip.innerText = et;
-    chip.addEventListener('click', () => { chip.classList.toggle('active'); if (activeEdgeTypes.has(et)) activeEdgeTypes.delete(et); else activeEdgeTypes.add(et); updateNodeVisibility(); });
-    edgeChipsEl.appendChild(chip);
+window.addEventListener('mouseup', () => {
+    if (dragNode) { dragNode.pinned = false; dragNode = null; }
+    isPanning = false;
+    canvas.style.cursor = 'grab';
 });
 
-function updateNodeVisibility() {
-    nodes.forEach(n => { const catMatch = activeCategories.has(n.catId); const edgeMatch = n.edges.some(e => activeEdgeTypes.has(e.type)); n.visible = catMatch && edgeMatch; });
-    hyperedges.forEach(he => { he.visible = he.nodes.some(n => n.visible); });
+canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = e.deltaY > 0 ? 0.92 : 1.08;
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    camera.x = mx - (mx - camera.x) * factor;
+    camera.y = my - (my - camera.y) * factor;
+    camera.zoom *= factor;
+    camera.zoom = Math.max(0.1, Math.min(5, camera.zoom));
+}, { passive: false });
+
+canvas.addEventListener('mouseleave', () => {
+    mouseScreen.x = -9999; mouseScreen.y = -9999;
+    hoveredNode = null;
+    document.getElementById('tooltip').style.display = 'none';
+});
+
+// ============================================================
+//  UI CONTROLS
+// ============================================================
+function setupUI() {
+    // Category toggles
+    const catTogglesEl = document.getElementById('category-toggles');
+    CATEGORY_LIST.forEach(cat => {
+        const label = document.createElement('label');
+        label.className = 'toggle-item';
+        const dot = `<span class="cat-dot" style="background:${CAT_COLORS[cat] || '#888'}"></span>`;
+        label.innerHTML = `<input type="checkbox" checked data-cat="${cat}"><span class="checkmark"></span>${dot}${CATEGORY_LABELS[cat] || cat}`;
+        label.querySelector('input').addEventListener('change', e => {
+            if (e.target.checked) activeCategories.add(cat); else activeCategories.delete(cat);
+            updateVisibility();
+        });
+        catTogglesEl.appendChild(label);
+    });
+
+    // Relationship family chips
+    const famChipsEl = document.getElementById('family-chips');
+    Object.keys(FAMILY_COLORS).forEach(fam => {
+        const chip = document.createElement('div');
+        chip.className = 'chip active';
+        chip.style.borderColor = FAMILY_COLORS[fam];
+        chip.innerText = FAMILY_LABELS[fam] || fam;
+        chip.addEventListener('click', () => {
+            chip.classList.toggle('active');
+            if (activeFamilies.has(fam)) activeFamilies.delete(fam); else activeFamilies.add(fam);
+            updateVisibility();
+        });
+        famChipsEl.appendChild(chip);
+    });
+
+    // Search
+    document.getElementById('search-input').addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        nodes.forEach(n => {
+            if (q === '') { n.baseSize = 7; return; }
+            const match = n.id.toLowerCase().includes(q) ||
+                          n.name.toLowerCase().includes(q) ||
+                          n.description.toLowerCase().includes(q);
+            n.baseSize = match ? 14 : 4;
+        });
+        alpha = Math.max(alpha, 0.3);
+    });
+
+    // Projection chips
+    document.querySelectorAll('#projection-chips .chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#projection-chips .chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentProjection = chip.getAttribute('data-proj');
+            alpha = 1.0;
+        });
+    });
+}
+
+function updateVisibility() {
+    nodes.forEach(n => {
+        n.visible = activeCategories.has(n.category);
+    });
+    graphEdges.forEach(e => {
+        const s = nodeMap[e.source], t = nodeMap[e.target];
+        e.visible = s && t && s.visible && t.visible && activeFamilies.has(e.family);
+    });
     alpha = Math.max(alpha, 0.5);
 }
 
-// Alternative Projections Logic
-const projChips = document.querySelectorAll('#projection-chips .chip');
-projChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-        projChips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentProjection = chip.getAttribute('data-proj');
-        alpha = 1.0; // Reheat simulation to execute morphing
-    });
-});
-
-// Stats
 function toggleStats() {
     const modal = document.getElementById('stats-modal');
-    if (modal.style.display === 'block') { modal.style.display = 'none'; } 
-    else {
-        modal.style.display = 'block';
-        document.getElementById('stat-v').innerText = nodes.filter(n => n.visible).length;
-        document.getElementById('stat-e').innerText = hyperedges.filter(he => he.visible).length;
-        document.getElementById('stat-card').innerText = (nodes.length / hyperedges.length).toFixed(1);
-        document.getElementById('stat-alpha').innerText = alpha.toFixed(4);
-    }
+    if (modal.style.display === 'block') { modal.style.display = 'none'; return; }
+    modal.style.display = 'block';
+    const vn = nodes.filter(n => n.visible).length;
+    const en = graphEdges.filter(e => e.visible).length;
+    const cats = new Set(nodes.filter(n => n.visible).map(n => n.category)).size;
+    const maxEdges = vn * (vn - 1);
+    const density = maxEdges > 0 ? (en / maxEdges).toFixed(4) : '0';
+    const avgDeg = vn > 0 ? ((2 * en) / vn).toFixed(2) : '0';
+    document.getElementById('stat-v').innerText = vn;
+    document.getElementById('stat-e').innerText = en;
+    document.getElementById('stat-cats').innerText = cats;
+    document.getElementById('stat-density').innerText = density;
+    document.getElementById('stat-degree').innerText = avgDeg;
+    document.getElementById('stat-alpha').innerText = alpha.toFixed(4);
 }
 
-requestAnimationFrame(draw);
+// ============================================================
+//  INIT
+// ============================================================
+window.addEventListener('resize', resize);
+resize();
+loadData();
 </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.org/conceptual-structure-node.schema.json",
   "title": "Conceptual Structure Typing Node Schema",
-  "description": "Schema for representing epistemic, conceptual, or systemic structures as typed nodes within a conceptual hypergraph.",
+  "description": "Schema for representing the concepts used to parse and represent the epistemic practice of agents.",
   "type": "object",
   "required": [
     "id",
@@ -13,6 +13,7 @@
     "functionalRoles",
     "realityDomains",
     "historicalContext",
+    "specific",
     "relationships",
     "metadata"
   ],
@@ -27,10 +28,29 @@
     },
     "category": {
       "type": "string",
-      "description": "Major category, subtype, or ontological classification."
+      "enum": [
+        "reality",
+        "observationInterface",
+        "concreteEpistemicArtifact",
+        "epistemicBlueprint",
+        "epistemicAgent",
+        "epistemicProcess",
+        "epistemicStandard",
+        "epistemicDomain",
+        "epistemicConstraint",
+        "epistemicInfrastructure",
+        "epistemicFeedback",
+        "epistemicAct",
+        "epistemicPrinciple",
+        "epistemicStrategy",
+        "epistemicFramework",
+        "epistemicOperator",
+        "metaEpistemicLayer"
+      ],
+      "description": "Ontological classification of the epistemic node."
     },
     "inheritanceLevel": {
-      "type": "number",
+      "type": "integer",
       "minimum": 0,
       "description": "Depth within conceptual or taxonomic inheritance hierarchy."
     },
@@ -40,17 +60,17 @@
     },
     "functionalRoles": {
       "type": "array",
-      "description": "Primary functional roles served by this structure.",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "Primary functional roles served by this node."
     },
     "realityDomains": {
       "type": "array",
-      "description": "Domains of reality, knowledge, or systems in which this structure operates.",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "Domains of reality or systems in which this node operates."
     },
     "historicalContext": {
       "type": "object",
@@ -60,12 +80,10 @@
       ],
       "properties": {
         "summary": {
-          "type": "string",
-          "description": "Historical summary of the conceptual structure."
+          "type": "string"
         },
         "chronology": {
           "type": "array",
-          "description": "Chronological development timeline.",
           "items": {
             "type": "object",
             "required": [
@@ -75,16 +93,13 @@
             ],
             "properties": {
               "year": {
-                "type": "number",
-                "description": "Year of the event."
+                "type": "number"
               },
               "event": {
-                "type": "string",
-                "description": "Description of the historical event."
+                "type": "string"
               },
               "associatedContext": {
-                "type": "string",
-                "description": "Relevant actors, institutions, or contextual factors."
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -95,40 +110,86 @@
     },
     "specific": {
       "type": "object",
-      "description": "Domain-specific extension fields for specialized conceptual structures.",
-      "additionalProperties": true
+      "description": "Category-specific extension fields."
     },
     "relationships": {
       "type": "array",
-      "description": "Connections to other conceptual nodes.",
+      "description": "Typed edges connecting this node to others.",
       "items": {
         "type": "object",
         "required": [
-          "relationshipFamily",
           "relationshipType",
           "targetNodeId",
-          "attributes"
+          "description"
         ],
         "properties": {
           "relationshipFamily": {
             "type": "string",
-            "description": "High-level relation family classification."
+            "enum": [
+              "representational",
+              "structural",
+              "operational",
+              "normativeValidation",
+              "constraint",
+              "dynamicFeedback",
+              "infrastructure",
+              "metaEpistemic"
+            ]
           },
           "relationshipType": {
             "type": "string",
-            "description": "Specific relationship type."
+            "enum": [
+              "observes",
+              "encodes",
+              "expresses_in",
+              "formalizes",
+              "abstracts_from",
+              "composed_of",
+              "has_parameter",
+              "has_input",
+              "has_output",
+              "implements_principle",
+              "uses",
+              "performs",
+              "acts_on",
+              "produces",
+              "transforms",
+              "predicts",
+              "decomposes",
+              "integrates",
+              "estimates",
+              "conforms_to",
+              "evaluated_by",
+              "validates",
+              "refutes",
+              "supports",
+              "is_bounded_by",
+              "constrains",
+              "distorts",
+              "depends_on",
+              "triggers",
+              "updates",
+              "feeds_back_to",
+              "iterates_on",
+              "evolves_into",
+              "provides",
+              "hosts",
+              "stores",
+              "communicates",
+              "standardizes",
+              "monitors",
+              "governs",
+              "audits",
+              "optimizes"
+            ]
           },
           "targetNodeId": {
-            "type": "string",
-            "description": "Identifier of the target node."
+            "type": "string"
           },
-          "attributes": {
-            "type": "object",
-            "description": "Additional relation-specific metadata.",
-            "additionalProperties": true
+          "description": {
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       }
     },
     "metadata": {
@@ -143,7 +204,6 @@
       "properties": {
         "tags": {
           "type": "array",
-          "description": "Semantic or retrieval tags.",
           "items": {
             "type": "string"
           }
@@ -151,21 +211,17 @@
         "confidenceScore": {
           "type": "number",
           "minimum": 0,
-          "maximum": 1,
-          "description": "Confidence score representing epistemic reliability."
+          "maximum": 1
         },
         "sourceReference": {
-          "type": "string",
-          "description": "Reference to source material or provenance."
+          "type": "string"
         },
         "createdAt": {
           "type": "string",
-          "format": "date-time",
-          "description": "Creation timestamp."
+          "format": "date-time"
         },
         "auditTrail": {
           "type": "array",
-          "description": "Review and revision history.",
           "items": {
             "type": "object",
             "required": [
@@ -175,17 +231,284 @@
             "properties": {
               "reviewDate": {
                 "type": "string",
-                "format": "date",
-                "description": "Date of review."
+                "format": "date"
               },
               "reviewNote": {
-                "type": "string",
-                "description": "Review notes or modifications."
+                "type": "string"
               }
             },
             "additionalProperties": false
           }
         }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "category": { "const": "reality" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/realitySpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "observationInterface" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/observationInterfaceSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "concreteEpistemicArtifact" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/concreteEpistemicArtifactSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicBlueprint" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicBlueprintSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicAgent" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicAgentSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicProcess" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicProcessSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicStandard" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicStandardSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicDomain" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicDomainSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicConstraint" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicConstraintSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicInfrastructure" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicInfrastructureSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicFeedback" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicFeedbackSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicAct" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicActSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicPrinciple" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicPrincipleSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicStrategy" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicStrategySpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicFramework" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicFrameworkSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "epistemicOperator" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/epistemicOperatorSpecific" } } }
+    },
+    {
+      "if": { "properties": { "category": { "const": "metaEpistemicLayer" } } },
+      "then": { "properties": { "specific": { "$ref": "#/$defs/metaEpistemicLayerSpecific" } } }
+    }
+  ],
+  "$defs": {
+    "realitySpecific": {
+      "type": "object",
+      "required": ["ontologicalClass", "observability"],
+      "properties": {
+        "ontologicalClass": { "type": "string" },
+        "observability": {
+          "type": "string",
+          "enum": ["observable", "latent", "partiallyObservable"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "observationInterfaceSpecific": {
+      "type": "object",
+      "required": ["transductionMethod", "samplingMethod", "encodingMethod"],
+      "properties": {
+        "transductionMethod": { "type": "string" },
+        "samplingMethod": { "type": "string" },
+        "encodingMethod": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "concreteEpistemicArtifactSpecific": {
+      "type": "object",
+      "required": ["modality", "structure", "truthEvaluability", "noiseModel"],
+      "properties": {
+        "modality": {
+          "type": "string",
+          "enum": ["sensorimotor", "computational", "cognitive", "institutional"]
+        },
+        "structure": { "type": "string" },
+        "truthEvaluability": { "type": "boolean" },
+        "noiseModel": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicBlueprintSpecific": {
+      "type": "object",
+      "required": ["representationType", "formalism", "expressiveLimits"],
+      "properties": {
+        "representationType": { "type": "string" },
+        "formalism": { "type": "string" },
+        "expressiveLimits": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "epistemicAgentSpecific": {
+      "type": "object",
+      "required": ["agentType", "capabilities", "autonomyLevel", "goalStructure"],
+      "properties": {
+        "agentType": {
+          "type": "string",
+          "enum": ["human", "machine", "hybridSystem", "institution"]
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "autonomyLevel": { "type": "string" },
+        "goalStructure": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicProcessSpecific": {
+      "type": "object",
+      "required": ["processType", "inputs", "outputs", "validationMethod"],
+      "properties": {
+        "processType": { "type": "string" },
+        "inputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "validationMethod": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicStandardSpecific": {
+      "type": "object",
+      "required": ["standardType", "complianceCriteria", "measurementBasis"],
+      "properties": {
+        "standardType": { "type": "string" },
+        "complianceCriteria": { "type": "string" },
+        "measurementBasis": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicDomainSpecific": {
+      "type": "object",
+      "required": ["domainScope", "knowledgeBoundaries", "primaryObjects"],
+      "properties": {
+        "domainScope": { "type": "string" },
+        "knowledgeBoundaries": { "type": "string" },
+        "primaryObjects": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "epistemicConstraintSpecific": {
+      "type": "object",
+      "required": ["constraintType", "boundedResource", "failureMode"],
+      "properties": {
+        "constraintType": { "type": "string" },
+        "boundedResource": { "type": "string" },
+        "failureMode": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicInfrastructureSpecific": {
+      "type": "object",
+      "required": ["infrastructureType", "storageMechanism", "communicationMode"],
+      "properties": {
+        "infrastructureType": { "type": "string" },
+        "storageMechanism": { "type": "string" },
+        "communicationMode": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicFeedbackSpecific": {
+      "type": "object",
+      "required": ["feedbackType", "signalSource", "adaptationTarget"],
+      "properties": {
+        "feedbackType": { "type": "string" },
+        "signalSource": { "type": "string" },
+        "adaptationTarget": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicActSpecific": {
+      "type": "object",
+      "required": ["actType", "intent", "target", "outcome"],
+      "properties": {
+        "actType": { "type": "string" },
+        "intent": { "type": "string" },
+        "target": { "type": "string" },
+        "outcome": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicPrincipleSpecific": {
+      "type": "object",
+      "required": ["principleType", "formalStatement", "applicability"],
+      "properties": {
+        "principleType": { "type": "string" },
+        "formalStatement": { "type": "string" },
+        "applicability": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicStrategySpecific": {
+      "type": "object",
+      "required": ["strategyType", "optimizationGoal", "decisionHeuristic"],
+      "properties": {
+        "strategyType": { "type": "string" },
+        "optimizationGoal": { "type": "string" },
+        "decisionHeuristic": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicFrameworkSpecific": {
+      "type": "object",
+      "required": ["frameworkType", "coreAssumptions", "integrationScope"],
+      "properties": {
+        "frameworkType": { "type": "string" },
+        "coreAssumptions": { "type": "string" },
+        "integrationScope": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "epistemicOperatorSpecific": {
+      "type": "object",
+      "required": ["operatorType", "transformationRule", "operandType"],
+      "properties": {
+        "operatorType": { "type": "string" },
+        "transformationRule": { "type": "string" },
+        "operandType": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "metaEpistemicLayerSpecific": {
+      "type": "object",
+      "required": ["reflectionScope", "governanceRole", "recursiveDepth"],
+      "properties": {
+        "reflectionScope": { "type": "string" },
+        "governanceRole": { "type": "string" },
+        "recursiveDepth": { "type": "integer", "minimum": 1 }
       },
       "additionalProperties": false
     }
